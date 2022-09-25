@@ -1,0 +1,46 @@
+{
+  "name": "@guildest/guildest",
+  "version": "0.0.0",
+  "description": "A powerful NPM module that allows you to easily interact with the Guilded API.",
+  "repository": "Guildest/guildest",
+  "homepage": "https://guildest.js.org",
+  "private": true,
+  "contributors": [
+    "Runin Mascot | SidisLiveYT (https://github.com/SidisLiveYT)"
+  ],
+  "license": "Apache-2.0",
+  "scripts": {
+    "test": "ts-node test",
+    "build": "pnpm -r build",
+    "lint": "eslint packages/*/src/**/*.ts scripts/*.ts",
+    "format": "prettier --write **/*.{ts,md,json,yml,yaml}",
+    "docs": "rimraf docs && typedoc",
+    "prepare": "husky install && pnpm build",
+    "clear": "pnpm -r clear",
+    "changeset": "changeset",
+    "version": "ts-node scripts/version",
+    "version:dev": "pnpm run version --dev",
+    "publish": "pnpm build && ts-node scripts/publish",
+    "publish:dev": "pnpm run publish --dev"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@changesets/cli": "^2.24.4",
+    "@favware/npm-deprecate": "^1.0.5",
+    "@types/node": "^18.7.20",
+    "@typescript-eslint/eslint-plugin": "^5.38.0",
+    "@typescript-eslint/parser": "^5.38.0",
+    "eslint": "^8.24.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "typedoc": "^0.23.15",
+    "typedoc-plugin-missing-exports": "^1.0.0",
+    "typescript": "^4.8.3"
+  },
+  "packageManager": "pnpm@7.12.2"
+}
