@@ -8,7 +8,7 @@ import {
 	eventCalenderEventUpdated,
 	eventChannelMessageReactionCreated,
 	eventChannelMessageReactionDeleted,
-	eventChatMessageCreate,
+	eventChatMessageCreated,
 	eventChatMessageDeleted,
 	eventChatMessageUpdated,
 	eventDocCreated,
@@ -74,7 +74,7 @@ export interface wsMessagePayload {
  * @see https://www.guilded.gg/docs/api/websockets
  */
 export interface wsEvents {
-	ChatMessageCreated: eventChatMessageCreate;
+	ChatMessageCreated: eventChatMessageCreated;
 	ChatMessageUpdated: eventChatMessageUpdated;
 	ChatMessageDeleted: eventChatMessageDeleted;
 	TeamMemberJoined: eventTeamMemberJoined;

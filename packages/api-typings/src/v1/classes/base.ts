@@ -91,26 +91,46 @@ export interface ApiBaseUser extends ApiBaseUserSummary {
  * @see https://www.guilded.gg/docs/api/listItems/ListItemSummary
  */
 export interface ApiBaseListItemNote {
+	/* Represents the Creation Time/Data ISO-String Value of the List Item Note on Guilded. */
 	createdAt: string;
+	/* Represents the User Id , created By on Guilded. */
 	createdBy: string;
+	/* Represents the Last Update At ISO-String Value of the List Item Note on Guilded. */
 	updatedAt?: string;
+	/* Represents the User Id , last Updated By on Guilded. */
 	updatedBy?: string;
 }
 
+/**
+ * Represents the Base Social Links
+ * @see https://www.guilded.gg/docs/api/socialLinks
+ */
 export interface ApiBaseSocialLinks {
+	/* Represents The handle of the user within the external service on Guilded. */
 	handle?: string;
+	/* Represents The unique ID that represents this members social link within the external service on Guilded. */
 	serviceId?: string;
+	/* Represents The type of social link requested on Guilded. */
 	type?: string;
 }
 
+/** Represents the Base Server Event (Websocket) **/
 export interface ApiBaseServerEvent {
 	serverId: string;
 }
 
+/**
+ * Represent the Base User Info on Guilded during Wwbsocket Events
+ * @see https://www.guilded.gg/docs/api/websockets/TeamMemberUpdated
+ */
 export interface ApiBaseUserInfo extends ApiBase {
 	nickname?: string;
 }
 
+/**
+ * Represents the Base Member Roles Ids for Websocket Events
+ * @see https://www.guilded.gg/docs/api/websockets/teamRolesUpdated
+ */
 export interface ApiBaseMemberRoleIds {
 	userId: string;
 	roleIds: Array<number>;

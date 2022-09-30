@@ -119,6 +119,10 @@ export interface ApiServerMemberUpdateXp {
 	total: number;
 }
 
+/**
+ * Represents Server Member Roles Array from Get Method on Guilded.
+ * @see https://www.guilded.gg/docs/api/roleMembership/RoleMembershipReadMany
+ */
 export interface ApiServerMemberManyFetchRoles {
 	/* Array of Roles Ids Associated with Server Member on Guilded. */
 	roleIds: number[];
