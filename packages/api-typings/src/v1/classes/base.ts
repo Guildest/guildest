@@ -85,3 +85,51 @@ export interface ApiBaseUser extends ApiBaseUserSummary {
 	/* Created At Data/Time ISO-String Value for User Creation on Guilded. */
 	createdAt: string;
 }
+
+/**
+ * Represents List Item's Note on Guilded.
+ * @see https://www.guilded.gg/docs/api/listItems/ListItemSummary
+ */
+export interface ApiBaseListItemNote {
+	createdAt: string;
+	createdBy: string;
+	updatedAt?: string;
+	updatedBy?: string;
+}
+
+export interface ApiBaseSocialLinks {
+	handle?: string;
+	serviceId?: string;
+	type?: string;
+}
+
+export interface ApiBaseServerEvent {
+	serverId: string;
+}
+
+export interface ApiBaseUserInfo extends ApiBase {
+	nickname?: string;
+}
+
+export interface ApiBaseMemberRoleIds {
+	userId: string;
+	roleIds: Array<number>;
+}
+
+/** Represents a client user. */
+export interface ApiBaseClientUser extends ApiBaseUser {
+	/** The bot ID of the client user. */
+	botId: string;
+	/** The ID of the user that created the client user. */
+	createdBy: string;
+}
+
+/** Represents a error that occurred while interacting with the Guilded REST API. */
+export interface ApiBaseError {
+	/** The code of the error. */
+	code: string;
+	/** The message of the error. */
+	message: string;
+	/** The meta data of the error. */
+	meta?: any;
+}

@@ -1,23 +1,6 @@
 import { ApiBase, ApiBaseMentions } from './base';
 
 /**
- * Represents Message Delete Webhook Metadata/Response from Guilded.
- * @see https://www.guilded.gg/docs/api/websockets/ChatMessageDeleted
- */
-export interface ApiMessageDelete extends ApiBase {
-	/* The Id of the Chat Message in string. */
-	id: string;
-	/* The Server Id of the Server where Chat Message is present in string. */
-	serverId?: string;
-	/* The Channel Id of the Server where Chat Message is present in string. */
-	channelId: string;
-	/* Represent the Deleted-at Data/Time in ISO-String Value. */
-	deletedAt: string;
-	/* Represent isPrivate if Message is Privately Send. */
-	isPrivate?: boolean;
-}
-
-/**
  * Represents Message Type on Guilded.
  * @see https://www.guilded.gg/docs/api/chat/ChatMessage
  */
@@ -30,7 +13,9 @@ export enum ApiMessageType {
  * Represents Message Value from Chat on Guilded.
  * @see https://www.guilded.gg/docs/api/chat/ChatMessage
  */
-export interface ApiMessage extends Omit<ApiMessageDelete, 'deletedAt'> {
+export interface ApiMessage extends ApiBase {
+	/* The Channel Id of the Server where Chat Message is present in string. */
+	channelId: string;
 	/* Represent Type of the Message on Guilded. */
 	type: ApiMessageType;
 	/* The Server Id of the Server where Chat Message is present in string. */
