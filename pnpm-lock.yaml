@@ -1,40 +1,65 @@
 lockfileVersion: 5.4
 
-specifiers:
-  '@changesets/cli': ^2.24.4
-  '@favware/npm-deprecate': ^1.0.5
-  '@types/node': ^18.7.20
-  '@typescript-eslint/eslint-plugin': ^5.38.0
-  '@typescript-eslint/parser': ^5.38.0
-  eslint: ^8.24.0
-  eslint-config-prettier: ^8.5.0
-  eslint-plugin-prettier: ^4.2.1
-  husky: ^8.0.1
-  lint-staged: ^13.0.3
-  prettier: ^2.7.1
-  rimraf: ^3.0.2
-  ts-node: ^10.9.1
-  typedoc: ^0.23.15
-  typedoc-plugin-missing-exports: ^1.0.0
-  typescript: ^4.8.3
+importers:
 
-devDependencies:
-  '@changesets/cli': 2.24.4
-  '@favware/npm-deprecate': 1.0.5
-  '@types/node': 18.7.20
-  '@typescript-eslint/eslint-plugin': 5.38.0_4gkcvl6qsi23tqqawfqgcwtp54
-  '@typescript-eslint/parser': 5.38.0_7ilbxdl5iguzcjriqqcg2m5cku
-  eslint: 8.24.0
-  eslint-config-prettier: 8.5.0_eslint@8.24.0
-  eslint-plugin-prettier: 4.2.1_cfn5x6ujhhgzv3423d6k7r2zzm
-  husky: 8.0.1
-  lint-staged: 13.0.3
-  prettier: 2.7.1
-  rimraf: 3.0.2
-  ts-node: 10.9.1_xncqeq3xkoqhng77wx5a5ihsty
-  typedoc: 0.23.15_typescript@4.8.3
-  typedoc-plugin-missing-exports: 1.0.0_typedoc@0.23.15
-  typescript: 4.8.3
+  .:
+    specifiers:
+      '@changesets/cli': ^2.24.4
+      '@favware/npm-deprecate': ^1.0.5
+      '@types/node': ^18.7.20
+      '@typescript-eslint/eslint-plugin': ^5.38.0
+      '@typescript-eslint/parser': ^5.38.0
+      eslint: ^8.24.0
+      eslint-config-prettier: ^8.5.0
+      eslint-plugin-prettier: ^4.2.1
+      husky: ^8.0.1
+      lint-staged: ^13.0.3
+      prettier: ^2.7.1
+      rimraf: ^3.0.2
+      ts-node: ^10.9.1
+      typedoc: ^0.23.15
+      typedoc-plugin-missing-exports: ^1.0.0
+      typescript: ^4.8.3
+    devDependencies:
+      '@changesets/cli': 2.24.4
+      '@favware/npm-deprecate': 1.0.5
+      '@types/node': 18.7.20
+      '@typescript-eslint/eslint-plugin': 5.38.0_4gkcvl6qsi23tqqawfqgcwtp54
+      '@typescript-eslint/parser': 5.38.0_7ilbxdl5iguzcjriqqcg2m5cku
+      eslint: 8.24.0
+      eslint-config-prettier: 8.5.0_eslint@8.24.0
+      eslint-plugin-prettier: 4.2.1_cfn5x6ujhhgzv3423d6k7r2zzm
+      husky: 8.0.1
+      lint-staged: 13.0.3
+      prettier: 2.7.1
+      rimraf: 3.0.2
+      ts-node: 10.9.1_xncqeq3xkoqhng77wx5a5ihsty
+      typedoc: 0.23.15_typescript@4.8.3
+      typedoc-plugin-missing-exports: 1.0.0_typedoc@0.23.15
+      typescript: 4.8.3
+
+  packages/guildest-api-typings:
+    specifiers:
+      rimraf: ^3.0.2
+      typescript: ^4.8.4
+    devDependencies:
+      rimraf: 3.0.2
+      typescript: 4.8.4
+
+  packages/ws:
+    specifiers:
+      '@types/ws': ^8.5.3
+      guildest-api-typings: workspace:^
+      rimraf: ^3.0.2
+      typescript: ^4.8.4
+      ws: ^8.9.0
+    dependencies:
+      '@types/ws': 8.5.3
+      ws: 8.9.0
+    devDependencies:
+      guildest-api-typings: link:../guildest-api-typings
+      rimraf: 3.0.2
+      typescript: 4.8.4
 
 packages:
 
@@ -448,7 +473,6 @@ packages:
 
   /@types/node/18.7.20:
     resolution: {integrity: sha512-adzY4vLLr5Uivmx8+zfSJ5fbdgKxX8UMtjtl+17n0B1q1Nz8JEmE151vefMdpD+1gyh+77weN4qEhej/O7budQ==}
-    dev: true
 
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
@@ -457,6 +481,12 @@ packages:
   /@types/semver/6.2.3:
     resolution: {integrity: sha512-KQf+QAMWKMrtBMsB8/24w53tEsxllMj6TuA80TT/5igJalLI/zm0L3oXRbIAl4Ohfc85gyHX/jhMwsVkmhLU4A==}
     dev: true
+
+  /@types/ws/8.5.3:
+    resolution: {integrity: sha512-6YOoWjruKj1uLf3INHH7D3qTXwFfEsg1kf3c0uDdSBJwfa/llkwIjrAGV7j7mVgGNbzTQ3HiHKKDXl6bJPD97w==}
+    dependencies:
+      '@types/node': 18.7.20
+    dev: false
 
   /@typescript-eslint/eslint-plugin/5.38.0_4gkcvl6qsi23tqqawfqgcwtp54:
     resolution: {integrity: sha512-GgHi/GNuUbTOeoJiEANi0oI6fF3gBQc3bGFYj40nnAPCbhrtEDf2rjBmefFadweBmO1Du1YovHeDP2h5JLhtTQ==}
@@ -3134,6 +3164,12 @@ packages:
     hasBin: true
     dev: true
 
+  /typescript/4.8.4:
+    resolution: {integrity: sha512-QCh+85mCy+h0IGff8r5XWzOVSbBO+KfeYrMQh7NJ58QujwcE22u+NUSmUxqF+un70P9GXKxa2HCNiTTMJknyjQ==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
+    dev: true
+
   /unbox-primitive/1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}
     dependencies:
@@ -3274,6 +3310,19 @@ packages:
   /wrappy/1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
     dev: true
+
+  /ws/8.9.0:
+    resolution: {integrity: sha512-Ja7nszREasGaYUYCI2k4lCKIRTt+y7XuqVoHR44YpI49TtryyqbqvDMn5eqfW7e6HzTukDRIsXqzVHScqRcafg==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: ^5.0.2
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+    dev: false
 
   /y18n/4.0.3:
     resolution: {integrity: sha512-JKhqTOwSrqNA1NY5lSztJ1GrBiUodLMmIZuLiDaMRJ+itFd+ABVE8XBjOvIWL+rSqNDC74LCSFmlb/U4UZ4hJQ==}
