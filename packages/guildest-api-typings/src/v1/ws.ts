@@ -40,7 +40,7 @@ import {
 } from './classes/events';
 
 /** The ready payload of the websocket. */
-export interface WSReadyPayload {
+export interface wsReadyPayload {
 	/** The last message ID. */
 	lastMessageId: string;
 	/** The client user. */
