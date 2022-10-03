@@ -1,10 +1,10 @@
 {
-	"name": "guildest-api-typings",
+	"name": "@guildest/guilded-api-typings",
 	"version": "0.1.0",
 	"description": "Type definitions for the Guilded API.",
 	"repository": {
 		"url": "Guildest/guildest",
-		"directory": "packages/guildest-api-typings"
+		"directory": "packages/guilded-api-typings"
 	},
 	"homepage": "https://guildest.js.org",
 	"main": "dist",
