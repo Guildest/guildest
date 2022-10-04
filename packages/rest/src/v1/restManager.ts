@@ -59,12 +59,12 @@ export class restManager {
 	async request<R = any, B = any, Q extends Record<string, any> = Record<string, any>>(
 		path: string,
 		method: string,
-		query: Q,
-		body: B,
+		query?: Q,
+		body?: B,
 		retries: number = 0,
 		authenticated: boolean = true,
 	): Promise<R> {
-		const sParams: URLSearchParams | undefined = Object.entries(query)?.reduce(
+		const sParams: URLSearchParams | undefined = Object.entries(query!)?.reduce(
 			(tPara: URLSearchParams | undefined = new URLSearchParams(), eNt) => {
 				tPara.append(...eNt);
 				return tPara;
@@ -76,7 +76,9 @@ export class restManager {
 			headers: authenticated && this.token ? this.restAuthHeaders : this.restHeaders,
 			body: body ? JSON.stringify(body) : undefined,
 		});
-		const rData = (await res.json()?.catch(() => undefined)) as ApiBaseError | R;
+		const rData = (await res.json()?.catch(() => ({
+			message: 'JSON Parse failed of Response Object Data.',
+		}))) as ApiBaseError | R;
 		if (res.ok) return rData as R;
 		else if (res.status === 429 && retries <= this.maxRetries) {
 			const rInterval =
@@ -107,13 +109,13 @@ export class restManager {
 	 * @returns The response from the REST API.
 	 * @example rest.get('/channels/abc');
 	 */
-	get<B extends any, Q extends Record<string, any> = Record<string, any>>(
+	get<R = any, B = any, Q extends Record<string, any> = Record<string, any>>(
 		path: string,
-		query: Q,
-		body: B,
+		query?: Q,
+		body?: B,
 		authenticated: boolean = true,
-	) {
-		return this.request(path, 'GET', query, body, 0, authenticated);
+	): Promise<R> {
+		return this.request<R, B, Q>(path, 'GET', query, body, 0, authenticated);
 	}
 
 	/**
@@ -124,13 +126,13 @@ export class restManager {
 	 * @returns The response from the REST API.
 	 * @example rest.post('/channels/abc',undefined,{ name: 'Chat', type: 'chat' });
 	 */
-	post<B extends any, Q extends Record<string, any> = Record<string, any>>(
+	post<R = any, B = any, Q extends Record<string, any> = Record<string, any>>(
 		path: string,
-		query: Q,
-		body: B,
+		query?: Q,
+		body?: B,
 		authenticated: boolean = true,
-	) {
-		return this.request(path, 'POST', query, body, 0, authenticated);
+	): Promise<R> {
+		return this.request<R, B, Q>(path, 'POST', query, body, 0, authenticated);
 	}
 
 	/**
@@ -141,13 +143,13 @@ export class restManager {
 	 * @returns The response from the REST API.
 	 * @example rest.patch('/channels/abc',undefined,{ name: 'Chat' });
 	 */
-	patch<B extends any, Q extends Record<string, any> = Record<string, any>>(
+	patch<R = any, B = any, Q extends Record<string, any> = Record<string, any>>(
 		path: string,
-		query: Q,
-		body: B,
+		query?: Q,
+		body?: B,
 		authenticated: boolean = true,
-	) {
-		return this.request(path, 'PATCH', query, body, 0, authenticated);
+	): Promise<R> {
+		return this.request<R, B, Q>(path, 'PATCH', query, body, 0, authenticated);
 	}
 
 	/**
@@ -158,13 +160,13 @@ export class restManager {
 	 * @returns The response from the REST API.
 	 * @example rest.put('/channels/abc',undefined,{ content: 'Hello world!' });
 	 */
-	put<B extends any, Q extends Record<string, any> = Record<string, any>>(
+	put<R = any, B = any, Q extends Record<string, any> = Record<string, any>>(
 		path: string,
-		query: Q,
-		body: B,
+		query?: Q,
+		body?: B,
 		authenticated: boolean = true,
-	) {
-		return this.request(path, 'PUT', query, body, 0, authenticated);
+	): Promise<R> {
+		return this.request<R, B, Q>(path, 'PUT', query, body, 0, authenticated);
 	}
 
 	/**
@@ -173,12 +175,12 @@ export class restManager {
 	 * @returns The response from the REST API.
 	 * @example rest.delete('/channels/abc');
 	 */
-	delete<Q extends Record<string, any> = Record<string, any>>(
+	delete<R = any, Q extends Record<string, any> = Record<string, any>>(
 		path: string,
-		query: Q,
+		query?: Q,
 		authenticated: boolean = true,
 	) {
-		return this.request(path, 'DELETE', query, undefined, 0, authenticated);
+		return this.request<R>(path, 'DELETE', query, undefined, 0, authenticated);
 	}
 }
 
