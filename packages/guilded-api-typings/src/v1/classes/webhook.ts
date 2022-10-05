@@ -38,3 +38,12 @@ export interface ApiWebhook extends ApiWebhookCreatePayload {
 	/** The token of the webhook. */
 	token?: string;
 }
+
+/**
+ * Represents Webhook Value on Guilded.
+ * @see https://www.guilded.gg/docs/api/webhook/Webhook
+ */
+export interface RestWebhookQueryParams {
+	/** Channel Id of the Server on Guilded. */
+	channelId: string;
+}

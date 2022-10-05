@@ -1,10 +1,10 @@
 {
-	"name": "@guildest/rest",
+	"name": "@guildest/collection",
 	"version": "0.1.0",
-	"description": "The REST API manager for Guildest Library.",
+	"description": "The Collection Wrapper Framework for Guildest library.",
 	"repository": {
 		"url": "Guildest/guildest",
-		"directory": "packages/rest"
+		"directory": "packages/collection"
 	},
 	"homepage": "https://guildest.js.org",
 	"main": "dist",
@@ -30,12 +30,7 @@
 		"build": "pnpm clear && tsc",
 		"clear": "rimraf dist typings"
 	},
-	"dependencies": {
-		"@guildest/guilded-api-typings": "workspace:^",
-		"node-fetch": "3.2.10"
-	},
 	"devDependencies": {
-		"@types/node-fetch": "^2.6.2",
 		"rimraf": "^3.0.2",
 		"typescript": "^4.8.4"
 	}

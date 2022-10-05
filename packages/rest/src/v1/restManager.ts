@@ -1,6 +1,8 @@
 import { ApiBaseError } from '@guildest/guilded-api-typings';
+import fetch from 'node-fetch';
 import { version } from '../../package.json';
 import { RestApiError } from './apiError';
+import { router } from './utils/router';
 
 /**
  * The REST-API Manager for the Guilded API.
@@ -15,6 +17,8 @@ export class restManager {
 	version: number | undefined;
 	/** Max Retries for 429 Ratelimit Error. */
 	maxRetries: number;
+	/** Router for Rest Manager consists of Model's Routers. */
+	readonly router: router;
 
 	/** @param options The options for the REST API manager. */
 	constructor(public readonly options: restOptions) {
@@ -22,6 +26,7 @@ export class restManager {
 		this.proxyUrl = options.proxyUrl;
 		this.maxRetries = options.maxRetries ?? 3;
 		if (!this.proxyUrl) this.version = options.version;
+		this.router = new router(this);
 	}
 
 	/** The Rest API Url for Interacting using node:fetch on Guilded. */
