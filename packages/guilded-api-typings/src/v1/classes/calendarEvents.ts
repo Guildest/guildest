@@ -1,19 +1,19 @@
 import { ApiBaseMentions } from './base';
 
 /**
- * Calender Event Payload for Creation of Update Rest's request
+ * Calendar Event Payload for Creation of Update Rest's request
  * @see https://www.guilded.gg/docs/api/calendarEvents/CalendarEventCreate
  */
-export interface ApiCalenderEventPayload {
-	/** Name of the Calender Event */
+export interface ApiCalendarEventPayload {
+	/** Name of the Calendar Event */
 	name?: string;
-	/** Description of the Calender Event */
+	/** Description of the Calendar Event */
 	description?: string;
-	/** Location of the Calender Event */
+	/** Location of the Calendar Event */
 	location?: string;
-	/** Start Date/Time ISO-String Value of the Calender Event */
+	/** Start Date/Time ISO-String Value of the Calendar Event */
 	startsAt?: string;
-	/** A URL to associate with the Calender Event */
+	/** A URL to associate with the Calendar Event */
 	url?: string;
 	/** The color of the event when viewing in the calendar (min 0; max 16777215)  */
 	color?: number;
@@ -21,15 +21,15 @@ export interface ApiCalenderEventPayload {
 	rsvpLimit?: number;
 	/** The duration of the event in minutes (min 1) */
 	duration?: number;
-	/** Represents if Private Boolean Value of Calender Event */
+	/** Represents if Private Boolean Value of Calendar Event */
 	isPrivate?: boolean;
 }
 
 /**
- * Represents Calender Event Cancellation Value of the Calender Event Data
+ * Represents Calendar Event Cancellation Value of the Calendar Event Data
  * @see https://www.guilded.gg/docs/api/calendarEvents/CalendarEvent
  */
-export interface ApiCalenderEventCancellation {
+export interface ApiCalendarEventCancellation {
 	/** Represents The description of event cancellation (min length 1; max length 140) */
 	description?: string;
 	/** Represents The ID of the user who created this event cancellation */
@@ -40,32 +40,32 @@ export interface ApiCalenderEventCancellation {
  * Represents The CalendarEvent on Guilded.
  * @see https://www.guilded.gg/docs/api/calendarEvents/CalendarEvent
  */
-export interface ApiCalenderEvent extends ApiCalenderEventPayload {
-	/** Represents Id Value of Calender Event */
+export interface ApiCalendarEvent extends ApiCalendarEventPayload {
+	/** Represents Id Value of Calendar Event */
 	id: number;
-	/** Represents the associated Server Id Value of Calender Event */
+	/** Represents the associated Server Id Value of Calendar Event */
 	serverId: string;
-	/** Represents the associated Channel Id Value of Calender Event */
+	/** Represents the associated Channel Id Value of Calendar Event */
 	channelId: string;
-	/** Represents the Name of Calender Event */
+	/** Represents the Name of Calendar Event */
 	name: string;
-	/** Start Time/Date ISO-String value of Calender Event */
+	/** Start Time/Date ISO-String value of Calendar Event */
 	startsAt: string;
-	/** Represents the Related Mentions present with Calender Events. */
+	/** Represents the Related Mentions present with Calendar Events. */
 	mentions?: ApiBaseMentions;
-	/** Creation Time/Date ISO-String value of Calender Event */
+	/** Creation Time/Date ISO-String value of Calendar Event */
 	createdAt: string;
 	/** The ID of the user who created this event  */
 	createdBy: string;
-	/** Represents the Calender Event Cancellation Value related to Calender Event. */
-	cancellation?: ApiCalenderEventCancellation;
+	/** Represents the Calendar Event Cancellation Value related to Calendar Event. */
+	cancellation?: ApiCalendarEventCancellation;
 }
 
 /**
- * Represents the Calender Event Rsvp Status Type Value
+ * Represents the Calendar Event Rsvp Status Type Value
  * @see https://www.guilded.gg/docs/api/calendarEvents/CalendarEventRsvp
  */
-export enum ApiCalenderEventRsvpStatusType {
+export enum ApiCalendarEventRsvpStatusType {
 	Going = 'going',
 	Maybe = 'maybe',
 	Decilned = 'declined',
@@ -75,28 +75,28 @@ export enum ApiCalenderEventRsvpStatusType {
 }
 
 /**
- * Represents the Calender Event Rsvp Payload Value
+ * Represents the Calendar Event Rsvp Payload Value
  * @see https://www.guilded.gg/docs/api/calendarEvents/CalendarEventRsvpUpdate
  */
-export interface ApiCalenderEventRsvpPayload {
-	/** Represents the Calender Event Rsvp Payload Value. */
-	status: ApiCalenderEventRsvpStatusType;
+export interface ApiCalendarEventRsvpPayload {
+	/** Represents the Calendar Event Rsvp Payload Value. */
+	status: ApiCalendarEventRsvpStatusType;
 }
 
 /**
- * Represents the Calender Event Rsvp Model Value.
+ * Represents the Calendar Event Rsvp Model Value.
  * @see https://www.guilded.gg/docs/api/calendarEvents/CalendarEventRsvp
  */
-export interface ApiCalenderEventRsvp extends ApiCalenderEventRsvpPayload {
-	/** Represents the Calender Event Id */
+export interface ApiCalendarEventRsvp extends ApiCalendarEventRsvpPayload {
+	/** Represents the Calendar Event Id */
 	calendarEventId: number;
-	/** Represents the Associaled Channel's Id of Calender Event */
+	/** Represents the Associaled Channel's Id of Calendar Event */
 	channelId: string;
-	/** Represents the Associated Server's Id of Calender Event */
+	/** Represents the Associated Server's Id of Calendar Event */
 	serverId: string;
-	/** Represents the Associated User's Id of Calender Event */
+	/** Represents the Associated User's Id of Calendar Event */
 	userId: string;
-	/** The ID of the user who created this RSVP Calender Event */
+	/** The ID of the user who created this RSVP Calendar Event */
 	createdBy: string;
 	/**  The ISO 8601 timestamp that the RSVP was created at */
 	createdAt: string;

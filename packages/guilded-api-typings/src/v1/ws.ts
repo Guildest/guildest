@@ -1,11 +1,11 @@
 import { ApiBaseClientUser } from './classes/base';
 import {
-	eventCalenderEventCreated,
-	eventCalenderEventDeleted,
-	eventCalenderEventRsvpDeleted,
-	eventCalenderEventRsvpManyUpdated,
-	eventCalenderEventRsvpUpdated,
-	eventCalenderEventUpdated,
+	eventCalendarEventCreated,
+	eventCalendarEventDeleted,
+	eventCalendarEventRsvpDeleted,
+	eventCalendarEventRsvpManyUpdated,
+	eventCalendarEventRsvpUpdated,
+	eventCalendarEventUpdated,
 	eventChannelMessageReactionCreated,
 	eventChannelMessageReactionDeleted,
 	eventChatMessageCreated,
@@ -91,9 +91,9 @@ export interface wsEvents {
 	DocCreated: eventDocCreated;
 	DocUpdated: eventDocUpdated;
 	DocDeleted: eventDocDeleted;
-	CalendarEventCreated: eventCalenderEventCreated;
-	CalendarEventUpdated: eventCalenderEventUpdated;
-	CalendarEventDeleted: eventCalenderEventDeleted;
+	CalendarEventCreated: eventCalendarEventCreated;
+	CalendarEventUpdated: eventCalendarEventUpdated;
+	CalendarEventDeleted: eventCalendarEventDeleted;
 	ForumTopicCreated: eventForumTopicCreated;
 	ForumTopicUpdated: eventForumTopicUpdated;
 	ForumTopicDeleted: eventForumTopicDeleted;
@@ -101,9 +101,9 @@ export interface wsEvents {
 	ForumTopicUnpinned: eventForumTopicUnPinned;
 	ForumTopicLocked: eventForumTopicLocked;
 	ForumTopicUnlocked: eventForumTopicUnLocked;
-	CalendarEventRsvpUpdated: eventCalenderEventRsvpUpdated;
-	CalendarEventRsvpManyUpdated: eventCalenderEventRsvpManyUpdated;
-	CalendarEventRsvpDeleted: eventCalenderEventRsvpDeleted;
+	CalendarEventRsvpUpdated: eventCalendarEventRsvpUpdated;
+	CalendarEventRsvpManyUpdated: eventCalendarEventRsvpManyUpdated;
+	CalendarEventRsvpDeleted: eventCalendarEventRsvpDeleted;
 	ListItemCreated: eventListItemCreated;
 	ListItemUpdated: eventListItemUpdated;
 	ListItemDeleted: eventListItemDeleted;

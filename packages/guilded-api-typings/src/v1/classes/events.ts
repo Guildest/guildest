@@ -5,7 +5,7 @@ import {
 	ApiBaseMemberRoleIds,
 	ApiBaseReaction,
 } from './base';
-import { ApiCalenderEvent, ApiCalenderEventRsvp } from './calenderEvents';
+import { ApiCalendarEvent, ApiCalendarEventRsvp } from './calendarEvents';
 import { ApiServerChannel } from './channel';
 import { ApiMessage } from './chat';
 import { ApiDocs } from './docs';
@@ -189,30 +189,30 @@ export interface eventDocDeleted extends ApiBaseServerEvent {
 }
 
 /**
- * Represents Event When Calender Event has been Created in Server.
- * @see https://www.guilded.gg/docs/api/websockets/CalenderEventCreated
+ * Represents Event When Calendar Event has been Created in Server.
+ * @see https://www.guilded.gg/docs/api/websockets/CalendarEventCreated
  */
-export interface eventCalenderEventCreated extends ApiBaseServerEvent {
-	/** Represent the Calender Event Data/Object/Model along with Event Trigger. */
-	calenderEvent: ApiCalenderEvent;
+export interface eventCalendarEventCreated extends ApiBaseServerEvent {
+	/** Represent the Calendar Event Data/Object/Model along with Event Trigger. */
+	calendarEvent: ApiCalendarEvent;
 }
 
 /**
- * Represents Event When Calender Event has been Editted/Updated in Server.
- * @see https://www.guilded.gg/docs/api/websockets/CalenderEventUpdated
+ * Represents Event When Calendar Event has been Editted/Updated in Server.
+ * @see https://www.guilded.gg/docs/api/websockets/CalendarEventUpdated
  */
-export interface eventCalenderEventUpdated extends ApiBaseServerEvent {
-	/** Represent the Calender Event Data/Object/Model along with Event Trigger. */
-	calenderEvent: ApiCalenderEvent;
+export interface eventCalendarEventUpdated extends ApiBaseServerEvent {
+	/** Represent the Calendar Event Data/Object/Model along with Event Trigger. */
+	calendarEvent: ApiCalendarEvent;
 }
 
 /**
- * Represents Event When Calender Event has been Deleted in Server.
- * @see https://www.guilded.gg/docs/api/websockets/CalenderEventDeleted
+ * Represents Event When Calendar Event has been Deleted in Server.
+ * @see https://www.guilded.gg/docs/api/websockets/CalendarEventDeleted
  */
-export interface eventCalenderEventDeleted extends ApiBaseServerEvent {
-	/** Represent the Calender Event Data/Object/Model along with Event Trigger. */
-	calenderEvent: ApiCalenderEvent;
+export interface eventCalendarEventDeleted extends ApiBaseServerEvent {
+	/** Represent the Calendar Event Data/Object/Model along with Event Trigger. */
+	calendarEvent: ApiCalendarEvent;
 }
 
 /**
@@ -279,30 +279,30 @@ export interface eventForumTopicUnLocked extends ApiBaseServerEvent {
 }
 
 /**
- * Represents Event When Calender Event Rsvp has been Updated in Server.
- * @see https://www.guilded.gg/docs/api/websockets/CalenderEventRsvpUpdated
+ * Represents Event When Calendar Event Rsvp has been Updated in Server.
+ * @see https://www.guilded.gg/docs/api/websockets/CalendarEventRsvpUpdated
  */
-export interface eventCalenderEventRsvpUpdated extends ApiBaseServerEvent {
-	/** Represent the Calender Event Rsvp Object/Data/Model along with Event Trigger. */
-	calendarEventRsvp: ApiCalenderEventRsvp;
+export interface eventCalendarEventRsvpUpdated extends ApiBaseServerEvent {
+	/** Represent the Calendar Event Rsvp Object/Data/Model along with Event Trigger. */
+	calendarEventRsvp: ApiCalendarEventRsvp;
 }
 
 /**
- * Represents Event When Many Calender Event Rsvp has been Updated in Server.
- * @see https://www.guilded.gg/docs/api/websockets/CalenderEventRsvpManyUpdated
+ * Represents Event When Many Calendar Event Rsvp has been Updated in Server.
+ * @see https://www.guilded.gg/docs/api/websockets/CalendarEventRsvpManyUpdated
  */
-export interface eventCalenderEventRsvpManyUpdated extends ApiBaseServerEvent {
-	/** Represent the Array of Calender Event Rsvp Object/Data/Model along with Event Trigger. */
-	calendarEventRsvp: Array<ApiCalenderEventRsvp>;
+export interface eventCalendarEventRsvpManyUpdated extends ApiBaseServerEvent {
+	/** Represent the Array of Calendar Event Rsvp Object/Data/Model along with Event Trigger. */
+	calendarEventRsvp: Array<ApiCalendarEventRsvp>;
 }
 
 /**
- * Represents Event When Calender Event Rsvp has been Deleted in Server.
- * @see https://www.guilded.gg/docs/api/websockets/CalenderEventRsvpDeleted
+ * Represents Event When Calendar Event Rsvp has been Deleted in Server.
+ * @see https://www.guilded.gg/docs/api/websockets/CalendarEventRsvpDeleted
  */
-export interface eventCalenderEventRsvpDeleted extends ApiBaseServerEvent {
-	/** Represent the Calender Event Rsvp Object/Data/Model along with Event Trigger. */
-	calendarEventRsvp: ApiCalenderEventRsvp;
+export interface eventCalendarEventRsvpDeleted extends ApiBaseServerEvent {
+	/** Represent the Calendar Event Rsvp Object/Data/Model along with Event Trigger. */
+	calendarEventRsvp: ApiCalendarEventRsvp;
 }
 
 /**

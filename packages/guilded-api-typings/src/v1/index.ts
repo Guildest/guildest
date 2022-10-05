@@ -1,5 +1,5 @@
 // Clases for Guilded API
-export * from './classes/calenderEvents';
+export * from './classes/calendarEvents';
 export * from './classes/channel';
 export * from './classes/docs';
 export * from './classes/server';

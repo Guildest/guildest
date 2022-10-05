@@ -102,19 +102,29 @@ export interface ApiServerMemberBan extends ApiServerMemberBanPayload {
 }
 
 /**
- * Represents Server Award XP to New Users on Guilded.
+ * Represents Server Award XP Payload to New Users on Guilded.
  * @see https://www.guilded.gg/docs/api/server-xp/ServerXpForUserCreate
  */
-export interface ApiServerMemberAwardXp {
+export interface ApiServerMemberAwardPayloadXp {
 	/* Represent Amount of XP to New Server Members (max 1000,min -1000) on Server on Guilded */
 	amount: number;
+}
+
+/**
+ * Represents Server Member XP Award Response on Guilded.
+ * @see https://www.guilded.gg/docs/api/server-xp/ServerXpForUserCreate
+ * @see https://www.guilded.gg/docs/api/server-xp/ServerXpForUserUpdate
+ */
+export interface ApiServerMemberXpResponse {
+	/* Represent Total Amount of XP of Server Members (max 1000000000,min -1000000000) on Server on Guilded */
+	total: number;
 }
 
 /**
  * Represents Server Member XP Update Payload on Guilded.
  * @see https://www.guilded.gg/docs/api/server-xp/ServerXpForUserUpdate
  */
-export interface ApiServerMemberUpdateXp {
+export interface ApiServerMemberUpdatePayloadXp {
 	/* Represent Total Amount of XP of Server Members (max 1000000000,min -1000000000) on Server on Guilded */
 	total: number;
 }

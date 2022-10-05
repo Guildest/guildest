@@ -20,7 +20,7 @@ export interface ApiChannelUpdatePayload {
 export enum ApiChannelType {
 	Announcements = 'announcements',
 	Chat = 'chat',
-	Calender = 'calender',
+	Calendar = 'calendar',
 	Forums = 'forums',
 	Media = 'media',
 	Docs = 'docs',

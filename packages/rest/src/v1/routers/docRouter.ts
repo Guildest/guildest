@@ -14,11 +14,28 @@ export class DocsRouter {
 	/** @param rest The REST API manager the router belongs to. */
 	constructor(public readonly rest: restManager) {}
 
+	/**
+	 * Create a New Doc on Channel on Guilded.
+	 * @param channelId The ID of the channel on Guilded.
+	 * @param payload The JSON Parameters for Docs on Guilded.
+	 * @returns New Doc Object on Guilded.
+	 * @example DocsRouter.create("abc" , { content: "Doc Content Here!!" })
+	 */
+
 	async create(channelId: string, payload: ApiDocsPayload): Promise<ApiDocs> {
 		return await this.rest
 			.post<{ doc: ApiDocs }, ApiDocsPayload>(Endpoints.docs(channelId), payload)
 			?.then((R) => R?.doc);
 	}
+
+	/**
+	 * Fetch Doc or Docs on Channel on Guilded.
+	 * @param channelId The ID of the channel on Guilded.
+	 * @param docId The ID of the Doc on Guilded.
+	 * @param query The Query Parameters for Docs on Guilded.
+	 * @returns Doc Object on Guilded.
+	 * @example DocsRouter.fetch("abc" , "xyz")
+	 */
 
 	async fetch(
 		channelId: string,
@@ -39,6 +56,15 @@ export class DocsRouter {
 				.then((R) => R?.docs);
 	}
 
+	/**
+	 * Update Doc on Channel on Guilded.
+	 * @param channelId The ID of the channel on Guilded.
+	 * @param docId The ID of the Doc on Guilded.
+	 * @param payload The JSON Parameters for Docs on Guilded.
+	 * @returns Updated Doc Object on Guilded.
+	 * @example DocsRouter.update("abc" , "xyz")
+	 */
+
 	async update(channelId: string, docId: string, payload: ApiDocsPayload): Promise<ApiDocs> {
 		return await this.rest
 			.put<{ doc: ApiDocs }, ApiDocsPayload>(
@@ -48,9 +74,17 @@ export class DocsRouter {
 			?.then((R) => R?.doc);
 	}
 
-	async delete(channelID: string, docId: string): Promise<boolean> {
+	/**
+	 * Delete Doc on Channel on Guilded.
+	 * @param channelId The ID of the channel on Guilded.
+	 * @param docId The ID of the Doc on Guilded.
+	 * @returns Boolean Value as "true" or Error
+	 * @example DocsRouter.delete("abc" , "xyz")
+	 */
+
+	async delete(channelId: string, docId: string): Promise<boolean> {
 		return await this.rest
-			.delete<void>(Endpoints.doc(channelID, parseInt(docId)))
+			.delete<void>(Endpoints.doc(channelId, parseInt(docId)))
 			?.then(() => true);
 	}
 }
