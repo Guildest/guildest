@@ -2,7 +2,7 @@ import {
 	ApiChannelMessageEditPayload,
 	ApiChannelMessagePayload,
 	ApiMessage,
-	ApiMessagesFetchOptions,
+	ApiMessagesQueryParams,
 	Endpoints,
 } from '@guildest/guilded-api-typings';
 import { restManager } from '../restManager';
@@ -18,14 +18,17 @@ export class MessageRouter {
 	/**
 	 * Create a Channel Chat Message on Guilded.
 	 * @param channelId Channel ID for Message on Guilded.
-	 * @param body The JSON Parameter of the channel.
+	 * @param payload The JSON Parameter of the channel.
 	 * @returns The created New Message.
 	 * @example MessageRouter.create( "abc", { content: 'Chat Message Content' });
 	 */
 
-	async create<R = ApiMessage>(channelId: string, body: ApiChannelMessagePayload): Promise<R> {
+	async create(channelId: string, payload: ApiChannelMessagePayload): Promise<ApiMessage> {
 		return this.rest
-			.post<{ message: R }>(Endpoints.messages(channelId), undefined, body)
+			.post<{ message: ApiMessage }, ApiChannelMessagePayload>(
+				Endpoints.messages(channelId),
+				payload,
+			)
 			.then((R) => R.message);
 	}
 
@@ -33,23 +36,27 @@ export class MessageRouter {
 	 * Fetch Many or Single Channel Chat Message on Guilded.
 	 * @param channelId Channel ID for Message on Guilded.
 	 * @param messageId Message ID for Message on Guilded.
-	 * @param fetchManyOptions The JSON Parameter of the Fetch Options for Messsages for channel.
+	 * @param query The Query Parameters of the Fetch Request for Messsages for Message on Guilded.
 	 * @returns The Messages or Message Value on Guilded.
-	 * @example MessageRouter.fetch( "abc" , { content: 'Chat Message Content' });
+	 * @example MessageRouter.fetch( "abc" , "xyz" , { limit: 1 });
 	 */
 
-	async fetch<R = ApiMessage>(
+	async fetch(
 		channelId: string,
 		messageId?: string,
-		fetchManyOptions?: ApiMessagesFetchOptions,
-	): Promise<R | Array<R>> {
+		query?: ApiMessagesQueryParams,
+	): Promise<ApiMessage | Array<ApiMessage>> {
 		if (messageId)
 			return this.rest
-				.get<{ message: R }, any>(Endpoints.message(channelId, messageId), fetchManyOptions)
+				.get<{ message: ApiMessage }, undefined, ApiMessagesQueryParams>(
+					Endpoints.message(channelId, messageId),
+					undefined,
+					query,
+				)
 				?.then((R) => R.message);
 		else
 			return this.rest
-				.get<{ messages: Array<R> }, ApiMessagesFetchOptions>(Endpoints.messages(channelId))
+				.get<{ messages: Array<ApiMessage> }>(Endpoints.messages(channelId))
 				?.then((R) => R.messages);
 	}
 
@@ -57,17 +64,20 @@ export class MessageRouter {
 	 * Update Channel Chat Message on Guilded.
 	 * @param channelId Channel ID for Message on Guilded.
 	 * @param messageId Message ID for Message on Guilded.
-	 * @param body JSON Params for Message Update Payload.
+	 * @param payload JSON Params for Message Update Payload.
 	 * @returns The Message on Guilded.
 	 * @example MessageRouter.update( "abc", "xyz" , { content: 'Chat Message Content' });
 	 */
 
-	async update<R = ApiMessage>(
+	async update(
 		channelId: string,
 		messageId: string,
-		body: ApiChannelMessageEditPayload,
-	): Promise<R> {
-		return await this.rest.put<R>(Endpoints.message(channelId, messageId), undefined, body);
+		payload: ApiChannelMessageEditPayload,
+	): Promise<ApiMessage> {
+		return await this.rest.put<ApiMessage, ApiChannelMessageEditPayload>(
+			Endpoints.message(channelId, messageId),
+			payload,
+		);
 	}
 
 	/**

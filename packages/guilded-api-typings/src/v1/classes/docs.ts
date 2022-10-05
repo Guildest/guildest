@@ -33,3 +33,14 @@ export interface ApiDocs extends ApiDocsPayload {
 	/** The ID of the user who updated this doc */
 	updatedBy: string;
 }
+
+/**
+ * Payload Value of Api Docs during Creation and Modification
+ * @see https://www.guilded.gg/docs/api/docs/DocReadMany
+ */
+export interface ApiDocsQueryParams {
+	/** An ISO 8601 timestamp that will be used to filter out results for the current page on Guilded. */
+	before?: string;
+	/** The max size of the page (default 25; min 1; max 100) on Guilded. */
+	limit?: number;
+}

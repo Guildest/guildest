@@ -149,10 +149,10 @@ export interface ApiChannelMessagePayload extends ApiChannelMessageEditPayload {
 }
 
 /**
- * Represents Messages Fetch Request Options on Guilded.
+ * Represents Messages Fetch Request Query Params on Guilded.
  * @see https://www.guilded.gg/docs/api/chat/ChannelMessageReadMany
  */
-export interface ApiMessagesFetchOptions {
+export interface ApiMessagesQueryParams {
 	/* If Private Status of Chat-Message on Guilded. */
 	before?: string;
 	/* If Silent Status of Chat-Message on Guilded. */

@@ -50,8 +50,8 @@ export class restManager {
 	 * Make a request to the REST API.
 	 * @param path The path to the resource.
 	 * @param method The HTTP method.
-	 * @param query The Query/Params for the request.
-	 * @param body The Body/Json-Data for the request.
+	 * @param body The Body OR Json-Params for the request.
+	 * @param query The Query-Params for the request.
 	 * @param retries The number of retries.
 	 * @returns The response from the REST API.
 	 * @example rest.request('/channels/abc', 'GET');
@@ -59,8 +59,8 @@ export class restManager {
 	async request<R = any, B = any, Q extends Record<string, any> = Record<string, any>>(
 		path: string,
 		method: string,
-		query?: Q,
 		body?: B,
+		query?: Q,
 		retries: number = 0,
 		authenticated: boolean = true,
 	): Promise<R> {
@@ -86,7 +86,7 @@ export class restManager {
 				this.options.retryInterval ??
 				10 * 1000;
 			await new Promise((resolve) => setTimeout(resolve, rInterval * 1000));
-			return this.request(path, method, query, body, retries++, authenticated);
+			return this.request(path, method, body, query, retries++, authenticated);
 		}
 		const error = rData as ApiBaseError;
 		throw new RestApiError(
@@ -104,83 +104,86 @@ export class restManager {
 	/**
 	 * Make a GET request to the REST API.
 	 * @param path The path to the resource.
-	 * @param query The Query/Params for the request.
-	 * @param body The Body/Json-Data for the request.
+	 * @param body The Body OR Json-Params for the request.
+	 * @param query The Query-Params for the request.
 	 * @returns The response from the REST API.
 	 * @example rest.get('/channels/abc');
 	 */
 	get<R = any, B = any, Q extends Record<string, any> = Record<string, any>>(
 		path: string,
-		query?: Q,
 		body?: B,
+		query?: Q,
 		authenticated: boolean = true,
 	): Promise<R> {
-		return this.request<R, B, Q>(path, 'GET', query, body, 0, authenticated);
+		return this.request<R, B, Q>(path, 'GET', body, query, 0, authenticated);
 	}
 
 	/**
 	 * Make a POST request to the REST API.
 	 * @param path The path to the resource.
-	 * @param query The Query/Params for the request.
-	 * @param body The Body/Json-Data for the request.
+	 * @param body The Body OR Json-Params for the request.
+	 * @param query The Query-Params for the request.
 	 * @returns The response from the REST API.
-	 * @example rest.post('/channels/abc',undefined,{ name: 'Chat', type: 'chat' });
+	 * @example rest.post('/channels/abc',{ name: 'Chat', type: 'chat' });
 	 */
 	post<R = any, B = any, Q extends Record<string, any> = Record<string, any>>(
 		path: string,
-		query?: Q,
 		body?: B,
+		query?: Q,
 		authenticated: boolean = true,
 	): Promise<R> {
-		return this.request<R, B, Q>(path, 'POST', query, body, 0, authenticated);
+		return this.request<R, B, Q>(path, 'POST', body, query, 0, authenticated);
 	}
 
 	/**
 	 * Make a PATCH request to the REST API.
 	 * @param path The path to the resource.
-	 * @param query The Query/Params for the request.
-	 * @param body The Body/Json-Data for the request.
+	 * @param body The Body OR Json-Params for the request.
+	 * @param query The Query-Params for the request.
 	 * @returns The response from the REST API.
-	 * @example rest.patch('/channels/abc',undefined,{ name: 'Chat' });
+	 * @example rest.patch('/channels/abc',{ name: 'Chat' });
 	 */
 	patch<R = any, B = any, Q extends Record<string, any> = Record<string, any>>(
 		path: string,
-		query?: Q,
 		body?: B,
+		query?: Q,
 		authenticated: boolean = true,
 	): Promise<R> {
-		return this.request<R, B, Q>(path, 'PATCH', query, body, 0, authenticated);
+		return this.request<R, B, Q>(path, 'PATCH', body, query, 0, authenticated);
 	}
 
 	/**
 	 * Make a PUT request to the REST API.
 	 * @param path The path to the resource.
-	 * @param query The Query/Params for the request.
-	 * @param body The Body/Json-Data for the request.
+	 * @param body The Body OR Json-Params for the request.
+	 * @param query The Query-Params for the request.
 	 * @returns The response from the REST API.
-	 * @example rest.put('/channels/abc',undefined,{ content: 'Hello world!' });
+	 * @example rest.put('/channels/abc',{ content: 'Hello world!' });
 	 */
 	put<R = any, B = any, Q extends Record<string, any> = Record<string, any>>(
 		path: string,
-		query?: Q,
 		body?: B,
+		query?: Q,
 		authenticated: boolean = true,
 	): Promise<R> {
-		return this.request<R, B, Q>(path, 'PUT', query, body, 0, authenticated);
+		return this.request<R, B, Q>(path, 'PUT', body, query, 0, authenticated);
 	}
 
 	/**
 	 * Make a DELETE request to the REST API.
 	 * @param path The path for the resource.
+	 * @param body The Body OR Json-Params for the request.
+	 * @param query The Query-Params for the request.
 	 * @returns The response from the REST API.
 	 * @example rest.delete('/channels/abc');
 	 */
-	delete<R = any, Q extends Record<string, any> = Record<string, any>>(
+	delete<R = any, B = any, Q extends Record<string, any> = Record<string, any>>(
 		path: string,
+		body?: B,
 		query?: Q,
 		authenticated: boolean = true,
 	) {
-		return this.request<R>(path, 'DELETE', query, undefined, 0, authenticated);
+		return this.request<R>(path, 'DELETE', body, query, 0, authenticated);
 	}
 }
 

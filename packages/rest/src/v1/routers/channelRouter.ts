@@ -15,14 +15,17 @@ export class ChannelRouter {
 
 	/**
 	 * Create a channel on Guilded.
-	 * @param body The JSON Parameter of the channel.
+	 * @param payload The JSON Parameter of the channel.
 	 * @returns The created channel.
 	 * @example ChannelRouter.create({ name: 'Chat', type: 'chat' });
 	 */
 
-	async create<R extends ApiServerChannel>(body: ApiCreateChannelPayload): Promise<R> {
+	async create(payload: ApiCreateChannelPayload): Promise<ApiServerChannel> {
 		return await this.rest
-			.post<{ channel: R }>(Endpoints.channels, undefined, body)
+			.post<{ channel: ApiServerChannel }, ApiCreateChannelPayload>(
+				Endpoints.channels,
+				payload,
+			)
 			?.then((R) => R?.channel);
 	}
 
@@ -33,26 +36,26 @@ export class ChannelRouter {
 	 * @example ChannelRouter.fetch('abc');
 	 */
 
-	async fetch<R extends ApiServerChannel>(channelId: string): Promise<R> {
+	async fetch(channelId: string): Promise<ApiServerChannel> {
 		return await this.rest
-			.get<{ channel: R }>(Endpoints.channel(channelId))
+			.get<{ channel: ApiServerChannel }>(Endpoints.channel(channelId))
 			?.then((R) => R?.channel);
 	}
 
 	/**
 	 * Edit a channel on Guilded.
 	 * @param channelId The ID of the channel to edit.
-	 * @param body The JSON-Params of the channel.
+	 * @param payload The JSON-Params of the channel.
 	 * @returns The edited channel.
 	 * @example ChannelRouter.update('abc', { name: 'Chat' });
 	 */
 
-	async update<R extends ApiServerChannel>(
-		channelId: string,
-		body: ApiCreateChannelPayload,
-	): Promise<R> {
+	async update(channelId: string, payload: ApiCreateChannelPayload): Promise<ApiServerChannel> {
 		return await this.rest
-			.patch<{ channel: R }>(Endpoints.channel(channelId), undefined, body)
+			.patch<{ channel: ApiServerChannel }, ApiCreateChannelPayload>(
+				Endpoints.channel(channelId),
+				payload,
+			)
 			.then((R) => R?.channel);
 	}
 

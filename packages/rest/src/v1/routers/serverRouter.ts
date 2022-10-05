@@ -16,9 +16,9 @@ export class ServerRouter {
 	 * @example ServerRouter.fetch('abc');
 	 */
 
-	async fetch<R = ApiServer>(serverId: string): Promise<R> {
+	async fetch(serverId: string): Promise<ApiServer> {
 		return await this.rest
-			.get<{ server: R }>(Endpoints.server(serverId))
+			.get<{ server: ApiServer }>(Endpoints.server(serverId))
 			.then((R) => R?.server);
 	}
 }
