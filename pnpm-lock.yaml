@@ -38,6 +38,14 @@ importers:
       typedoc-plugin-missing-exports: 1.0.0_typedoc@0.23.15
       typescript: 4.8.3
 
+  packages/collection:
+    specifiers:
+      rimraf: ^3.0.2
+      typescript: ^4.8.4
+    devDependencies:
+      rimraf: 3.0.2
+      typescript: 4.8.4
+
   packages/guilded-api-typings:
     specifiers:
       rimraf: ^3.0.2
