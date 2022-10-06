@@ -1,0 +1,37 @@
+{
+	"name": "@guildest/builders",
+	"version": "0.1.0",
+	"description": "A set of builders for creating a Guilded bot.",
+	"repository": {
+		"url": "Guildest/guildest",
+		"directory": "packages/builders"
+	},
+	"homepage": "https://guildest.js.org",
+	"main": "dist",
+	"typings": "typings",
+	"files": [
+		"CHANGELOG.md",
+		"dist",
+		"typings"
+	],
+	"keywords": [
+		"guilded",
+		"api",
+		"js",
+		"ts",
+		"typings",
+		"builders"
+	],
+	"contributors": [
+		"Runin Mascot | SidisLiveYT (https://github.com/SidisLiveYT)"
+	],
+	"license": "Apache-2.0",
+	"scripts": {
+		"build": "pnpm clear && tsc",
+		"clear": "rimraf dist typings",
+		"lint": "eslint src"
+	},
+	"devDependencies": {
+		"@guildest/guilded-api-typings": "workspace:^"
+	}
+}

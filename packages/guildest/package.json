@@ -1,0 +1,39 @@
+{
+	"name": "guildest",
+	"version": "0.1.0",
+	"description": "A powerful NPM module that allows you to easily interact with the Guilded API.",
+	"repository": {
+		"url": "Guildest/guildest",
+		"directory": "packages/guildest"
+	},
+	"homepage": "https://guildest.js.org",
+	"main": "dist",
+	"types": "typings",
+	"files": [
+		"CHANGELOG.md",
+		"dist",
+		"typings"
+	],
+	"keywords": [
+		"guilded",
+		"api",
+		"js",
+		"ts",
+		"typings"
+	],
+	"contributors": [
+		"Runin Mascot | SidisLiveYT (https://github.com/SidisLiveYT)"
+	],
+	"license": "Apache-2.0",
+	"scripts": {
+		"build": "pnpm clear && tsc",
+		"clear": "rimraf dist typings",
+		"lint": "eslint src"
+	},
+	"dependencies": {
+		"@guildest/collection": "^1.0.0",
+		"@guildest/rest": "workspace:^",
+		"@guildest/ws": "workspace:^",
+		"@guildest/guilded-api-typings": "workspace:^"
+	}
+}
