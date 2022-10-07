@@ -1,0 +1,20 @@
+/** A set of color presets. */
+export enum ColorConstants {
+	DEFAULT = 0x000000,
+	WHITE = 0xffffff,
+	BLACK = 0x000000,
+	GILDED = 0xf5c400,
+	GREY = 0x36363d,
+	RED = 0xe03131,
+	PINK = 0xc2255c,
+	GRAPE = 0x9c36b5,
+	VIOLET = 0x6741d9,
+	INDIGO = 0x3b5bdb,
+	BLUE = 0x1971c2,
+	CYAN = 0x0c8599,
+	TEAL = 0x099268,
+	GREEN = 0x2f9e44,
+	LIME = 0x66a80f,
+	YELLOW = 0xfcc419,
+	ORANGE = 0xe8590c,
+}

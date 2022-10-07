@@ -32,7 +32,8 @@
 		"lint": "eslint src"
 	},
 	"dependencies": {
-		"@guildest/guilded-api-typings": "workspace:^"
+		"@guildest/guilded-api-typings": "workspace:^",
+		"linkifyjs": "^4.0.2"
 	},
 	"devDependencies": {
 		"rimraf": "^3.0.2",
