@@ -38,6 +38,17 @@ importers:
       typedoc-plugin-missing-exports: 1.0.0_typedoc@0.23.15
       typescript: 4.8.3
 
+  packages/builders:
+    specifiers:
+      '@guildest/guilded-api-typings': workspace:^
+      rimraf: ^3.0.2
+      typescript: ^4.8.4
+    dependencies:
+      '@guildest/guilded-api-typings': link:../guilded-api-typings
+    devDependencies:
+      rimraf: 3.0.2
+      typescript: 4.8.4
+
   packages/collection:
     specifiers:
       rimraf: ^3.0.2
@@ -53,6 +64,20 @@ importers:
     devDependencies:
       rimraf: 3.0.2
       typescript: 4.8.4
+
+  packages/guildest:
+    specifiers:
+      '@guildest/builders': workspace:^
+      '@guildest/collection': workspace:^
+      '@guildest/guilded-api-typings': workspace:^
+      '@guildest/rest': workspace:^
+      '@guildest/ws': workspace:^
+    dependencies:
+      '@guildest/builders': link:../builders
+      '@guildest/collection': link:../collection
+      '@guildest/guilded-api-typings': link:../guilded-api-typings
+      '@guildest/rest': link:../rest
+      '@guildest/ws': link:../ws
 
   packages/rest:
     specifiers:

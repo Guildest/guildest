@@ -1,7 +1,7 @@
 import {
 	ApiServerMember,
 	ApiServerMemberSummary,
-	ApiServerMemberUpdatePayload,
+	restServerMemberUpdatePayload,
 	Endpoints,
 } from '@guildest/guilded-api-typings';
 import { restManager } from '../restManager';
@@ -26,9 +26,9 @@ export class MemberRouter {
 	async update(
 		serverId: string,
 		memberId: string,
-		payload: ApiServerMemberUpdatePayload,
-	): Promise<ApiServerMemberUpdatePayload> {
-		return await this.rest.put<ApiServerMemberUpdatePayload, ApiServerMemberUpdatePayload>(
+		payload: restServerMemberUpdatePayload,
+	): Promise<restServerMemberUpdatePayload> {
+		return await this.rest.put<restServerMemberUpdatePayload, restServerMemberUpdatePayload>(
 			Endpoints.serverNickname(serverId, memberId),
 			payload,
 		);

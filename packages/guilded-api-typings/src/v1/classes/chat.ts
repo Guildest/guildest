@@ -128,7 +128,7 @@ export interface ApiEmbedField {
  * Represents Channel Message Edit Payload on Guilded.
  * @see https://www.guilded.gg/docs/api/chat/ChannelMessageUpdate
  */
-export interface ApiChannelMessageEditPayload {
+export interface restChannelMessageEditPayload {
 	/* Represent the String Value as Normal Text Payload on Guilded in Message. */
 	content?: string;
 	/* Represent the Embed Payload on Guilded in Message. */
@@ -139,7 +139,7 @@ export interface ApiChannelMessageEditPayload {
  * Represents Channel Message Create Payload on Guilded.
  * @see https://www.guilded.gg/docs/api/chat/ChannelMessageCreate
  */
-export interface ApiChannelMessagePayload extends ApiChannelMessageEditPayload {
+export interface restChannelMessageCreatePayload extends restChannelMessageEditPayload {
 	/* If Private Status of Chat-Message on Guilded. */
 	isPrivate?: boolean;
 	/* If Silent Status of Chat-Message on Guilded. */
@@ -152,7 +152,7 @@ export interface ApiChannelMessagePayload extends ApiChannelMessageEditPayload {
  * Represents Messages Fetch Request Query Params on Guilded.
  * @see https://www.guilded.gg/docs/api/chat/ChannelMessageReadMany
  */
-export interface ApiMessagesQueryParams {
+export interface restMessageQueryParams {
 	/* If Private Status of Chat-Message on Guilded. */
 	before?: string;
 	/* If Silent Status of Chat-Message on Guilded. */
@@ -162,3 +162,14 @@ export interface ApiMessagesQueryParams {
 	/* Represent the String Value as Normal Text Payload on Guilded in Message. */
 	includePrivate?: boolean;
 }
+
+/** Represents the Channel Message Create Payload Resolvable for Guilded REST API. */
+export type restChannelMessageCreateResolvable =
+	| string
+	| restChannelMessageCreatePayload
+	| ApiEmbed
+	| Array<ApiEmbed>
+	| ApiMessage;
+
+/** Represents the Message Embed Resolve for Guilded REST API. */
+export type restMessageEmbedResolvable = string | ApiEmbed | Array<ApiEmbedField>;

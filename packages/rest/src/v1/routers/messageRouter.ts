@@ -1,9 +1,11 @@
 import {
-	ApiChannelMessageEditPayload,
-	ApiChannelMessagePayload,
+	restChannelMessageEditPayload,
+	restChannelMessageCreatePayload,
 	ApiMessage,
-	ApiMessagesQueryParams,
+	restMessageQueryParams,
 	Endpoints,
+	ApiEmbed,
+	restChannelMessageCreateResolvable,
 } from '@guildest/guilded-api-typings';
 import { restManager } from '../restManager';
 
@@ -23,11 +25,16 @@ export class MessageRouter {
 	 * @example MessageRouter.create( "abc", { content: 'Chat Message Content' });
 	 */
 
-	async create(channelId: string, payload: ApiChannelMessagePayload): Promise<ApiMessage> {
-		return this.rest
-			.post<{ message: ApiMessage }, ApiChannelMessagePayload>(
+	async create(
+		channelId: string,
+		payload: restChannelMessageCreateResolvable,
+	): Promise<ApiMessage> {
+		return await this.rest
+			.post<{ message: ApiMessage }, restChannelMessageCreatePayload>(
 				Endpoints.messages(channelId),
-				payload,
+				(typeof payload === 'string' ? { content: payload as string } : undefined) ??
+					(Array.isArray(payload) ? { embeds: payload as Array<ApiEmbed> } : undefined) ??
+					(payload as ApiMessage),
 			)
 			.then((R) => R.message);
 	}
@@ -44,11 +51,11 @@ export class MessageRouter {
 	async fetch(
 		channelId: string,
 		messageId?: string,
-		query?: ApiMessagesQueryParams,
+		query?: restMessageQueryParams,
 	): Promise<ApiMessage | Array<ApiMessage>> {
 		if (messageId)
 			return this.rest
-				.get<{ message: ApiMessage }, undefined, ApiMessagesQueryParams>(
+				.get<{ message: ApiMessage }, undefined, restMessageQueryParams>(
 					Endpoints.message(channelId, messageId),
 					undefined,
 					query,
@@ -72,9 +79,9 @@ export class MessageRouter {
 	async update(
 		channelId: string,
 		messageId: string,
-		payload: ApiChannelMessageEditPayload,
+		payload: restChannelMessageEditPayload,
 	): Promise<ApiMessage> {
-		return await this.rest.put<ApiMessage, ApiChannelMessageEditPayload>(
+		return await this.rest.put<ApiMessage, restChannelMessageEditPayload>(
 			Endpoints.message(channelId, messageId),
 			payload,
 		);

@@ -59,7 +59,7 @@ export interface ApiListItem extends ApiListItemSummary {
  * @see https://www.guilded.gg/docs/api/listItems/ListItemUpdate
  * @see https://www.guilded.gg/docs/api/listItems/ListItemDelete
  */
-export interface ApiListItemNotePayload {
+export interface restListItemNotePayload {
 	/** Represent the List Item Note Content Value on Guilded. */
 	content: string;
 }
@@ -70,9 +70,9 @@ export interface ApiListItemNotePayload {
  * @see https://www.guilded.gg/docs/api/listItems/ListItemUpdate
  * @see https://www.guilded.gg/docs/api/listItems/ListItemDelete
  */
-export interface ApiListItemPayload {
+export interface restListItemPayload {
 	/** Represents The message of the list item */
 	message: string;
 	/** Represents The note of the list item */
-	note?: ApiListItemNotePayload;
+	note?: restListItemNotePayload;
 }

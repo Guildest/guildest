@@ -4,7 +4,7 @@ import { ApiBase } from './base';
  * Represents Channel Update Payload on Guilded.
  * @see https://www.guilded.gg/docs/api/channels/ChannelUpdate
  */
-export interface ApiChannelUpdatePayload {
+export interface restChannelUpdatePayload {
 	/* The Name of the Channel. */
 	name?: string;
 	/* The Topic of the Channel. */
@@ -65,7 +65,7 @@ export interface ApiServerChannel extends ApiBase {
  * Represents Server Channel Create Payload on Guilded.
  * @see https://www.guilded.gg/docs/api/channels/ChannelCreate
  */
-export interface ApiCreateChannelPayload extends ApiChannelUpdatePayload {
+export interface restCreateChannelPayload extends restChannelUpdatePayload {
 	/* The Name of the Channel. */
 	name: string;
 	/* The Topic of the Channel. */

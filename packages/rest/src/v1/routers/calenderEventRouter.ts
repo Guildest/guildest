@@ -1,8 +1,8 @@
 import {
 	ApiCalendarEvent,
-	ApiCalendarEventPayload,
+	restCalendarEventPayload,
 	ApiCalendarEventRsvp,
-	ApiCalendarEventRsvpPayload,
+	restCalendarEventRsvpPayload,
 	Endpoints,
 } from '@guildest/guilded-api-typings';
 import { restManager } from '../restManager';
@@ -23,9 +23,9 @@ export class CalendarEventRouter {
 	 * @example CalendarEventRouter.create("abc" , { name : "foo" })
 	 */
 
-	async create(channelId: string, payload: ApiCalendarEventPayload): Promise<ApiCalendarEvent> {
+	async create(channelId: string, payload: restCalendarEventPayload): Promise<ApiCalendarEvent> {
 		return await this.rest
-			.post<{ calendarEvent: ApiCalendarEvent }, ApiCalendarEventPayload>(
+			.post<{ calendarEvent: ApiCalendarEvent }, restCalendarEventPayload>(
 				Endpoints.calendarEvents(channelId),
 				payload,
 			)
@@ -70,10 +70,10 @@ export class CalendarEventRouter {
 	async update(
 		channelId: string,
 		calendarEventId: string,
-		payload: ApiCalendarEventPayload,
+		payload: restCalendarEventPayload,
 	): Promise<ApiCalendarEvent> {
 		return await this.rest
-			.patch<{ calendarEvent: ApiCalendarEvent }, ApiCalendarEventPayload>(
+			.patch<{ calendarEvent: ApiCalendarEvent }, restCalendarEventPayload>(
 				Endpoints.calendarEvent(channelId, parseInt(calendarEventId)),
 				payload,
 			)
@@ -145,10 +145,10 @@ export class CalendarEventRsvpRouter {
 		channelId: string,
 		calendarEventId: string,
 		userId: string,
-		payload: ApiCalendarEventRsvpPayload,
+		payload: restCalendarEventRsvpPayload,
 	): Promise<ApiCalendarEventRsvp> {
 		return this.rest
-			.put<{ calendarEventRsvp: ApiCalendarEventRsvp }, ApiCalendarEventRsvpPayload>(
+			.put<{ calendarEventRsvp: ApiCalendarEventRsvp }, restCalendarEventRsvpPayload>(
 				Endpoints.calendarEventRsvp(channelId, parseInt(calendarEventId), userId),
 				payload,
 			)

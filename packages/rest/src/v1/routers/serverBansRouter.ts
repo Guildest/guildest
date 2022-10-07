@@ -1,6 +1,6 @@
 import {
 	ApiServerMemberBan,
-	ApiServerMemberBanPayload,
+	restServerMemberBanPayload,
 	Endpoints,
 } from '@guildest/guilded-api-typings';
 import { restManager } from '../restManager';
@@ -25,10 +25,10 @@ export class ServerBansRouter {
 	async create(
 		serverId: string,
 		memberId: string,
-		payload?: ApiServerMemberBanPayload,
+		payload?: restServerMemberBanPayload,
 	): Promise<ApiServerMemberBan> {
 		return await this.rest
-			.post<{ serverMemberBan: ApiServerMemberBan }, ApiServerMemberBanPayload>(
+			.post<{ serverMemberBan: ApiServerMemberBan }, restServerMemberBanPayload>(
 				Endpoints.serverBan(serverId, memberId),
 				payload,
 			)

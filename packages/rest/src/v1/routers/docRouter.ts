@@ -1,8 +1,8 @@
 import {
 	ApiDocs,
-	ApiDocsPayload,
+	restDocsPayload,
 	Endpoints,
-	ApiDocsQueryParams,
+	restDocsQueryParams,
 } from '@guildest/guilded-api-typings';
 import { restManager } from '../restManager';
 
@@ -22,9 +22,9 @@ export class DocsRouter {
 	 * @example DocsRouter.create("abc" , { content: "Doc Content Here!!" })
 	 */
 
-	async create(channelId: string, payload: ApiDocsPayload): Promise<ApiDocs> {
+	async create(channelId: string, payload: restDocsPayload): Promise<ApiDocs> {
 		return await this.rest
-			.post<{ doc: ApiDocs }, ApiDocsPayload>(Endpoints.docs(channelId), payload)
+			.post<{ doc: ApiDocs }, restDocsPayload>(Endpoints.docs(channelId), payload)
 			?.then((R) => R?.doc);
 	}
 
@@ -40,7 +40,7 @@ export class DocsRouter {
 	async fetch(
 		channelId: string,
 		docId?: string,
-		query?: ApiDocsQueryParams,
+		query?: restDocsQueryParams,
 	): Promise<ApiDocs | Array<ApiDocs>> {
 		if (docId)
 			return await this.rest
@@ -48,7 +48,7 @@ export class DocsRouter {
 				.then((R) => R?.doc);
 		else
 			return await this.rest
-				.get<{ docs: Array<ApiDocs> }, undefined, ApiDocsQueryParams>(
+				.get<{ docs: Array<ApiDocs> }, undefined, restDocsQueryParams>(
 					Endpoints.docs(channelId),
 					undefined,
 					query,
@@ -65,9 +65,9 @@ export class DocsRouter {
 	 * @example DocsRouter.update("abc" , "xyz")
 	 */
 
-	async update(channelId: string, docId: string, payload: ApiDocsPayload): Promise<ApiDocs> {
+	async update(channelId: string, docId: string, payload: restDocsPayload): Promise<ApiDocs> {
 		return await this.rest
-			.put<{ doc: ApiDocs }, ApiDocsPayload>(
+			.put<{ doc: ApiDocs }, restDocsPayload>(
 				Endpoints.doc(channelId, parseInt(docId)),
 				payload,
 			)

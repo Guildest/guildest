@@ -1,5 +1,5 @@
 import {
-	ApiCreateChannelPayload,
+	restCreateChannelPayload,
 	ApiServerChannel,
 	Endpoints,
 } from '@guildest/guilded-api-typings';
@@ -20,9 +20,9 @@ export class ChannelRouter {
 	 * @example ChannelRouter.create({ name: 'Chat', type: 'chat' });
 	 */
 
-	async create(payload: ApiCreateChannelPayload): Promise<ApiServerChannel> {
+	async create(payload: restCreateChannelPayload): Promise<ApiServerChannel> {
 		return await this.rest
-			.post<{ channel: ApiServerChannel }, ApiCreateChannelPayload>(
+			.post<{ channel: ApiServerChannel }, restCreateChannelPayload>(
 				Endpoints.channels,
 				payload,
 			)
@@ -50,9 +50,9 @@ export class ChannelRouter {
 	 * @example ChannelRouter.update('abc', { name: 'Chat' });
 	 */
 
-	async update(channelId: string, payload: ApiCreateChannelPayload): Promise<ApiServerChannel> {
+	async update(channelId: string, payload: restCreateChannelPayload): Promise<ApiServerChannel> {
 		return await this.rest
-			.patch<{ channel: ApiServerChannel }, ApiCreateChannelPayload>(
+			.patch<{ channel: ApiServerChannel }, restCreateChannelPayload>(
 				Endpoints.channel(channelId),
 				payload,
 			)

@@ -74,7 +74,7 @@ export interface ApiServerMember extends ApiServerMemberSummary {
  * Represents Server Member Update/Edit Payload on Guilded.
  * @see https://www.guilded.gg/docs/api/members/MemberNicknameUpdate
  */
-export interface ApiServerMemberUpdatePayload {
+export interface restServerMemberUpdatePayload {
 	/* Represent New NickName for Specified Server Member on Guilded. */
 	nickname: string;
 }
@@ -83,7 +83,7 @@ export interface ApiServerMemberUpdatePayload {
  * Represents Server Member Ban Payload on Guilded.
  * @see https://www.guilded.gg/docs/api/member-bans/ServerMemberBanCreate
  */
-export interface ApiServerMemberBanPayload {
+export interface restServerMemberBanPayload {
 	/* Represent Valid Reason for Server Ban on Guilded. */
 	reason?: string;
 }
@@ -92,7 +92,7 @@ export interface ApiServerMemberBanPayload {
  * Represents Server Member Ban on Guilded.
  * @see https://www.guilded.gg/docs/api/member-bans/ServerMemberBan
  */
-export interface ApiServerMemberBan extends ApiServerMemberBanPayload {
+export interface ApiServerMemberBan extends restServerMemberBanPayload {
 	/* Represent User Data of Server Member Ban Model on Guilded. */
 	user: ApiBaseUserSummary;
 	/* Represent Created By User Id of Server Member Ban Request/Payload on Guilded. */
@@ -105,7 +105,7 @@ export interface ApiServerMemberBan extends ApiServerMemberBanPayload {
  * Represents Server Award XP Payload to New Users on Guilded.
  * @see https://www.guilded.gg/docs/api/server-xp/ServerXpForUserCreate
  */
-export interface ApiServerMemberAwardPayloadXp {
+export interface restServerMemberAwardPayloadXp {
 	/* Represent Amount of XP to New Server Members (max 1000,min -1000) on Server on Guilded */
 	amount: number;
 }
@@ -124,7 +124,7 @@ export interface ApiServerMemberXpResponse {
  * Represents Server Member XP Update Payload on Guilded.
  * @see https://www.guilded.gg/docs/api/server-xp/ServerXpForUserUpdate
  */
-export interface ApiServerMemberUpdatePayloadXp {
+export interface restServerMemberUpdatePayloadXp {
 	/* Represent Total Amount of XP of Server Members (max 1000000000,min -1000000000) on Server on Guilded */
 	total: number;
 }

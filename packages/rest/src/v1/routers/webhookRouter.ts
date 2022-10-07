@@ -1,11 +1,12 @@
 import {
-	ApiChannelMessagePayload,
 	ApiMessage,
+	ApiEmbed,
 	ApiWebhook,
 	ApiWebhookCreatePayload,
 	ApiWebhookUpdatePayload,
 	Endpoints,
 	RestWebhookQueryParams,
+	restChannelMessageCreateResolvable,
 } from '@guildest/guilded-api-typings';
 import fetch from 'node-fetch';
 import { restManager } from '../restManager';
@@ -111,14 +112,20 @@ export class WebhookRouter {
 	async execute(
 		webhookId: string,
 		webhookToken: string,
-		payload: ApiChannelMessagePayload,
+		payload: restChannelMessageCreateResolvable,
 	): Promise<ApiMessage> {
 		return (await fetch(
 			`https://media.guilded.gg${Endpoints.webhookExecute(webhookId, webhookToken)}`,
 			{
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(payload),
+				body: JSON.stringify(
+					(typeof payload === 'string' ? { content: payload as string } : undefined) ??
+						(Array.isArray(payload)
+							? { embeds: payload as Array<ApiEmbed> }
+							: undefined) ??
+						(payload as ApiMessage),
+				),
 			},
 		)?.then(async (R) => await R.json())) as ApiMessage;
 	}

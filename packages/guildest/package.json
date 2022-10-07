@@ -31,7 +31,8 @@
 		"lint": "eslint src"
 	},
 	"dependencies": {
-		"@guildest/collection": "^1.0.0",
+		"@guildest/builders": "workspace:^",
+		"@guildest/collection": "workspace:^",
 		"@guildest/rest": "workspace:^",
 		"@guildest/ws": "workspace:^",
 		"@guildest/guilded-api-typings": "workspace:^"

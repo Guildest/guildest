@@ -1,10 +1,10 @@
 import {
 	ApiForumTopic,
-	ApiForumTopicCreatePayload,
-	ApiForumTopicUpdatePayload,
+	restForumTopicCreatePayload,
+	restForumTopicUpdatePayload,
 	ApiForumTopicSummary,
 	Endpoints,
-	ApiForumTopicsQueryParams,
+	restForumTopicsQueryParams,
 } from '@guildest/guilded-api-typings';
 import { restManager } from '../restManager';
 
@@ -24,9 +24,9 @@ export class ForumTopicRouter {
 	 * @example ForumTopicRouter.create('abc' , { name: "New Topic!!" })
 	 */
 
-	async create(channelId: string, payload: ApiForumTopicCreatePayload): Promise<ApiForumTopic> {
+	async create(channelId: string, payload: restForumTopicCreatePayload): Promise<ApiForumTopic> {
 		return await this.rest
-			.post<{ forumTopic: ApiForumTopic }, ApiForumTopicCreatePayload>(
+			.post<{ forumTopic: ApiForumTopic }, restForumTopicCreatePayload>(
 				Endpoints.forumTopics(channelId),
 				payload,
 			)
@@ -45,7 +45,7 @@ export class ForumTopicRouter {
 	async fetch(
 		channelId: string,
 		forumTopicId?: string,
-		query?: ApiForumTopicsQueryParams,
+		query?: restForumTopicsQueryParams,
 	): Promise<ApiForumTopic | Array<ApiForumTopicSummary>> {
 		if (forumTopicId)
 			return await this.rest
@@ -58,7 +58,7 @@ export class ForumTopicRouter {
 				.post<
 					{ forumTopics: Array<ApiForumTopicSummary> },
 					undefined,
-					ApiForumTopicsQueryParams
+					restForumTopicsQueryParams
 				>(Endpoints.forumTopics(channelId), undefined, query)
 				?.then((R) => R?.forumTopics);
 	}
@@ -75,10 +75,10 @@ export class ForumTopicRouter {
 	async update(
 		channelId: string,
 		forumTopicId: string,
-		payload: ApiForumTopicUpdatePayload,
+		payload: restForumTopicUpdatePayload,
 	): Promise<ApiForumTopic> {
 		return await this.rest
-			.patch<{ forumTopic: ApiForumTopic }, ApiForumTopicUpdatePayload>(
+			.patch<{ forumTopic: ApiForumTopic }, restForumTopicUpdatePayload>(
 				Endpoints.forumTopic(channelId, parseInt(forumTopicId)),
 				payload,
 			)

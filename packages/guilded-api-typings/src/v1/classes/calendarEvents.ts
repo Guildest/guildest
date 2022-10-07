@@ -4,7 +4,7 @@ import { ApiBaseMentions } from './base';
  * Calendar Event Payload for Creation of Update Rest's request
  * @see https://www.guilded.gg/docs/api/calendarEvents/CalendarEventCreate
  */
-export interface ApiCalendarEventPayload {
+export interface restCalendarEventPayload {
 	/** Name of the Calendar Event */
 	name?: string;
 	/** Description of the Calendar Event */
@@ -40,7 +40,7 @@ export interface ApiCalendarEventCancellation {
  * Represents The CalendarEvent on Guilded.
  * @see https://www.guilded.gg/docs/api/calendarEvents/CalendarEvent
  */
-export interface ApiCalendarEvent extends ApiCalendarEventPayload {
+export interface ApiCalendarEvent extends restCalendarEventPayload {
 	/** Represents Id Value of Calendar Event */
 	id: number;
 	/** Represents the associated Server Id Value of Calendar Event */
@@ -78,7 +78,7 @@ export enum ApiCalendarEventRsvpStatusType {
  * Represents the Calendar Event Rsvp Payload Value
  * @see https://www.guilded.gg/docs/api/calendarEvents/CalendarEventRsvpUpdate
  */
-export interface ApiCalendarEventRsvpPayload {
+export interface restCalendarEventRsvpPayload {
 	/** Represents the Calendar Event Rsvp Payload Value. */
 	status: ApiCalendarEventRsvpStatusType;
 }
@@ -87,7 +87,7 @@ export interface ApiCalendarEventRsvpPayload {
  * Represents the Calendar Event Rsvp Model Value.
  * @see https://www.guilded.gg/docs/api/calendarEvents/CalendarEventRsvp
  */
-export interface ApiCalendarEventRsvp extends ApiCalendarEventRsvpPayload {
+export interface ApiCalendarEventRsvp extends restCalendarEventRsvpPayload {
 	/** Represents the Calendar Event Id */
 	calendarEventId: number;
 	/** Represents the Associaled Channel's Id of Calendar Event */

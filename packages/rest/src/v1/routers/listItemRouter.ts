@@ -1,6 +1,6 @@
 import {
 	ApiListItem,
-	ApiListItemPayload,
+	restListItemPayload,
 	ApiListItemSummary,
 	Endpoints,
 } from '@guildest/guilded-api-typings';
@@ -22,9 +22,9 @@ export class ListItemRouter {
 	 * @example new ListItemRouter.create("abc" , { message : "TODO list" })
 	 */
 
-	async create(channelId: string, payload: ApiListItemPayload): Promise<ApiListItem> {
+	async create(channelId: string, payload: restListItemPayload): Promise<ApiListItem> {
 		return await this.rest
-			.post<{ listItem: ApiListItem }, ApiListItemPayload>(
+			.post<{ listItem: ApiListItem }, restListItemPayload>(
 				Endpoints.listItems(channelId),
 				payload,
 			)
@@ -65,10 +65,10 @@ export class ListItemRouter {
 	async update(
 		channelId: string,
 		listItemId: string,
-		payload: ApiListItemPayload,
+		payload: restListItemPayload,
 	): Promise<ApiListItem> {
 		return await this.rest
-			.put<{ listItem: ApiListItem }, ApiListItemPayload>(
+			.put<{ listItem: ApiListItem }, restListItemPayload>(
 				Endpoints.listItem(channelId, listItemId),
 				payload,
 			)

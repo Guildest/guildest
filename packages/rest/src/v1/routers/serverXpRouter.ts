@@ -1,6 +1,6 @@
 import {
-	ApiServerMemberAwardPayloadXp,
-	ApiServerMemberUpdatePayloadXp,
+	restServerMemberAwardPayloadXp,
+	restServerMemberUpdatePayloadXp,
 	ApiServerMemberXpResponse,
 	Endpoints,
 } from '@guildest/guilded-api-typings';
@@ -26,18 +26,18 @@ export class ServerXPRouter {
 
 	async award(
 		serverId: string,
-		payload: ApiServerMemberAwardPayloadXp,
+		payload: restServerMemberAwardPayloadXp,
 		memberId?: string,
 		roleId?: string,
 	): Promise<ApiServerMemberXpResponse | boolean> {
 		if (roleId)
-			return await this.rest.post<ApiServerMemberXpResponse, ApiServerMemberAwardPayloadXp>(
+			return await this.rest.post<ApiServerMemberXpResponse, restServerMemberAwardPayloadXp>(
 				Endpoints.serverRoleXp(serverId, parseInt(roleId)),
 				payload,
 			);
 		else
 			return await this.rest
-				.post<void, ApiServerMemberAwardPayloadXp>(
+				.post<void, restServerMemberAwardPayloadXp>(
 					Endpoints.serverMemberXp(serverId, memberId!),
 					payload,
 				)
@@ -56,9 +56,9 @@ export class ServerXPRouter {
 	async update(
 		serverId: string,
 		memberId: string,
-		payload: ApiServerMemberUpdatePayloadXp,
+		payload: restServerMemberUpdatePayloadXp,
 	): Promise<ApiServerMemberXpResponse> {
-		return await this.rest.put<ApiServerMemberXpResponse, ApiServerMemberUpdatePayloadXp>(
+		return await this.rest.put<ApiServerMemberXpResponse, restServerMemberUpdatePayloadXp>(
 			Endpoints.serverMemberXp(serverId, memberId),
 			payload,
 		);

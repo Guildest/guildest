@@ -44,7 +44,7 @@ export interface ApiForumTopic extends ApiForumTopicSummary {
  * Represents Server Forums Topic Update Payload on Guilded.
  * @see https://www.guilded.gg/docs/api/forums/ForumTopicUpdate
  */
-export interface ApiForumTopicUpdatePayload {
+export interface restForumTopicUpdatePayload {
 	/* Represent Forum Topic Title on Guilded. */
 	title?: string;
 	/* Represent Forum Topic Content on Guilded. */
@@ -55,7 +55,7 @@ export interface ApiForumTopicUpdatePayload {
  * Represents Server Forums Topic Create Payload on Guilded.
  * @see https://www.guilded.gg/docs/api/forums/ForumTopicCreate
  */
-export interface ApiForumTopicCreatePayload extends ApiForumTopicUpdatePayload {
+export interface restForumTopicCreatePayload extends restForumTopicUpdatePayload {
 	/* Represent Forum Topic Title on Guilded. */
 	title: string;
 	/* Represent Forum Topic Content on Guilded. */
@@ -66,7 +66,7 @@ export interface ApiForumTopicCreatePayload extends ApiForumTopicUpdatePayload {
  * Represents Server Forums Topics Fetch Query on Guilded.
  * @see https://www.guilded.gg/docs/api/forums/ForumTopicReadMany
  */
-export interface ApiForumTopicsQueryParams {
+export interface restForumTopicsQueryParams {
 	/* Represent An ISO 8601 timestamp that will be used to filter out results for the current page on Guilded. */
 	before?: string;
 	/* Represent The max size of the page (default 25; min 1; max 100) on Guilded. */
