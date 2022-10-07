@@ -3,5 +3,7 @@ export class EmbedBuilder {
 		if (data) this.resolve(data);
 	}
 
-	public resolve(apiData: Record<string, any>) {}
+	public resolve(apiData: Record<string, any>) {
+		return apiData;
+	}
 }

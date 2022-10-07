@@ -66,8 +66,8 @@ export class restManager {
 		method: string,
 		body?: B,
 		query?: Q,
-		retries: number = 0,
-		authenticated: boolean = true,
+		retries = 0,
+		authenticated = true,
 	): Promise<R> {
 		const sParams: URLSearchParams | undefined = Object.entries(query!)?.reduce(
 			(tPara: URLSearchParams | undefined = new URLSearchParams(), eNt) => {
@@ -87,7 +87,9 @@ export class restManager {
 		if (res.ok) return rData as R;
 		else if (res.status === 429 && retries <= this.maxRetries) {
 			const rInterval =
-				parseInt(res?.headers?.get('Retry-After')!) ??
+				(res?.headers?.get('Retry-After')
+					? parseInt(res.headers.get('Retry-After')!)
+					: undefined) ??
 				this.options.retryInterval ??
 				10 * 1000;
 			await new Promise((resolve) => setTimeout(resolve, rInterval * 1000));
@@ -118,7 +120,7 @@ export class restManager {
 		path: string,
 		body?: B,
 		query?: Q,
-		authenticated: boolean = true,
+		authenticated = true,
 	): Promise<R> {
 		return this.request<R, B, Q>(path, 'GET', body, query, 0, authenticated);
 	}
@@ -135,7 +137,7 @@ export class restManager {
 		path: string,
 		body?: B,
 		query?: Q,
-		authenticated: boolean = true,
+		authenticated = true,
 	): Promise<R> {
 		return this.request<R, B, Q>(path, 'POST', body, query, 0, authenticated);
 	}
@@ -152,7 +154,7 @@ export class restManager {
 		path: string,
 		body?: B,
 		query?: Q,
-		authenticated: boolean = true,
+		authenticated = true,
 	): Promise<R> {
 		return this.request<R, B, Q>(path, 'PATCH', body, query, 0, authenticated);
 	}
@@ -169,7 +171,7 @@ export class restManager {
 		path: string,
 		body?: B,
 		query?: Q,
-		authenticated: boolean = true,
+		authenticated = true,
 	): Promise<R> {
 		return this.request<R, B, Q>(path, 'PUT', body, query, 0, authenticated);
 	}
@@ -186,7 +188,7 @@ export class restManager {
 		path: string,
 		body?: B,
 		query?: Q,
-		authenticated: boolean = true,
+		authenticated = true,
 	) {
 		return this.request<R>(path, 'DELETE', body, query, 0, authenticated);
 	}

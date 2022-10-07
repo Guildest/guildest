@@ -12,7 +12,7 @@
   "scripts": {
     "test": "ts-node test",
     "build": "pnpm -r build",
-    "lint": "eslint packages/*/src/**/*.ts scripts/*.ts",
+    "lint": "eslint packages/*/src/**/*.ts --fix",
     "format": "prettier --write **/*.{ts,md,json,yml,yaml}",
     "docs": "rimraf docs && typedoc",
     "prepare": "husky install && pnpm build",

@@ -1,2 +1,2 @@
-export { webSocketManager as default } from './wsManager'
-export * from './wsManager'
+export { webSocketManager as default } from './wsManager';
+export * from './wsManager';

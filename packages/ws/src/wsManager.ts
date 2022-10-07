@@ -27,7 +27,7 @@ export class webSocketManager extends EventEmitter {
 	/** Ready At Timestmap in milliseconds from "Date.now()" function during socket emitting Ready event. */
 	readyAt: number | undefined;
 	/** Numerical Attempts of Reconnect for Now for Websocket sudden disconnect and reconnect operation checks. */
-	reconnectAttempts: number = 0;
+	reconnectAttempts = 0;
 	/** Last Time Socket Pinged Timestamp in Guilded's Websocket. */
 	lastPingAt: number | undefined;
 	/** Last Time Socket Ponged Timestamp in Guilded's Websocket after Ping event emittion. */

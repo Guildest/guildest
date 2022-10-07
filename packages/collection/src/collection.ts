@@ -8,7 +8,7 @@ export class Collection<K extends string | number | symbol, V> extends Map<K, V>
 	 * @param maxLimit The Max maxLimit of the Collection Item to Store.
 	 */
 	constructor(
-		public readonly object?: Object | Map<K, V> | Record<K, V> | Collection<K, V> | Array<V>,
+		public readonly object?: Map<K, V> | Record<K, V> | Collection<K, V> | Array<V>,
 		public maxLimit?: number,
 	) {
 		super();
@@ -24,7 +24,7 @@ export class Collection<K extends string | number | symbol, V> extends Map<K, V>
 	 * @example Collection.add("foo" , "bar2" , true)
 	 */
 
-	public add(key: K, value: V, replace: boolean = true): this | false {
+	public add(key: K, value: V, replace = true): this | false {
 		if (!key) throw new SyntaxError('Unique Key has not been Provided');
 		else if (this.maxLimit && this.maxLimit <= this.size) this.limit();
 		if (!this.has(key) || (replace && this.get(key) !== value)) this.set(key, value);
@@ -120,18 +120,18 @@ export class Collection<K extends string | number | symbol, V> extends Map<K, V>
 	 * @example Collection.random(10 , true)
 	 */
 
-	public random(amount: number = 1, unique: boolean = false): Collection<K, V> {
+	public random(amount = 1, unique = false): Collection<K, V> {
 		if (!(amount && typeof amount === 'number'))
 			throw new TypeError('Invalid Amount Type is Detected');
 		else if (!(amount > 0 && amount <= this.size)) amount = Math.floor(this.size / 2);
-		let nMap: Collection<K, V> = new this.constructor[Symbol.species]<K, V>(),
-			rKey: K;
-		while (amount < nMap.size) {
+		const nCol: Collection<K, V> = new this.constructor[Symbol.species]<K, V>();
+		let rKey: K;
+		while (amount < nCol.size) {
 			rKey = this.toKeyArray[Math.floor(Math.random() * this.size)];
-			if (rKey && !nMap.has(rKey)) nMap.set(rKey, this.get(rKey)!);
-			else if (unique && rKey && nMap.has(rKey)) nMap.set(rKey, this.get(rKey)!);
+			if (rKey && !nCol.has(rKey)) nCol.set(rKey, this.get(rKey)!);
+			else if (unique && rKey && nCol.has(rKey)) nCol.set(rKey, this.get(rKey)!);
 		}
-		return nMap;
+		return nCol;
 	}
 
 	/**
@@ -141,10 +141,8 @@ export class Collection<K extends string | number | symbol, V> extends Map<K, V>
 	 * @example Collection.merge({ "foo" : "bar" })
 	 */
 
-	public merge<O = Object | Map<K, V> | Record<K, V> | Collection<K, V> | Array<V>>(
-		object: O,
-	): this {
-		let nCol = this.convert(object);
+	public merge<O = Map<K, V> | Record<K, V> | Collection<K, V> | Array<V>>(object: O): this {
+		const nCol = this.convert(object);
 		if (nCol.size <= 0) throw new SyntaxError('Empty Collection is Detected');
 		else if (nCol.maxLimit === Infinity || this.maxLimit === Infinity) this.maxLimit = Infinity;
 		else if (typeof nCol?.maxLimit === 'number')
@@ -163,7 +161,7 @@ export class Collection<K extends string | number | symbol, V> extends Map<K, V>
 	 * @example Collection.concat({ "foo" : "bar" })
 	 */
 
-	public concat<O = Object | Map<K, V> | Record<K, V> | Collection<K, V> | Array<V>>(
+	public concat<O = Map<K, V> | Record<K, V> | Collection<K, V> | Array<V>>(
 		...objects: Array<O>
 	): Collection<K, V> {
 		const nColl = this.clone();
@@ -180,10 +178,8 @@ export class Collection<K extends string | number | symbol, V> extends Map<K, V>
 	 * @example Collection.equals({ "foo" : "bar" })
 	 */
 
-	public equals<O = Object | Map<K, V> | Record<K, V> | Collection<K, V> | Array<V>>(
-		object: O,
-	): boolean {
-		let coll = this.convert(object);
+	public equals<O = Map<K, V> | Record<K, V> | Collection<K, V> | Array<V>>(object: O): boolean {
+		const coll = this.convert(object);
 		if (this === coll) return true;
 		else if (this.size !== coll.size) return false;
 		for (const [key, value] of this) {
@@ -348,7 +344,7 @@ export class Collection<K extends string | number | symbol, V> extends Map<K, V>
 	 * @example Collection.clone()
 	 */
 
-	public clone<O = Object | Map<K, V> | Record<K, V> | Collection<K, V> | Array<V>>(
+	public clone<O = Map<K, V> | Record<K, V> | Collection<K, V> | Array<V>>(
 		object: O | this = this,
 	): Collection<K, V> {
 		return new this.constructor[Symbol.species](this.convert(object));
@@ -361,11 +357,11 @@ export class Collection<K extends string | number | symbol, V> extends Map<K, V>
 	 * @example Collection.convert({ "foo" : "bar" })
 	 */
 
-	public convert<O = Object | Map<K, V> | Record<K, V> | Collection<K, V> | Array<V>>(
+	public convert<O = Map<K, V> | Record<K, V> | Collection<K, V> | Array<V>>(
 		object: O,
 	): Collection<K, V> {
 		if (!object) throw new TypeError('Object Value must be a Record or Something Close');
-		let nColl: Collection<K, V> = new this.constructor[Symbol.species]<K, V>();
+		const nColl: Collection<K, V> = new this.constructor[Symbol.species]<K, V>();
 		if (Array.isArray(object)) object.forEach((obj: V, index) => nColl.set(index as K, obj));
 		else if (object instanceof Map)
 			Array.from(object.keys()).forEach((key: K) => nColl.set(key, object.get(key)));
@@ -383,7 +379,7 @@ export class Collection<K extends string | number | symbol, V> extends Map<K, V>
 
 	public limit(amount: number = this.maxLimit!): Collection<K, V> | false {
 		if (amount > this.size) return false;
-		let nColl: Collection<K, V> = new this.constructor[Symbol.species]<K, V>();
+		const nColl: Collection<K, V> = new this.constructor[Symbol.species]<K, V>();
 		for (const [key, value] of this) {
 			if (nColl.size >= amount) break;
 			nColl.set(key, value);
@@ -400,7 +396,7 @@ export class Collection<K extends string | number | symbol, V> extends Map<K, V>
 	 */
 
 	public toMap(collection: Collection<K, V> = this): Map<K, V> {
-		let nMap = new Map<K, V>();
+		const nMap = new Map<K, V>();
 		for (const [key, val] of collection) {
 			if (['number', 'string', 'symbol'].includes(typeof key)) nMap.set(key, val);
 		}
@@ -414,8 +410,8 @@ export class Collection<K extends string | number | symbol, V> extends Map<K, V>
 	 * @example Collection.toObject()
 	 */
 
-	public toObject(collection: Collection<K, V> = this): Record<string, V> | Object {
-		let nObj = {};
+	public toObject(collection: Collection<K, V> = this): Record<string, V> {
+		const nObj = {};
 		for (const [key, val] of collection) {
 			if (['number', 'string', 'symbol'].includes(typeof key))
 				nObj[typeof key === 'number' ? Number(key) : String(key)] = val;
