@@ -1,4 +1,4 @@
-import { ApiBaseError } from '@guildest/guilded-api-typings';
+import type { ApiBaseError } from '@guildest/guilded-api-typings';
 import fetch from 'node-fetch';
 import { version } from '../../package.json';
 import { RestApiError } from './apiError';

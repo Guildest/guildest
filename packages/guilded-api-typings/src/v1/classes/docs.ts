@@ -1,4 +1,4 @@
-import { ApiBaseMentions } from './base';
+import type { ApiBaseMentions } from './base';
 
 /**
  * Payload Value of Api Docs during Creation and Modification

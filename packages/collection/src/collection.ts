@@ -125,7 +125,7 @@ export class Collection<K extends string | number | symbol, V> extends Map<K, V>
 			throw new TypeError('Invalid Amount Type is Detected');
 		else if (!(amount > 0 && amount <= this.size)) amount = Math.floor(this.size / 2);
 		const nCol: Collection<K, V> = new this.constructor[Symbol.species]<K, V>();
-		let rKey: K;
+		let rKey: K | undefined;
 		while (amount < nCol.size) {
 			rKey = this.toKeyArray[Math.floor(Math.random() * this.size)];
 			if (rKey && !nCol.has(rKey)) nCol.set(rKey, this.get(rKey)!);

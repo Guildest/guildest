@@ -1,4 +1,4 @@
-import { ApiBaseMentions } from './base';
+import type { ApiBaseMentions } from './base';
 
 /**
  * Calendar Event Payload for Creation of Update Rest's request

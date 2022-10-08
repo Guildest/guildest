@@ -1,4 +1,4 @@
-import { ApiBase, ApiBaseMentions, ApiBaseListItemNote } from './base';
+import type { ApiBase, ApiBaseMentions, ApiBaseListItemNote } from './base';
 
 /**
  * Represents the List Item Summary Value in Guilded.

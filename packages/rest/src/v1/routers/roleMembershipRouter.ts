@@ -1,5 +1,5 @@
 import { ApiServerMemberManyFetchRoles, Endpoints } from '@guildest/guilded-api-typings';
-import { restManager } from '../restManager';
+import type { restManager } from '../restManager';
 
 /**
  * The Role Membership's Router for the Guilded REST Api.

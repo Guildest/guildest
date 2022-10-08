@@ -1,4 +1,4 @@
-import { ApiBase, ApiBaseMentions } from './base';
+import type { ApiBase, ApiBaseMentions } from './base';
 
 /**
  * Represents Server Forums Topic Summary on Guilded.

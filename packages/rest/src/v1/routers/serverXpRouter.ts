@@ -4,7 +4,7 @@ import {
 	ApiServerMemberXpResponse,
 	Endpoints,
 } from '@guildest/guilded-api-typings';
-import { restManager } from '../restManager';
+import type { restManager } from '../restManager';
 
 /**
  * The Server XP's Router for the Guilded REST Api.

@@ -15,7 +15,7 @@ export class RestApiError extends Error {
 	 */
 	constructor(
 		public readonly code: string,
-		public readonly message: string,
+		public override readonly message: string,
 		public readonly status: string | number,
 		public readonly method: string,
 		public readonly path: string,

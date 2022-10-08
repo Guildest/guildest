@@ -4,7 +4,7 @@ import {
 	Endpoints,
 	restDocsQueryParams,
 } from '@guildest/guilded-api-typings';
-import { restManager } from '../restManager';
+import type { restManager } from '../restManager';
 
 /**
  * The Docs Router for the Guilded REST Api.

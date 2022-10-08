@@ -9,7 +9,7 @@ import {
 	restChannelMessageCreateResolvable,
 } from '@guildest/guilded-api-typings';
 import fetch from 'node-fetch';
-import { restManager } from '../restManager';
+import type { restManager } from '../restManager';
 
 /**
  * The Webhook's Router for the Guilded REST Api.

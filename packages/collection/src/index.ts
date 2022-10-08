@@ -1,1 +1,1 @@
-export * as Collection from './collection';
+export * from './collection';

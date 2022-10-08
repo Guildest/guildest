@@ -1,4 +1,4 @@
-import { ApiBase } from './base';
+import type { ApiBase } from './base';
 
 /**
  * Represents Channel Update Payload on Guilded.

@@ -1,5 +1,5 @@
 import { Endpoints } from '@guildest/guilded-api-typings';
-import { restManager } from '../restManager';
+import type { restManager } from '../restManager';
 
 /**
  * The Reaction's Router for the Guilded REST Api.

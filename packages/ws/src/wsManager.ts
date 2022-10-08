@@ -121,7 +121,7 @@ export class webSocketManager extends EventEmitter {
 				this.socket!.ping();
 				break;
 			case wsOpGatawayCode.Resume:
-				delete this.lastMessageId;
+				this.lastMessageId = undefined;
 				break;
 		}
 	}

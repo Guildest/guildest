@@ -7,7 +7,7 @@ import {
 	ApiEmbed,
 	restChannelMessageCreateResolvable,
 } from '@guildest/guilded-api-typings';
-import { restManager } from '../restManager';
+import type { restManager } from '../restManager';
 
 /**
  * The Message Router for the Guilded REST Api.

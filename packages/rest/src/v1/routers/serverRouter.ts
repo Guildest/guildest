@@ -1,5 +1,5 @@
 import { ApiServer, Endpoints } from '@guildest/guilded-api-typings';
-import { restManager } from '../restManager';
+import type { restManager } from '../restManager';
 
 /**
  * The Server Router for the Guilded REST Api.

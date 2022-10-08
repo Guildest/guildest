@@ -1,4 +1,4 @@
-import { ApiBase, ApiBaseUser, ApiBaseUserSummary } from './base';
+import type { ApiBase, ApiBaseUser, ApiBaseUserSummary } from './base';
 
 /**
  * Represents Server Type on Guilded.

@@ -1,5 +1,5 @@
-import { ApiBaseClientUser } from './classes/base';
-import {
+import type { ApiBaseClientUser } from './classes/base';
+import type {
 	eventCalendarEventCreated,
 	eventCalendarEventDeleted,
 	eventCalendarEventRsvpDeleted,
