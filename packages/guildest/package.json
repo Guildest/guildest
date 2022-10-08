@@ -27,8 +27,7 @@
 	"license": "Apache-2.0",
 	"scripts": {
 		"build": "pnpm clear && tsc",
-		"clear": "rimraf dist typings",
-		"lint": "eslint src"
+		"clear": "rimraf dist typings"
 	},
 	"dependencies": {
 		"@guildest/builders": "workspace:^",
