@@ -2,7 +2,7 @@ import {
 	ApiServerMemberBan,
 	restServerMemberBanPayload,
 	Endpoints,
-} from '@guildest/guilded-api-typings';
+} from '@guildest/api-typings';
 import type { restManager } from '../restManager';
 
 /**

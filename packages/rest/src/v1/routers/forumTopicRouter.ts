@@ -5,7 +5,7 @@ import {
 	ApiForumTopicSummary,
 	Endpoints,
 	restForumTopicsQueryParams,
-} from '@guildest/guilded-api-typings';
+} from '@guildest/api-typings';
 import type { restManager } from '../restManager';
 
 /**

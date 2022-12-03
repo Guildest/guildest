@@ -1,4 +1,4 @@
-import { ApiServer, Endpoints } from '@guildest/guilded-api-typings';
+import { ApiServer, Endpoints } from '@guildest/api-typings';
 import type { restManager } from '../restManager';
 
 /**

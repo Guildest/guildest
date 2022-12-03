@@ -3,7 +3,7 @@ import {
 	restDocsPayload,
 	Endpoints,
 	restDocsQueryParams,
-} from '@guildest/guilded-api-typings';
+} from '@guildest/api-typings';
 import type { restManager } from '../restManager';
 
 /**

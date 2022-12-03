@@ -7,7 +7,7 @@ import {
 	Endpoints,
 	RestWebhookQueryParams,
 	restChannelMessageCreateResolvable,
-} from '@guildest/guilded-api-typings';
+} from '@guildest/api-typings';
 import fetch from 'node-fetch';
 import type { restManager } from '../restManager';
 

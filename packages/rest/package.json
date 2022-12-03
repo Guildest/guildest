@@ -31,7 +31,7 @@
 		"clear": "rimraf dist typings"
 	},
 	"dependencies": {
-		"@guildest/guilded-api-typings": "workspace:^",
+		"@guildest/api-typings": "workspace:^",
 		"node-fetch": "3.2.10"
 	},
 	"devDependencies": {

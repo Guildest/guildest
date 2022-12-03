@@ -6,7 +6,7 @@ import type {
 	ApiEmbedField,
 	ApiEmbedFooter,
 	restMessageEmbedResolvable,
-} from '@guildest/guilded-api-typings';
+} from '@guildest/api-typings';
 import {
 	ColorResolver,
 	ImageUrlResolver,

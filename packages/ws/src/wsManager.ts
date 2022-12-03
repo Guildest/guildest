@@ -7,7 +7,7 @@ import {
 	wsOpGatawayCode,
 	wsEvents,
 	ApiBaseClientUser,
-} from '@guildest/guilded-api-typings';
+} from '@guildest/api-typings';
 
 /**
  * Guilded API Websocket Manager for CLient/User Based Web Applications

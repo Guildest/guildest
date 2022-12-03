@@ -1,4 +1,4 @@
-import { ApiBaseSocialLinks, Endpoints } from '@guildest/guilded-api-typings';
+import { ApiBaseSocialLinks, Endpoints } from '@guildest/api-typings';
 import type { restManager } from '../restManager';
 
 /**

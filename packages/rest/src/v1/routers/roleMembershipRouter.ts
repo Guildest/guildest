@@ -1,4 +1,4 @@
-import { ApiServerMemberManyFetchRoles, Endpoints } from '@guildest/guilded-api-typings';
+import { ApiServerMemberManyFetchRoles, Endpoints } from '@guildest/api-typings';
 import type { restManager } from '../restManager';
 
 /**
