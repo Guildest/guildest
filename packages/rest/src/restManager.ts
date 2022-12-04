@@ -1,8 +1,9 @@
 import type { ApiBaseError } from '@guildest/api-typings';
-import fetch from 'node-fetch';
-import { version } from '../../package.json';
 import { RestApiError } from './apiError';
 import { router } from './utils/router';
+
+/** Guilded Rest Api Version for the Lib */
+export const version = 1;
 
 /**
  * The REST-API Manager for the Guilded API.

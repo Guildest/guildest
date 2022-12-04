@@ -1,6 +1,5 @@
 import EventEmitter from 'events';
 import webSocket from 'ws';
-import { version } from '../package.json';
 import {
 	wsMessagePayload,
 	wsReadyPayload,
@@ -8,6 +7,9 @@ import {
 	wsEvents,
 	ApiBaseClientUser,
 } from '@guildest/api-typings';
+
+/** Guilded Websocket Version for the Lib */
+export const version = 1;
 
 /**
  * Guilded API Websocket Manager for CLient/User Based Web Applications

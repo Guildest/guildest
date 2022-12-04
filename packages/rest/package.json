@@ -31,12 +31,11 @@
 		"clear": "rimraf dist typings"
 	},
 	"dependencies": {
-		"@guildest/api-typings": "workspace:^",
-		"node-fetch": "3.2.10"
+		"@guildest/api-typings": "workspace:^"
 	},
 	"devDependencies": {
-		"@types/node-fetch": "^2.6.2",
+		"@types/node": "^18.11.10",
 		"rimraf": "^3.0.2",
-		"typescript": "^4.8.4"
+		"typescript": "^4.9.3"
 	}
 }

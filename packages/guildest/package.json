@@ -35,5 +35,10 @@
 		"@guildest/rest": "workspace:^",
 		"@guildest/ws": "workspace:^",
 		"@guildest/api-typings": "workspace:^"
+	},
+	"devDependencies": {
+		"@types/node": "^18.11.10",
+		"rimraf": "^3.0.2",
+		"typescript": "^4.9.3"
 	}
 }

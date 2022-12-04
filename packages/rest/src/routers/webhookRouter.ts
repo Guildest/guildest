@@ -8,7 +8,6 @@ import {
 	RestWebhookQueryParams,
 	restChannelMessageCreateResolvable,
 } from '@guildest/api-typings';
-import fetch from 'node-fetch';
 import type { restManager } from '../restManager';
 
 /**

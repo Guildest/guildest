@@ -42,7 +42,8 @@
 		"useDefineForClassFields": true,
 
 		/* Extra Config */
-		"noImplicitAny": false
+		"noImplicitAny": false,
+		"lib": ["ESNext", "DOM"]
 	},
 	"include": ["packages/*/src/**/*.ts"]
 }
