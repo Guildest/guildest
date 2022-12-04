@@ -7,8 +7,8 @@
 		"directory": "packages/ws"
 	},
 	"homepage": "https://guildest.js.org",
-	"main": "dist",
-	"types": "typings",
+	"main": "dist/src/index.js",
+	"types": "typings/src/index.d.ts",
 	"files": [
 		"CHANGELOG.md",
 		"dist",
@@ -32,8 +32,9 @@
 		"clear": "rimraf dist typings"
 	},
 	"dependencies": {
-		"@types/ws": "^8.5.3",
 		"@guildest/api-typings": "workspace:^",
+		"@types/ws": "^8.5.3",
+		"typed-emitter": "^2.1.0",
 		"ws": "^8.11.0"
 	},
 	"devDependencies": {

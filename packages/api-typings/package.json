@@ -7,8 +7,8 @@
 		"directory": "packages/api-typings"
 	},
 	"homepage": "https://guildest.js.org",
-	"main": "dist",
-	"typings": "typings",
+	"main": "dist/index.js",
+	"types": "typings/index.d.ts",
 	"files": [
 		"CHANGELOG.md",
 		"dist",

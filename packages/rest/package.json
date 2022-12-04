@@ -7,8 +7,8 @@
 		"directory": "packages/rest"
 	},
 	"homepage": "https://guildest.js.org",
-	"main": "dist",
-	"types": "typings",
+	"main": "dist/index.js",
+	"types": "typings/index.d.ts",
 	"files": [
 		"CHANGELOG.md",
 		"dist",
