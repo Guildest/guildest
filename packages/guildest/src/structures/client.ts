@@ -1,9 +1,11 @@
 import type { restOptions } from '@guildest/rest';
 import { webSocketManager, wsOptions } from '@guildest/ws';
 import EventEmitter from 'events';
-import { ClientUser } from './clientUser';
+import { gateawayHandler } from '../handlers/gateawayHandler';
+import { ClientUser } from './users';
 
 export class Client extends EventEmitter {
+	gateaway: gateawayHandler = new gateawayHandler(this);
 	ws: webSocketManager = new webSocketManager({ token: this.token, ...this.option.ws });
 	readyTimestamp?: number;
 	user?: ClientUser;

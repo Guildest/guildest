@@ -63,11 +63,11 @@ export interface ApiServerMember extends ApiServerMemberSummary {
 	/* Represent User Data of Server Member Model on Guilded. */
 	user: ApiBaseUser;
 	/* Represent NickName of Server Member on Guilded. */
-	nickaname?: string;
+	nickname?: string;
 	/* Represent Joined At Data/Time ISO-String of Server Member on Guilded. */
 	joinedAt: string;
 	/* If User/Member is Server Owner on Guilded. */
-	isOwnmer?: boolean;
+	isOwner?: boolean;
 }
 
 /**

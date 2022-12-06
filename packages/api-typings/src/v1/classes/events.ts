@@ -4,6 +4,7 @@ import type {
 	ApiBaseUserInfo,
 	ApiBaseMemberRoleIds,
 	ApiBaseReaction,
+	ApiBaseBotServerEvent,
 } from './base';
 import type { ApiCalendarEvent, ApiCalendarEventRsvp } from './calendarEvents';
 import type { ApiServerChannel } from './channel';
@@ -31,6 +32,23 @@ export interface wsMessageDelete extends ApiBase {
 	isPrivate?: boolean;
 }
 
+/**
+ * Represents Event When Bot Membership Created in Server by someone.
+ * @see https://www.guilded.gg/docs/api/websockets/BotServerMembershipCreated
+ */
+export interface eventBotServerMembershipCreated extends ApiBaseBotServerEvent {
+	/** Created By User Id for the Bot Membership. */
+	createdBy: string;
+}
+
+/**
+ * Represents Event When Bot Membership Deleted in Server by someone.
+ * @see https://www.guilded.gg/docs/api/websockets/BotServerMembershipDeleted
+ */
+export interface eventBotServerMembershipCreated extends ApiBaseBotServerEvent {
+	/** Deleted By User Id for the Bot Membership. */
+	deletedBy: string;
+}
 /**
  * Represents Event When Message is Created.
  * @see https://www.guilded.gg/docs/api/websockets/ChatMessageCreated

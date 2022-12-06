@@ -1,3 +1,5 @@
+import type { ApiServer } from './server';
+
 /**
  * Represents Base Class of Guilded Class.
  */
@@ -114,8 +116,15 @@ export interface ApiBaseSocialLinks {
 	type?: string;
 }
 
+/** Represents the Base Bot Server Event (Websocket) **/
+export interface ApiBaseBotServerEvent {
+	/** Server from the Guilded API from event. */
+	server: ApiServer;
+}
+
 /** Represents the Base Server Event (Websocket) **/
 export interface ApiBaseServerEvent {
+	/** Server Id from the Guilded API from event. */
 	serverId: string;
 }
 

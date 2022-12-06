@@ -35,6 +35,8 @@ export enum ApiChannelType {
  * @see https://www.guilded.gg/docs/api/channels/ServerChannel
  */
 export interface ApiServerChannel extends ApiBase {
+	/** Server Channel Type on the Guilded API */
+	type: ApiChannelType;
 	/* The Name of the Channel. */
 	name: string;
 	/* The Topic of the Channel. */
