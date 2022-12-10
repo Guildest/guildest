@@ -26,8 +26,10 @@ export interface ApiServer extends ApiBase {
 	ownerId: string;
 	/* Represents User Id of the Server Owner or Founder on the Guilded. */
 	type?: ApiServerType;
+	/** Represents the Server Name in the Guilded. */
+	name: string;
 	/* Url of the Server Or Vanity Value to make a self Made Url duiring processing */
-	urL?: string;
+	url?: string;
 	/* About Section of the Server on Guilded. */
 	about?: string;
 	/* Avatar Media-uri Value Associated with the Server on Guilded. */

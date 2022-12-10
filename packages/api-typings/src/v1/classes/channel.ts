@@ -42,7 +42,7 @@ export interface ApiServerChannel extends ApiBase {
 	/* The Topic of the Channel. */
 	topic?: string;
 	/* The Creation Date in ISO String of Channel. */
-	createdAt?: string;
+	createdAt: string;
 	/* The Userd Id of User who Created the Channel. */
 	createdBy: string;
 	/* The Updated Date in ISO String of Channel. */

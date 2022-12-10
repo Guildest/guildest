@@ -1,7 +1,7 @@
 import type { restOptions } from '@guildest/rest';
 import { webSocketManager, wsOptions } from '@guildest/ws';
 import EventEmitter from 'events';
-import { gateawayHandler } from '../handlers/gateawayHandler';
+import { gateawayHandler } from '../events/gateawayHandler';
 import { ClientUser } from './users';
 
 export class Client extends EventEmitter {
@@ -23,7 +23,7 @@ export class Client extends EventEmitter {
 	}
 }
 
-interface ClientOption {
+export interface ClientOption {
 	rest?: restOptions;
 	ws?: wsOptions;
 	caches?: {
