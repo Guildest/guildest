@@ -1,10 +1,10 @@
-import type { ApiMessage, ApiMessageType, ApiEmbed, ApiBaseMentions } from '@guildest/api-typings';
+import { ApiMessage, ApiMessageType, ApiEmbed, ApiBaseMentions } from '@guildest/api-typings';
 import { DateParse } from '../utils/basicUtils';
 import { Base } from './base';
-import type { Client } from './client';
+import { Client } from './client';
 
 export class Message extends Base<ApiMessage> {
-	type: ApiMessageType;
+	type: MessageType;
 	serverId?: string;
 	channelId: string;
 	content?: string;
@@ -38,3 +38,5 @@ export class Message extends Base<ApiMessage> {
 		if ('updatedAt' in json) this.updatedAt = DateParse(json.updatedAt);
 	}
 }
+
+export type MessageType = keyof typeof ApiMessageType;

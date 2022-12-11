@@ -1,18 +1,18 @@
-import type {
+import {
 	ApiServer,
 	ApiServerMemberBan,
 	ApiServerMember,
 	ApiServerType,
-	ApiBaseUser,
+	ApiUserType,
+	ApiUserResolve,
 } from '@guildest/api-typings';
-import { ApiServerType as ServerTypes } from '@guildest/api-typings';
 import { Base } from './base';
-import type { Client } from './client';
+import { Client } from './client';
 import { User } from './users';
 
 export class Server extends Base<ApiServer> {
 	readonly ownerId: string;
-	type?: ApiServerType;
+	type?: ServerType;
 	name: string;
 	uri?: string;
 	about?: string;
@@ -65,7 +65,7 @@ export class Member extends Base<ApiServerMember> {
 		return this.user.name;
 	}
 
-	get type() {
+	get type(): keyof typeof ApiUserType {
 		return this.user.type;
 	}
 
@@ -88,8 +88,7 @@ export class MemberBan extends Base<ApiServerMemberBan> {
 
 	constructor(client: Client, json: ApiServerMemberBan) {
 		super(client, { ...json, id: json.user.id });
-		this.user = new User(this.client, json.user as ApiBaseUser);
-
+		this.user = new User(this.client, json.user as ApiUserResolve);
 		this.createdBy = json.createdBy;
 		this.createdAt = Date.parse(json.createdAt);
 
@@ -101,4 +100,4 @@ export class MemberBan extends Base<ApiServerMemberBan> {
 	}
 }
 
-export { ServerTypes };
+export type ServerType = keyof typeof ApiServerType;

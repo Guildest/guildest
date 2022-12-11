@@ -1,5 +1,5 @@
 import { ApiBaseSocialLinks, Endpoints } from '@guildest/api-typings';
-import type { restManager } from '../restManager';
+import { restManager } from '../restManager';
 
 /**
  * The Social Link's Router for the Guilded REST Api.

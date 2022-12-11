@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import type TypedEmitter from 'typed-emitter';
+import TypedEmitter from 'typed-emitter';
 import webSocket from 'ws';
 import {
 	wsMessagePayload,

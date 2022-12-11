@@ -1,4 +1,4 @@
-import type { ApiBase, ApiBaseMentions, ApiBaseListItemNote } from './base';
+import { ApiBase, ApiBaseMentions, ApiBaseListItemNote } from './base';
 
 /**
  * Represents the List Item Summary Value in Guilded.
@@ -52,6 +52,9 @@ export interface ApiListItem extends ApiListItemSummary {
 	/** Represent the Base List Item Note on Guilded. */
 	note?: ApiListItemNote;
 }
+
+/* Represents the Resolve for List Item for Guilded Packages. */
+export type ApiListItemResolve = ApiListItem | ApiListItemSummary;
 
 /**
  * Represents the List Item Note Payload Value in Guilded.

@@ -5,7 +5,7 @@ import {
 	restCalendarEventRsvpPayload,
 	Endpoints,
 } from '@guildest/api-typings';
-import type { restManager } from '../restManager';
+import { restManager } from '../restManager';
 
 /**
  * The Calendar Event's Router for the Guilded REST Api.

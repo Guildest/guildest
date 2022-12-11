@@ -1,4 +1,4 @@
-import type {
+import {
 	ApiBaseServerEvent,
 	ApiBase,
 	ApiBaseUserInfo,
@@ -6,14 +6,14 @@ import type {
 	ApiBaseReaction,
 	ApiBaseBotServerEvent,
 } from './base';
-import type { ApiCalendarEvent, ApiCalendarEventRsvp } from './calendarEvents';
-import type { ApiServerChannel } from './channel';
-import type { ApiMessage } from './chat';
-import type { ApiDocs } from './docs';
-import type { ApiForumTopic } from './forum';
-import type { ApiListItem } from './list';
-import type { ApiServerMember, ApiServerMemberBan } from './server';
-import type { ApiWebhook } from './webhook';
+import { ApiCalendarEvent, ApiCalendarEventRsvp } from './calendarEvents';
+import { ApiServerChannel } from './channel';
+import { ApiMessage } from './chat';
+import { ApiDocs } from './docs';
+import { ApiForumTopic } from './forum';
+import { ApiListItem } from './list';
+import { ApiServerMember, ApiServerMemberBan } from './server';
+import { ApiWebhook } from './webhook';
 
 /**
  * Represents Message Delete Websocket Metadata/Response from Guilded.

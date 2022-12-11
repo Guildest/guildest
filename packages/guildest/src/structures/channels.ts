@@ -1,11 +1,10 @@
-import type { ApiServerChannel, ApiChannelType } from '@guildest/api-typings';
-import { ApiChannelType as ChannelTypes } from '@guildest/api-typings';
+import { ApiServerChannel, ApiChannelType } from '@guildest/api-typings';
 import { DateParse } from '../utils/basicUtils';
 import { Base } from './base';
-import type { Client } from './client';
+import { Client } from './client';
 
 export class Channel extends Base<ApiServerChannel> {
-	type: ApiChannelType;
+	type: keyof typeof ApiChannelType;
 	name: string;
 	topic?: string;
 	createdAt: number;
@@ -41,5 +40,3 @@ export class Channel extends Base<ApiServerChannel> {
 		if ('archivedAt' in json) this.archivedAt = json.archivedAt;
 	}
 }
-
-export { ChannelTypes };

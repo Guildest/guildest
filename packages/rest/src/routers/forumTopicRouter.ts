@@ -6,7 +6,7 @@ import {
 	Endpoints,
 	restForumTopicsQueryParams,
 } from '@guildest/api-typings';
-import type { restManager } from '../restManager';
+import { restManager } from '../restManager';
 
 /**
  * The Forum Topic's Router for the Guilded REST Api.

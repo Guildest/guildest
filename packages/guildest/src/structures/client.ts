@@ -1,4 +1,4 @@
-import type { restOptions } from '@guildest/rest';
+import { restOptions } from '@guildest/rest';
 import { webSocketManager, wsOptions } from '@guildest/ws';
 import EventEmitter from 'events';
 import { gateawayHandler } from '../events/gateawayHandler';

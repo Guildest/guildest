@@ -8,7 +8,7 @@ import {
 	RestWebhookQueryParams,
 	restChannelMessageCreateResolvable,
 } from '@guildest/api-typings';
-import type { restManager } from '../restManager';
+import { restManager } from '../restManager';
 
 /**
  * The Webhook's Router for the Guilded REST Api.

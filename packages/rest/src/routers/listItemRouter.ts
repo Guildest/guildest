@@ -4,7 +4,7 @@ import {
 	ApiListItemSummary,
 	Endpoints,
 } from '@guildest/api-typings';
-import type { restManager } from '../restManager';
+import { restManager } from '../restManager';
 
 /**
  * The List Item's Router for the Guilded REST Api.

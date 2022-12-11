@@ -4,7 +4,7 @@ import {
 	restServerMemberUpdatePayload,
 	Endpoints,
 } from '@guildest/api-typings';
-import type { restManager } from '../restManager';
+import { restManager } from '../restManager';
 
 /**
  * The Server Member Router for the Guilded REST Api.

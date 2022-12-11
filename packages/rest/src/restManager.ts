@@ -1,4 +1,4 @@
-import type { ApiBaseError } from '@guildest/api-typings';
+import { ApiBaseError } from '@guildest/api-typings';
 import { RestApiError } from './apiError';
 import { router } from './utils/router';
 

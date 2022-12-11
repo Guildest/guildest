@@ -1,4 +1,4 @@
-import type { ApiBaseMentions } from './base';
+import { ApiBaseMentions } from './base';
 
 /**
  * Calendar Event Payload for Creation of Update Rest's request
@@ -66,12 +66,12 @@ export interface ApiCalendarEvent extends restCalendarEventPayload {
  * @see https://www.guilded.gg/docs/api/calendarEvents/CalendarEventRsvp
  */
 export enum ApiCalendarEventRsvpStatusType {
-	Going = 'going',
-	Maybe = 'maybe',
-	Decilned = 'declined',
-	Invited = 'invited',
-	Waitlisted = 'waitlisted',
-	NotResponded = 'not responsed',
+	'going',
+	'maybe',
+	'declined',
+	'invited',
+	'waitlisted',
+	'not responsed',
 }
 
 /**
@@ -80,7 +80,7 @@ export enum ApiCalendarEventRsvpStatusType {
  */
 export interface restCalendarEventRsvpPayload {
 	/** Represents the Calendar Event Rsvp Payload Value. */
-	status: ApiCalendarEventRsvpStatusType;
+	status: keyof typeof ApiCalendarEventRsvpStatusType;
 }
 
 /**

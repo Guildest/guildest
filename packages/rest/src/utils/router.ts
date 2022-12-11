@@ -1,4 +1,4 @@
-import type { restManager } from '../restManager';
+import { restManager } from '../restManager';
 import { CalendarEventRouter, CalendarEventRsvpRouter } from '../routers/calenderEventRouter';
 import { ChannelRouter } from '../routers/channelRouter';
 import { DocsRouter } from '../routers/docRouter';

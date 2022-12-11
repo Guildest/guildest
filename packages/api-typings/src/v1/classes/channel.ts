@@ -1,4 +1,4 @@
-import type { ApiBase } from './base';
+import { ApiBase } from './base';
 
 /**
  * Represents Channel Update Payload on Guilded.
@@ -18,16 +18,16 @@ export interface restChannelUpdatePayload {
  * @see https://www.guilded.gg/docs/api/channels/ServerChannel
  */
 export enum ApiChannelType {
-	Announcements = 'announcements',
-	Chat = 'chat',
-	Calendar = 'calendar',
-	Forums = 'forums',
-	Media = 'media',
-	Docs = 'docs',
-	Voice = 'voice',
-	List = 'list',
-	Scheduling = 'scheduling',
-	Stream = 'stream',
+	'announcements',
+	'chat',
+	'calendar',
+	'forums',
+	'media',
+	'docs',
+	'voice',
+	'list',
+	'scheduling',
+	'stream',
 }
 
 /**
@@ -36,7 +36,7 @@ export enum ApiChannelType {
  */
 export interface ApiServerChannel extends ApiBase {
 	/** Server Channel Type on the Guilded API */
-	type: ApiChannelType;
+	type: keyof typeof ApiChannelType;
 	/* The Name of the Channel. */
 	name: string;
 	/* The Topic of the Channel. */
@@ -75,7 +75,7 @@ export interface restCreateChannelPayload extends restChannelUpdatePayload {
 	/* Whether the Channel is Public. */
 	isPublic?: boolean;
 	/*Type of a Channel on Guilded. */
-	type: ApiChannelType;
+	type: keyof typeof ApiChannelType;
 	/* The Server Id of the Server where Channel is located. */
 	serverId?: string;
 	/* The Group Id Group Associated with the Channel. */

@@ -3,7 +3,7 @@ import {
 	restServerMemberBanPayload,
 	Endpoints,
 } from '@guildest/api-typings';
-import type { restManager } from '../restManager';
+import { restManager } from '../restManager';
 
 /**
  * The Server Bans Router for the Guilded REST Api.

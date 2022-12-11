@@ -1,4 +1,4 @@
-import type { Client } from './client';
+import { Client } from './client';
 
 export class Base<T = { id: string }, K = string> {
 	public id: K;

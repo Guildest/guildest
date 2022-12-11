@@ -1,4 +1,4 @@
-import type { ApiBase, ApiBaseMentions } from './base';
+import { ApiBase, ApiBaseMentions } from './base';
 
 /**
  * Represents Server Forums Topic Summary on Guilded.
@@ -40,6 +40,32 @@ export interface ApiForumTopic extends ApiForumTopicSummary {
 	mentions?: ApiBaseMentions;
 }
 
+/* Represents the Resolve for Forum Topic for Guilded Packages. */
+export type ApiForumTopicResolve = ApiForumTopic | ApiForumTopicSummary;
+
+/**
+ * Represents Forums Topic Comment on Guilded.
+ * @see https://www.guilded.gg/docs/api/forumComments/ForumTopicComment
+ */
+export interface ApiForumTopicComment {
+	/* Represent Forum Topic Comment Id string on Guilded Server. */
+	id: string;
+	/* Represent The content of the forum topic comment (min length 1; max length 10000) */
+	content: string;
+	/* Represents The ISO 8601 timestamp that the forum topic comment was created at */
+	createdAt: string;
+	/* Represents The ISO 8601 timestamp that the forum topic comment was Last Updated at */
+	updatedAt?: string;
+	/* Channel Id of the Related Forum Topic of the Server on Guilded. */
+	channelId: string;
+	/* Represents the Forum Topic id where User Commented on Guilded. */
+	forumTopicId: string;
+	/* User ID of the Commenter on Forum Topic on Guilded. */
+	createdBy: string;
+	/* Represent Forum Topic Comment Mentions on Guilded. */
+	mentions?: ApiBaseMentions;
+}
+
 /**
  * Represents Server Forums Topic Update Payload on Guilded.
  * @see https://www.guilded.gg/docs/api/forums/ForumTopicUpdate
@@ -71,4 +97,22 @@ export interface restForumTopicsQueryParams {
 	before?: string;
 	/* Represent The max size of the page (default 25; min 1; max 100) on Guilded. */
 	limit?: number;
+}
+
+/**
+ * Represents Server Forums Topic Comment Create Payload on Forum Topic on Guilded.
+ * @see https://www.guilded.gg/docs/api/forumComments/ForumTopicCommentCreate
+ */
+export interface restForumTopicCommentCreatePayload {
+	/* Represent Forum Topic Comment Title on Guilded. */
+	content: string;
+}
+
+/**
+ * Represents Server Forums Topic Comment Update Payload on Forum Topic on Guilded.
+ * @see https://www.guilded.gg/docs/api/forumComments/ForumTopicCommentUpdate
+ */
+export interface restForumTopicCommentUpdatePayload {
+	/* Represent Forum Topic Comment Title on Guilded. */
+	content: string;
 }

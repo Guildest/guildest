@@ -1,4 +1,4 @@
-import type { ApiServer } from './server';
+import { ApiServer } from './server';
 
 /**
  * Represents Base Class of Guilded Class.
@@ -57,20 +57,20 @@ export interface ApiBaseReaction {
  * Represents User Type on Guilded.
  * @see https://www.guilded.gg/docs/api/members/User
  */
-export enum ApiBaseUserType {
-	Bot = 'bot',
-	User = 'user',
+export enum ApiUserType {
+	bot,
+	user,
 }
 
 /**
  * Represents User Data Summary(LTE) on Guilded.
  * @see https://www.guilded.gg/docs/api/members/UserSummary
  */
-export interface ApiBaseUserSummary extends ApiBase {
+export interface ApiUserSummary extends ApiBase {
 	/* Id of the User as Unique Identifer on Guilded. */
 	id: string;
 	/* Type of the User on Guilded. */
-	type?: ApiBaseUserType;
+	type?: keyof typeof ApiUserType;
 	/* Name/User-Name of User on Guilded. */
 	name: string;
 	/* Avatar as Media-Uri of User on Guilded. */
@@ -81,12 +81,15 @@ export interface ApiBaseUserSummary extends ApiBase {
  * Represents User Complete-Data on Guilded.
  * @see https://www.guilded.gg/docs/api/members/User
  */
-export interface ApiBaseUser extends ApiBaseUserSummary {
+export interface ApiUser extends ApiUserSummary {
 	/* Banner as Media-Uri of User on Guilded. */
 	banner?: string;
 	/* Created At Data/Time ISO-String Value for User Creation on Guilded. */
 	createdAt: string;
 }
+
+/* Represents the Resolve for User for Guilded Packages. */
+export type ApiUserResolve = ApiUser | ApiUserSummary;
 
 /**
  * Represents List Item's Note on Guilded.
@@ -146,7 +149,7 @@ export interface ApiBaseMemberRoleIds {
 }
 
 /** Represents a client user. */
-export interface ApiBaseClientUser extends ApiBaseUser {
+export interface ApiBaseClientUser extends ApiUser {
 	/** The bot ID of the client user. */
 	botId: string;
 	/** The ID of the user that created the client user. */

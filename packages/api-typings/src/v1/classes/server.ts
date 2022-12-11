@@ -1,18 +1,18 @@
-import type { ApiBase, ApiBaseUser, ApiBaseUserSummary } from './base';
+import { ApiBase, ApiUser, ApiUserSummary } from './base';
 
 /**
  * Represents Server Type on Guilded.
  * @see https://www.guilded.gg/docs/api/servers/Server
  */
 export enum ApiServerType {
-	Team = 'team',
-	Organization = 'organization',
-	Community = 'community',
-	Clan = 'clan',
-	Guild = 'guild',
-	Friends = 'friends',
-	Streaming = 'streaming',
-	Other = 'other',
+	'team',
+	'organization',
+	'community',
+	'clan',
+	'guild',
+	'friends',
+	'streaming',
+	'other',
 }
 
 /**
@@ -25,7 +25,7 @@ export interface ApiServer extends ApiBase {
 	/* Represents User Id of the Server Owner or Founder on the Guilded. */
 	ownerId: string;
 	/* Represents User Id of the Server Owner or Founder on the Guilded. */
-	type?: ApiServerType;
+	type?: keyof typeof ApiServerType;
 	/** Represents the Server Name in the Guilded. */
 	name: string;
 	/* Url of the Server Or Vanity Value to make a self Made Url duiring processing */
@@ -52,7 +52,7 @@ export interface ApiServer extends ApiBase {
  */
 export interface ApiServerMemberSummary {
 	/* Represent User Summary of Server Member Model on Guilded. */
-	user: ApiBaseUserSummary;
+	user: ApiUserSummary;
 	/* Array of Roles Ids Associated with Server Member on Guilded. */
 	roleIds: number[];
 }
@@ -63,7 +63,7 @@ export interface ApiServerMemberSummary {
  */
 export interface ApiServerMember extends ApiServerMemberSummary {
 	/* Represent User Data of Server Member Model on Guilded. */
-	user: ApiBaseUser;
+	user: ApiUser;
 	/* Represent NickName of Server Member on Guilded. */
 	nickname?: string;
 	/* Represent Joined At Data/Time ISO-String of Server Member on Guilded. */
@@ -71,6 +71,9 @@ export interface ApiServerMember extends ApiServerMemberSummary {
 	/* If User/Member is Server Owner on Guilded. */
 	isOwner?: boolean;
 }
+
+/* Represents the Resolve for Server Member for Guilded Packages. */
+export type ApiServerMemberResolve = ApiServerMember | ApiServerMemberSummary;
 
 /**
  * Represents Server Member Update/Edit Payload on Guilded.
@@ -96,7 +99,7 @@ export interface restServerMemberBanPayload {
  */
 export interface ApiServerMemberBan extends restServerMemberBanPayload {
 	/* Represent User Data of Server Member Ban Model on Guilded. */
-	user: ApiBaseUserSummary;
+	user: ApiUserSummary;
 	/* Represent Created By User Id of Server Member Ban Request/Payload on Guilded. */
 	createdBy: string;
 	/* Represent Created At Data/Time ISO-String of Server Member Ban Request/Payload on Guilded. */
