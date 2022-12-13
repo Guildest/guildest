@@ -5,7 +5,7 @@ import { ApiBase, ApiUser, ApiUserSummary } from './base';
  * @see https://www.guilded.gg/docs/api/servers/Server
  */
 export enum ApiServerType {
-	Team = 'team',
+	Server = 'Server',
 	Organization = 'organization',
 	Community = 'community',
 	Clan = 'clan',

@@ -1,7 +1,7 @@
 import { ApiServer } from './server';
 
 /**
- * Represents Base Class of Guilded Class.
+ * Represents Base Class of Most Guilded Class with id property.
  */
 export interface ApiBase {
 	/* The Snowflake uuId or Unique Id of any Identity or Model. */
@@ -133,7 +133,7 @@ export interface ApiBaseServerEvent {
 
 /**
  * Represent the Base User Info on Guilded during Wwbsocket Events
- * @see https://www.guilded.gg/docs/api/websockets/TeamMemberUpdated
+ * @see https://www.guilded.gg/docs/api/websockets/ServerMemberUpdated
  */
 export interface ApiBaseUserInfo extends ApiBase {
 	nickname?: string;
@@ -141,7 +141,7 @@ export interface ApiBaseUserInfo extends ApiBase {
 
 /**
  * Represents the Base Member Roles Ids for Websocket Events
- * @see https://www.guilded.gg/docs/api/websockets/teamRolesUpdated
+ * @see https://www.guilded.gg/docs/api/websockets/ServerRolesUpdated
  */
 export interface ApiBaseMemberRoleIds {
 	userId: string;

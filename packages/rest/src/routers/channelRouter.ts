@@ -1,8 +1,4 @@
-import {
-	restCreateChannelPayload,
-	ApiServerChannel,
-	Endpoints,
-} from '@guildest/api-typings';
+import { restCreateChannelPayload, ApiServerChannel, Endpoints } from '@guildest/api-typings';
 import { restManager } from '../restManager';
 
 /**

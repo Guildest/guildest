@@ -1,5 +1,7 @@
 import { ApiBaseClientUser } from './classes/base';
 import {
+	eventBotServerMembershipCreated,
+	eventBotServerMembershipDeleted,
 	eventCalendarEventCreated,
 	eventCalendarEventDeleted,
 	eventCalendarEventRsvpDeleted,
@@ -26,17 +28,17 @@ import {
 	eventListItemDeleted,
 	eventListItemUnCompleted,
 	eventListItemUpdated,
-	eventTeamChannelCreated,
-	eventTeamChannelDeleted,
-	eventTeamChannelUpdated,
-	eventTeamMemberBanned,
-	eventTeamMemberJoined,
-	eventTeamMemberRemoved,
-	eventTeamMemberUnBanned,
-	eventTeamMemberUpdated,
-	eventTeamRolesUpdated,
-	eventTeamWebhookCreated,
-	eventTeamWebhookUpdated,
+	eventServerChannelCreated,
+	eventServerChannelDeleted,
+	eventServerChannelUpdated,
+	eventServerMemberBanned,
+	eventServerMemberJoined,
+	eventServerMemberRemoved,
+	eventServerMemberUnBanned,
+	eventServerMemberUpdated,
+	eventServerRolesUpdated,
+	eventServerWebhookCreated,
+	eventServerWebhookUpdated,
 } from './classes/events';
 
 /** The ready payload of the websocket. */
@@ -74,20 +76,22 @@ export interface wsMessagePayload {
  * @see https://www.guilded.gg/docs/api/websockets
  */
 export interface wsEvents {
+	BotServerMembershipCreated: eventBotServerMembershipCreated;
+	BotServerMembershipDeleted: eventBotServerMembershipDeleted;
 	ChatMessageCreated: eventChatMessageCreated;
 	ChatMessageUpdated: eventChatMessageUpdated;
 	ChatMessageDeleted: eventChatMessageDeleted;
-	TeamMemberJoined: eventTeamMemberJoined;
-	TeamMemberRemoved: eventTeamMemberRemoved;
-	TeamMemberBanned: eventTeamMemberBanned;
-	TeamMemberUnbanned: eventTeamMemberUnBanned;
-	TeamMemberUpdated: eventTeamMemberUpdated;
-	TeamRolesUpdated: eventTeamRolesUpdated;
-	TeamChannelCreated: eventTeamChannelCreated;
-	TeamChannelUpdated: eventTeamChannelUpdated;
-	TeamChannelDeleted: eventTeamChannelDeleted;
-	TeamWebhookCreated: eventTeamWebhookCreated;
-	TeamWebhookUpdated: eventTeamWebhookUpdated;
+	ServerMemberJoined: eventServerMemberJoined;
+	ServerMemberRemoved: eventServerMemberRemoved;
+	ServerMemberBanned: eventServerMemberBanned;
+	ServerMemberUnbanned: eventServerMemberUnBanned;
+	ServerMemberUpdated: eventServerMemberUpdated;
+	ServerRolesUpdated: eventServerRolesUpdated;
+	ServerChannelCreated: eventServerChannelCreated;
+	ServerChannelUpdated: eventServerChannelUpdated;
+	ServerChannelDeleted: eventServerChannelDeleted;
+	ServerWebhookCreated: eventServerWebhookCreated;
+	ServerWebhookUpdated: eventServerWebhookUpdated;
 	DocCreated: eventDocCreated;
 	DocUpdated: eventDocUpdated;
 	DocDeleted: eventDocDeleted;

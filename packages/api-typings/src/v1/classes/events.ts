@@ -33,6 +33,15 @@ export interface wsMessageDelete extends ApiBase {
 }
 
 /**
+ * Represents Event When Bot Membership Deleted in Server by someone.
+ * @see https://www.guilded.gg/docs/api/websockets/BotServerMembershipDeleted
+ */
+export interface eventBotServerMembershipDeleted extends ApiBaseBotServerEvent {
+	/** Deleted By User Id for the Bot Membership. */
+	deletedBy: string;
+}
+
+/**
  * Represents Event When Bot Membership Created in Server by someone.
  * @see https://www.guilded.gg/docs/api/websockets/BotServerMembershipCreated
  */
@@ -41,14 +50,6 @@ export interface eventBotServerMembershipCreated extends ApiBaseBotServerEvent {
 	createdBy: string;
 }
 
-/**
- * Represents Event When Bot Membership Deleted in Server by someone.
- * @see https://www.guilded.gg/docs/api/websockets/BotServerMembershipDeleted
- */
-export interface eventBotServerMembershipCreated extends ApiBaseBotServerEvent {
-	/** Deleted By User Id for the Bot Membership. */
-	deletedBy: string;
-}
 /**
  * Represents Event When Message is Created.
  * @see https://www.guilded.gg/docs/api/websockets/ChatMessageCreated
@@ -77,20 +78,20 @@ export interface eventChatMessageDeleted extends ApiBaseServerEvent {
 }
 
 /**
- * Represents Event When Team Member Join.
- * @see https://www.guilded.gg/docs/api/websockets/TeamMemberJoined
+ * Represents Event When Server Member Join.
+ * @see https://www.guilded.gg/docs/api/websockets/ServerMemberJoined
  */
-export interface eventTeamMemberJoined extends ApiBaseServerEvent {
-	/** Team Member Data/Object along with the Event Trigger */
+export interface eventServerMemberJoined extends ApiBaseServerEvent {
+	/** Server Member Data/Object along with the Event Trigger */
 	member: ApiServerMember;
 }
 
 /**
- * Represents Event When Team Member Removed/Left.
- * @see https://www.guilded.gg/docs/api/websockets/TeamMemberRemoved
+ * Represents Event When Server Member Removed/Left.
+ * @see https://www.guilded.gg/docs/api/websockets/ServerMemberRemoved
  */
-export interface eventTeamMemberRemoved extends ApiBaseServerEvent {
-	/** User Id of the Team Member Removed along with the Event Trigger */
+export interface eventServerMemberRemoved extends ApiBaseServerEvent {
+	/** User Id of the Server Member Removed along with the Event Trigger */
 	userId: string;
 	/** If its got Kicked whemn along side of Member Removed */
 	isKick?: boolean;
@@ -99,82 +100,82 @@ export interface eventTeamMemberRemoved extends ApiBaseServerEvent {
 }
 
 /**
- * Represents Event When Team Member Banned.
- * @see https://www.guilded.gg/docs/api/websockets/TeamMemberBanned
+ * Represents Event When Server Member Banned.
+ * @see https://www.guilded.gg/docs/api/websockets/ServerMemberBanned
  */
-export interface eventTeamMemberBanned extends ApiBaseServerEvent {
+export interface eventServerMemberBanned extends ApiBaseServerEvent {
 	/** Server Member Ban Information */
 	serverMemberBan: ApiServerMemberBan;
 }
 
 /**
- * Represents Event When Team Member Unbanned.
- * @see https://www.guilded.gg/docs/api/websockets/TeamMemberUnBanned
+ * Represents Event When Server Member Unbanned.
+ * @see https://www.guilded.gg/docs/api/websockets/ServerMemberUnBanned
  */
-export interface eventTeamMemberUnBanned extends ApiBaseServerEvent {
+export interface eventServerMemberUnBanned extends ApiBaseServerEvent {
 	/** Server Member Ban Information */
 	serverMemberBan: ApiServerMemberBan;
 }
 
 /**
- * Represents Event When Team Member Updated.
- * @see https://www.guilded.gg/docs/api/websockets/TeamMemberUpdated
+ * Represents Event When Server Member Updated.
+ * @see https://www.guilded.gg/docs/api/websockets/ServerMemberUpdated
  */
-export interface eventTeamMemberUpdated extends ApiBaseServerEvent {
+export interface eventServerMemberUpdated extends ApiBaseServerEvent {
 	/** Base User Info on Event Triger. */
 	userInfo: ApiBaseUserInfo;
 }
 
 /**
- * Represents Event When Array of Team Member Roles Updated.
- * @see https://www.guilded.gg/docs/api/websockets/TeamRolesUpdated
+ * Represents Event When Array of Server Member Roles Updated.
+ * @see https://www.guilded.gg/docs/api/websockets/ServerRolesUpdated
  */
-export interface eventTeamRolesUpdated extends ApiBaseServerEvent {
+export interface eventServerRolesUpdated extends ApiBaseServerEvent {
 	/** Represents the Array of Member Role Ids associated with Member */
 	memberRoleIds: Array<ApiBaseMemberRoleIds>;
 }
 
 /**
  * Represents Event When Server Channel has been Created in Server.
- * @see https://www.guilded.gg/docs/api/websockets/TeamChannelCreated
+ * @see https://www.guilded.gg/docs/api/websockets/ServerChannelCreated
  */
-export interface eventTeamChannelCreated extends ApiBaseServerEvent {
+export interface eventServerChannelCreated extends ApiBaseServerEvent {
 	/** Server Channel along side with the Event Trigger. */
 	channel: ApiServerChannel;
 }
 
 /**
  * Represents Event When Server Channel has been Editted/Updated in Server.
- * @see https://www.guilded.gg/docs/api/websockets/TeamChannelUpdated
+ * @see https://www.guilded.gg/docs/api/websockets/ServerChannelUpdated
  */
-export interface eventTeamChannelUpdated extends ApiBaseServerEvent {
+export interface eventServerChannelUpdated extends ApiBaseServerEvent {
 	/** Server Channel along side with the Event Trigger. */
 	channel: ApiServerChannel;
 }
 
 /**
  * Represents Event When Server Channel has been Deleted in Server.
- * @see https://www.guilded.gg/docs/api/websockets/TeamChannelDeleted
+ * @see https://www.guilded.gg/docs/api/websockets/ServerChannelDeleted
  */
-export interface eventTeamChannelDeleted extends ApiBaseServerEvent {
+export interface eventServerChannelDeleted extends ApiBaseServerEvent {
 	/** Server Channel along side with the Event Trigger. */
 	channel: ApiServerChannel;
 }
 
 /**
  * Represents Event When Webhook has been Created in Server.
- * @see https://www.guilded.gg/docs/api/websockets/TeamWebhookCreated
+ * @see https://www.guilded.gg/docs/api/websockets/ServerWebhookCreated
  */
-export interface eventTeamWebhookCreated extends ApiBaseServerEvent {
+export interface eventServerWebhookCreated extends ApiBaseServerEvent {
 	/** Webhook Data/Object on Server. */
 	webhook: ApiWebhook;
 }
 
 /**
  * Represents Event When Webhook has been Updated in Server.
- * @see https://www.guilded.gg/docs/api/websockets/TeamWebhookUpdated
+ * @see https://www.guilded.gg/docs/api/websockets/ServerWebhookUpdated
  */
-export interface eventTeamWebhookUpdated extends ApiBaseServerEvent {
+export interface eventServerWebhookUpdated extends ApiBaseServerEvent {
 	/** Webhook Data/Object on Server. */
 	webhook: ApiWebhook;
 }

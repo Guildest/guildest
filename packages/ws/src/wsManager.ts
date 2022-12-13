@@ -163,7 +163,7 @@ export class webSocketManager {
 	}
 
 	/** @ignore */
-	private onSocketDebug(message: string, name: string = 'LOG'): void {
+	private onSocketDebug(message: string, name = 'LOG'): void {
 		this.emitter.emit('debug', `[${name}] : ${message}`, this);
 	}
 

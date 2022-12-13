@@ -1,9 +1,4 @@
-import {
-	ApiDocs,
-	restDocsPayload,
-	Endpoints,
-	restDocsQueryParams,
-} from '@guildest/api-typings';
+import { ApiDocs, restDocsPayload, Endpoints, restDocsQueryParams } from '@guildest/api-typings';
 import { restManager } from '../restManager';
 
 /**

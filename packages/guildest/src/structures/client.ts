@@ -13,7 +13,7 @@ export class Client extends EventEmitter {
 		super();
 	}
 
-	async connect(token: string = this.token, force: boolean = false) {
+	async connect(token: string = this.token, force = false) {
 		if (force) this.ws = new webSocketManager({ token: token, ...this.option.ws });
 		this.ws.emitter.on('ready', (user) => {
 			this.user = new ClientUser(this, user);

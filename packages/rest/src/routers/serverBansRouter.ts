@@ -1,8 +1,4 @@
-import {
-	ApiServerMemberBan,
-	restServerMemberBanPayload,
-	Endpoints,
-} from '@guildest/api-typings';
+import { ApiServerMemberBan, restServerMemberBanPayload, Endpoints } from '@guildest/api-typings';
 import { restManager } from '../restManager';
 
 /**
