@@ -16,10 +16,17 @@ import {
 	eventDocCreated,
 	eventDocDeleted,
 	eventDocUpdated,
+	eventForumTopicCommentCreated,
+	eventForumTopicCommentDeleted,
+	eventForumTopicCommentReactionCreated,
+	eventForumTopicCommentReactionDeleted,
+	eventForumTopicCommentUpdated,
 	eventForumTopicCreated,
 	eventForumTopicDeleted,
 	eventForumTopicLocked,
 	eventForumTopicPinned,
+	eventForumTopicReactionCreated,
+	eventForumTopicReactionDeleted,
 	eventForumTopicUnLocked,
 	eventForumTopicUnPinned,
 	eventForumTopicUpdated,
@@ -103,8 +110,13 @@ export interface wsEvents {
 	ForumTopicDeleted: eventForumTopicDeleted;
 	ForumTopicPinned: eventForumTopicPinned;
 	ForumTopicUnpinned: eventForumTopicUnPinned;
+	ForumTopicReactionCreated: eventForumTopicReactionCreated;
+	ForumTopicReactionDeleted: eventForumTopicReactionDeleted;
 	ForumTopicLocked: eventForumTopicLocked;
 	ForumTopicUnlocked: eventForumTopicUnLocked;
+	ForumTopicCommentCreated: eventForumTopicCommentCreated;
+	ForumTopicCommentUpdated: eventForumTopicCommentUpdated;
+	ForumTopicCommentDeleted: eventForumTopicCommentDeleted;
 	CalendarEventRsvpUpdated: eventCalendarEventRsvpUpdated;
 	CalendarEventRsvpManyUpdated: eventCalendarEventRsvpManyUpdated;
 	CalendarEventRsvpDeleted: eventCalendarEventRsvpDeleted;
@@ -115,4 +127,6 @@ export interface wsEvents {
 	ListItemUncompleted: eventListItemUnCompleted;
 	ChannelMessageReactionCreated: eventChannelMessageReactionCreated;
 	ChannelMessageReactionDeleted: eventChannelMessageReactionDeleted;
+	ForumTopicCommentReactionCreated: eventForumTopicCommentReactionCreated;
+	ForumTopicCommentReactionDeleted: eventForumTopicCommentReactionDeleted;
 }

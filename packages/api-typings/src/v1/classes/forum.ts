@@ -1,4 +1,4 @@
-import { ApiBase, ApiBaseMentions } from './base';
+import { ApiBase, ApiBaseMentions, ApiBaseReaction } from './base';
 
 /**
  * Represents Server Forums Topic Summary on Guilded.
@@ -38,6 +38,26 @@ export interface ApiForumTopic extends ApiForumTopicSummary {
 	content: string;
 	/* Represent Forum Topic Mentions on Guilded. */
 	mentions?: ApiBaseMentions;
+}
+
+/**
+ * Rresents the Forum Topic Reaction Event Data .
+ * @see https://www.guilded.gg/docs/api/websockets/ForumTopicReactionCreated
+ * @see https://www.guilded.gg/docs/api/websockets/ForumTopicReactionDeleted
+ */
+export interface ApiForumTopicReaction extends Exclude<ApiBaseReaction, 'messageId'> {
+	/* Forum Topic Id Value of the Related Forum Topic on Guilded.  */
+	forumTopicId: string;
+}
+
+/**
+ * Rresents the Forum Topic Comment Reaction Event Data .
+ * @see https://www.guilded.gg/docs/api/websockets/ForumTopicCommentReactionCreated
+ * @see https://www.guilded.gg/docs/api/websockets/ForumTopicCommentReactionDeleted
+ */
+export interface ApiForumTopicCommentReaction extends ApiForumTopicReaction {
+	/** Represents the Forum Topic Comment Id on Forum Topic on Guilded. */
+	forumTopicCommentId: string;
 }
 
 /* Represents the Resolve for Forum Topic for Guilded Packages. */

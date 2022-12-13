@@ -10,7 +10,12 @@ import { ApiCalendarEvent, ApiCalendarEventRsvp } from './calendarEvents';
 import { ApiServerChannel } from './channel';
 import { ApiMessage } from './chat';
 import { ApiDocs } from './docs';
-import { ApiForumTopic } from './forum';
+import {
+	ApiForumTopic,
+	ApiForumTopicComment,
+	ApiForumTopicCommentReaction,
+	ApiForumTopicReaction,
+} from './forum';
 import { ApiListItem } from './list';
 import { ApiServerMember, ApiServerMemberBan } from './server';
 import { ApiWebhook } from './webhook';
@@ -280,6 +285,24 @@ export interface eventForumTopicUnPinned extends ApiBaseServerEvent {
 }
 
 /**
+ * Represents Event When User React on Forum Topic in Server.
+ * @see https://www.guilded.gg/docs/api/websockets/ForumTopicReactionCreated
+ */
+export interface eventForumTopicReactionCreated extends ApiBaseServerEvent {
+	/* Forum Topic Reaction Value on Forum Topic after Creation. */
+	reaction: ApiForumTopicReaction;
+}
+
+/**
+ * Represents Event When User Un-React / Remove Reaction from Forum Topic in Server.
+ * @see https://www.guilded.gg/docs/api/websockets/ForumTopicReactionDeleted
+ */
+export interface eventForumTopicReactionDeleted extends ApiBaseServerEvent {
+	/* Forum Topic Reaction Value on Forum Topic after Deletion. */
+	reaction: ApiForumTopicReaction;
+}
+
+/**
  * Represents Event When Forum Topic has been Locked in Server.
  * @see https://www.guilded.gg/docs/api/websockets/ForumTopicUnPinned
  */
@@ -295,6 +318,51 @@ export interface eventForumTopicLocked extends ApiBaseServerEvent {
 export interface eventForumTopicUnLocked extends ApiBaseServerEvent {
 	/** Represent the Forum Topic Object/Data/Model along with Event Trigger. */
 	forumTopic: ApiForumTopic;
+}
+
+/**
+ * Represents Event When Forum Topic Comment has been Created on Forum Topic in Server.
+ * @see https://www.guilded.gg/docs/api/websockets/ForumTopicCommentCreated
+ */
+export interface eventForumTopicCommentCreated extends ApiBaseServerEvent {
+	/** Forum Topic Comment Structure from Forum Topic on Guilded. */
+	forumTopicComment: ApiForumTopicComment;
+}
+
+/**
+ * Represents Event When Forum Topic Comment has been Updated on Forum Topic in Server.
+ * @see https://www.guilded.gg/docs/api/websockets/ForumTopicCommentUpdated
+ */
+export interface eventForumTopicCommentUpdated extends ApiBaseServerEvent {
+	/** Forum Topic Comment Structure from Forum Topic on Guilded. */
+	forumTopicComment: ApiForumTopicComment;
+}
+
+/**
+ * Represents Event When Forum Topic Comment has been Deleted on Forum Topic in Server.
+ * @see https://www.guilded.gg/docs/api/websockets/ForumTopicCommentDeleted
+ */
+export interface eventForumTopicCommentDeleted extends ApiBaseServerEvent {
+	/** Forum Topic Comment Structure from Forum Topic on Guilded. */
+	forumTopicComment: ApiForumTopicComment;
+}
+
+/**
+ * Represents Event When Forum Topic Comment Reaction has been Created on Forum Topic Comment in Server.
+ * @see https://www.guilded.gg/docs/api/websockets/ForumTopicCommentReactionCreated
+ */
+export interface eventForumTopicCommentReactionCreated extends ApiBaseServerEvent {
+	/** Reaction Structure from the Event on the Forum Topic Comment */
+	reaction: ApiForumTopicCommentReaction;
+}
+
+/**
+ * Represents Event When Forum Topic Comment Reaction has been Deleted on Forum Topic Comment in Server.
+ * @see https://www.guilded.gg/docs/api/websockets/ForumTopicCommentReactionDeleted
+ */
+export interface eventForumTopicCommentReactionDeleted extends ApiBaseServerEvent {
+	/** Reaction Structure from the Event on the Forum Topic Comment */
+	reaction: ApiForumTopicCommentReaction;
 }
 
 /**

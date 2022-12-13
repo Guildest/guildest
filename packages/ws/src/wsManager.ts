@@ -185,7 +185,7 @@ export class webSocketManager {
 		switch (op) {
 			case wsOpGatawayCode.Event:
 				if (!this.options.skipOptions?.internalEvents)
-					this.emitter.emit('gateaway', t as any, d);
+					this.emitter.emit('gateaway', t as string, d);
 				break;
 			case wsOpGatawayCode.Ready:
 				this.readyAt = Date.now();
@@ -278,7 +278,7 @@ export type wsManagerEvents = {
 	/** Unknown Response from  */
 	unknown: (message: string, data: Record<string, any>, ws: webSocketManager) => unknown;
 	/** Custom Event on Websocket's socket Message Payload. */
-	gateaway: <Event extends keyof wsEvents>(event: Event, metadta: wsEvents[Event]) => void;
+	gateaway: <Event extends keyof wsEvents>(event: string, metadta: wsEvents[Event]) => void;
 	/** Debug Response on Web-Socket Working and Routing in the Manager. */
 	debug: (message: string, ws: webSocketManager) => void;
 	/** Raw Message Payload from API Web-Socket Manager. */

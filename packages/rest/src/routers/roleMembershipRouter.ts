@@ -48,7 +48,7 @@ export class RoleMembershipRouter {
 	 */
 
 	async fetch(serverId: string, memberId: string): Promise<ApiServerMemberManyFetchRoles> {
-		return await this.rest.put<ApiServerMemberManyFetchRoles>(
+		return await this.rest.get<ApiServerMemberManyFetchRoles>(
 			Endpoints.serverMemberRoles(serverId, memberId),
 		);
 	}
