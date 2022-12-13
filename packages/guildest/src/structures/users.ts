@@ -4,7 +4,7 @@ import { Base } from './base';
 import { Client } from './client';
 
 export class User extends Base<ApiUserResolve> {
-	readonly type: UserType;
+	readonly type: ApiUserType;
 	name?: string;
 	avatar?: string;
 	createdAt?: number;
@@ -12,12 +12,12 @@ export class User extends Base<ApiUserResolve> {
 
 	constructor(client: Client, json: ApiUserResolve) {
 		super(client, json);
-		this.type = json.type ?? 'user';
+		this.type = json.type ?? ApiUserType.User;
 		this.__update(json);
 	}
 
 	get bot() {
-		return this.type === 'bot';
+		return this.type === ApiUserType.Bot;
 	}
 
 	__update(json: Partial<ApiUserResolve>) {
@@ -29,8 +29,8 @@ export class User extends Base<ApiUserResolve> {
 }
 export class ClientUser extends User {
 	constructor(client: Client, data: ApiBaseClientUser) {
-		super(client, { ...data, type: 'bot' });
+		super(client, { ...data, type: ApiUserType.Bot });
 	}
 }
 
-export type UserType = keyof typeof ApiUserType;
+export { ApiUserType as UserTypes } from '@guildest/api-typings';

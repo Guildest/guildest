@@ -58,8 +58,8 @@ export interface ApiBaseReaction {
  * @see https://www.guilded.gg/docs/api/members/User
  */
 export enum ApiUserType {
-	bot,
-	user,
+	Bot = 'bot',
+	User = 'user',
 }
 
 /**
@@ -70,7 +70,7 @@ export interface ApiUserSummary extends ApiBase {
 	/* Id of the User as Unique Identifer on Guilded. */
 	id: string;
 	/* Type of the User on Guilded. */
-	type?: keyof typeof ApiUserType;
+	type?: ApiUserType;
 	/* Name/User-Name of User on Guilded. */
 	name: string;
 	/* Avatar as Media-Uri of User on Guilded. */

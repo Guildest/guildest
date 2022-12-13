@@ -4,7 +4,7 @@ import { Base } from './base';
 import { Client } from './client';
 
 export class Channel extends Base<ApiServerChannel> {
-	type: keyof typeof ApiChannelType;
+	type: ApiChannelType;
 	name: string;
 	topic?: string;
 	createdAt: number;
@@ -40,3 +40,5 @@ export class Channel extends Base<ApiServerChannel> {
 		if ('archivedAt' in json) this.archivedAt = json.archivedAt;
 	}
 }
+
+export { ApiChannelType as ChannelTypes } from '@guildest/api-typings';

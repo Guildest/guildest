@@ -4,7 +4,7 @@ import { Base } from './base';
 import { Client } from './client';
 
 export class Message extends Base<ApiMessage> {
-	type: MessageType;
+	type: ApiMessageType;
 	serverId?: string;
 	channelId: string;
 	content?: string;
@@ -39,4 +39,4 @@ export class Message extends Base<ApiMessage> {
 	}
 }
 
-export type MessageType = keyof typeof ApiMessageType;
+export { ApiMessageType as MessageTypes } from '@guildest/api-typings';

@@ -66,12 +66,12 @@ export interface ApiCalendarEvent extends restCalendarEventPayload {
  * @see https://www.guilded.gg/docs/api/calendarEvents/CalendarEventRsvp
  */
 export enum ApiCalendarEventRsvpStatusType {
-	'going',
-	'maybe',
-	'declined',
-	'invited',
-	'waitlisted',
-	'not responsed',
+	Going = 'going',
+	Maybe = 'maybe',
+	Declined = 'declined',
+	Invited = 'invited',
+	Waitlisted = 'waitlisted',
+	Not_Responded = 'not responded',
 }
 
 /**
@@ -80,7 +80,7 @@ export enum ApiCalendarEventRsvpStatusType {
  */
 export interface restCalendarEventRsvpPayload {
 	/** Represents the Calendar Event Rsvp Payload Value. */
-	status: keyof typeof ApiCalendarEventRsvpStatusType;
+	status: ApiCalendarEventRsvpStatusType;
 }
 
 /**

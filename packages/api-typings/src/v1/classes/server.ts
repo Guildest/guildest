@@ -5,14 +5,14 @@ import { ApiBase, ApiUser, ApiUserSummary } from './base';
  * @see https://www.guilded.gg/docs/api/servers/Server
  */
 export enum ApiServerType {
-	'team',
-	'organization',
-	'community',
-	'clan',
-	'guild',
-	'friends',
-	'streaming',
-	'other',
+	Team = 'team',
+	Organization = 'organization',
+	Community = 'community',
+	Clan = 'clan',
+	Guild = 'guild',
+	Friends = 'friends',
+	Streaming = 'streaming',
+	Other = 'other',
 }
 
 /**
@@ -25,7 +25,7 @@ export interface ApiServer extends ApiBase {
 	/* Represents User Id of the Server Owner or Founder on the Guilded. */
 	ownerId: string;
 	/* Represents User Id of the Server Owner or Founder on the Guilded. */
-	type?: keyof typeof ApiServerType;
+	type?: ApiServerType;
 	/** Represents the Server Name in the Guilded. */
 	name: string;
 	/* Url of the Server Or Vanity Value to make a self Made Url duiring processing */

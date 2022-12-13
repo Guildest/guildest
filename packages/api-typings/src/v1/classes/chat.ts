@@ -5,8 +5,8 @@ import { ApiBase, ApiBaseMentions } from './base';
  * @see https://www.guilded.gg/docs/api/chat/ChatMessage
  */
 export enum ApiMessageType {
-	'default',
-	'system',
+	Default = 'default',
+	System = 'system',
 }
 
 /**
@@ -17,7 +17,7 @@ export interface ApiMessage extends ApiBase {
 	/* The Channel Id of the Server where Chat Message is present in string. */
 	channelId: string;
 	/* Represent Type of the Message on Guilded. */
-	type: keyof typeof ApiMessageType;
+	type: ApiMessageType;
 	/* The Server Id of the Server where Chat Message is present in string. */
 	serverId: string;
 	/* Represent the String Value as Normal Text Payload on Guilded in Message. */

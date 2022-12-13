@@ -3,7 +3,6 @@ import {
 	ApiServerMemberBan,
 	ApiServerMember,
 	ApiServerType,
-	ApiUserType,
 	ApiUserResolve,
 } from '@guildest/api-typings';
 import { Base } from './base';
@@ -12,7 +11,7 @@ import { User } from './users';
 
 export class Server extends Base<ApiServer> {
 	readonly ownerId: string;
-	type?: ServerType;
+	type?: ApiServerType;
 	name: string;
 	uri?: string;
 	about?: string;
@@ -61,16 +60,8 @@ export class Member extends Base<ApiServerMember> {
 		this.__update(json);
 	}
 
-	get username() {
+	get name() {
 		return this.user.name;
-	}
-
-	get type(): keyof typeof ApiUserType {
-		return this.user.type;
-	}
-
-	get bot() {
-		return this.user.bot;
 	}
 
 	__update(json: Partial<ApiServerMember>) {
@@ -100,4 +91,4 @@ export class MemberBan extends Base<ApiServerMemberBan> {
 	}
 }
 
-export type ServerType = keyof typeof ApiServerType;
+export { ApiServerType as ServerTypes } from '@guildest/api-typings';

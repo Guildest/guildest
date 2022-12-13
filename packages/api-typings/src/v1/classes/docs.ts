@@ -17,7 +17,7 @@ export interface restDocsPayload {
  */
 export interface ApiDocs extends restDocsPayload {
 	/** Unique Id of the Docs on Guilded. */
-	id: string;
+	id: number;
 	/** Represents the Associated Server Id of the Docs on Guilded. */
 	serverId: string;
 	/** Represents the Associated Channel Id of the Docs on Guilded. */
