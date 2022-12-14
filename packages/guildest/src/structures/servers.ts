@@ -1,11 +1,12 @@
 import {
 	ApiServer,
 	ApiServerMemberBan,
-	ApiServerMember,
 	ApiServerType,
 	ApiUserResolve,
+	ApiServerMemberResolve,
 } from '@guildest/api-typings';
 import { Collection } from '@guildest/collection';
+import { DateParse } from '../utils/basicUtils';
 import { Base } from './base';
 import { Client } from './client';
 import { User } from './users';
@@ -16,6 +17,7 @@ export class Server extends Base<ApiServer> {
 	name: string;
 	uri?: string;
 	members = new Collection<string, Member>();
+	bans = new Collection<string, MemberBan>();
 	about?: string;
 	avatar?: string;
 	banner?: string;
@@ -47,18 +49,17 @@ export class Server extends Base<ApiServer> {
 	}
 }
 
-export class Member extends Base<ApiServerMember> {
+export class Member extends Base<ApiServerMemberResolve> {
 	user: User;
 	roleIds?: number[];
 	nickname?: string;
-	joinedAt: number;
+	joinedAt?: number;
 	isOwner: boolean | null = null;
 
-	constructor(client: Client, json: ApiServerMember) {
+	constructor(client: Client, json: ApiServerMemberResolve) {
 		super(client, { ...json, id: json.user.id });
 		this.user = new User(this.client, json.user);
 		this.roleIds = json.roleIds;
-		this.joinedAt = Date.parse(json.joinedAt);
 		this.__update(json);
 	}
 
@@ -66,7 +67,8 @@ export class Member extends Base<ApiServerMember> {
 		return this.user.name;
 	}
 
-	__update(json: Partial<ApiServerMember>) {
+	__update(json: Partial<ApiServerMemberResolve>) {
+		if ('joinedAt' in json) this.joinedAt = DateParse(json.joinedAt);
 		if ('roleIds' in json) this.roleIds = json.roleIds;
 		if ('nickname' in json) this.nickname = json.nickname;
 		if ('isOwner' in json) this.isOwner = json.isOwner ?? false;

@@ -1,9 +1,9 @@
-import { ApiBaseMentions, ApiForumTopic, ApiForumTopicComment } from '@guildest/api-typings';
+import { ApiBaseMentions, ApiForumTopicComment, ApiForumTopicResolve } from '@guildest/api-typings';
 import { DateParse } from '../utils/basicUtils';
 import { Base } from './base';
 import { Client } from './client';
 
-export class ForumTopic extends Base<ApiForumTopic> {
+export class ForumTopic extends Base<ApiForumTopicResolve> {
 	serverId: string;
 	channelId: string;
 	title: string;
@@ -16,7 +16,7 @@ export class ForumTopic extends Base<ApiForumTopic> {
 	isLocked?: boolean;
 	content?: string;
 	mentions?: ApiBaseMentions;
-	constructor(client: Client, json: ApiForumTopic) {
+	constructor(client: Client, json: ApiForumTopicResolve) {
 		super(client, json);
 		this.serverId = json.serverId;
 		this.channelId = json.channelId;
@@ -25,7 +25,7 @@ export class ForumTopic extends Base<ApiForumTopic> {
 		this.createdBy = json.createdBy;
 	}
 
-	__update(json: Partial<ApiForumTopic>) {
+	__update(json: Partial<ApiForumTopicResolve>) {
 		if ('createdByWebhookId' in json) this.createdByWebhookId = json.createdByWebhookId;
 		if ('updatedAt' in json) this.updatedAt = DateParse(json.updatedAt);
 		if ('bumpedAt' in json) this.bumpedAt = DateParse(json.bumpedAt);

@@ -1,9 +1,11 @@
 import {
 	ChannelRouter,
+	ForumTopicRouter,
 	MemberRouter,
 	MessageRouter,
 	restManager,
 	restOptions,
+	ServerBansRouter,
 	ServerRouter,
 } from '@guildest/rest';
 import { webSocketManager, wsOptions } from '@guildest/ws';
@@ -13,17 +15,16 @@ import {
 	restUpdateChannelPayload,
 	restCreateChannelPayload,
 	restChannelMessageCreatePayload,
-	ApiMessage,
 	restChannelMessageEditPayload,
-	restServerMemberUpdatePayload,
-	restServerMemberUpdateResponse,
-	ApiServerMember,
+	restForumTopicCreatePayload,
+	restForumTopicsQueryParams,
 } from '@guildest/api-typings';
 import { ClientUser, User } from './users';
 import { gateawayHandler } from '../handlers/gateaway';
 import { Channel } from './channels';
-import { Server, Member } from './servers';
+import { Server, Member, MemberBan } from './servers';
 import { Message } from './messages';
+import { ForumTopic } from './forums';
 
 export class Client extends EventEmitter {
 	user?: ClientUser;
@@ -33,17 +34,15 @@ export class Client extends EventEmitter {
 	rest: restManager = new restManager({ token: this.token, ...this.option.rest });
 	gateawayHandler: gateawayHandler = new gateawayHandler(this);
 
-	collections = {
-		channel: new Collection<string, Channel>(),
-		server: new Collection<string, Server>(),
-		users: new Collection<string, User>(),
-	};
+	__collections = new Collection<string, User | Channel | Server>();
 
 	router = {
 		servers: new ServerRouter(this.rest),
 		channels: new ChannelRouter(this.rest),
 		messages: new MessageRouter(this.rest),
 		members: new MemberRouter(this.rest),
+		bans: new ServerBansRouter(this.rest),
+		forumTopics: new ForumTopicRouter(this.rest),
 	};
 
 	constructor(readonly token: string, public readonly option: ClientOption) {
@@ -62,29 +61,13 @@ export class Client extends EventEmitter {
 	}
 
 	getChannel(channelId: string): Channel | undefined {
-		if (channelId && this.collections.channel.has(channelId))
-			return this.collections.channel.get(channelId);
+		if (channelId && this.__collections.has(channelId))
+			return this.__collections.get(channelId) as Channel;
 		else return undefined;
 	}
 
-	async createRESTChannel(
-		payload: restCreateChannelPayload,
-		cache: boolean = true,
-	): Promise<Channel> {
-		let channel = await this.router.channels
-			.create(payload)
-			.then((res) => new Channel(this, res))
-			.catch((err) => {
-				this.emit('error', err);
-				this.emit('restError', err);
-				throw err;
-			});
-		if (cache && channel.id) this.collections.channel.add(channel.id, channel, true);
-		return channel;
-	}
-
-	async getRESTChannel(channelId: string, cache: boolean = true): Promise<Channel> {
-		let channel = await this.router.channels
+	async getRESTChannel(channelId: string, cache = true): Promise<Channel> {
+		const channel = await this.router.channels
 			.fetch(channelId)
 			.then((res) => new Channel(this, res))
 			.catch((err) => {
@@ -92,16 +75,23 @@ export class Client extends EventEmitter {
 				this.emit('restError', err);
 				throw err;
 			});
-		if (cache) this.collections.channel.add(channelId, channel, true);
+		if (cache) this.__collections.add(channelId, channel, true);
 		return channel;
 	}
 
-	async editRESTChannel(
-		channelId: string,
-		payload: restUpdateChannelPayload,
-		cache: boolean = true,
-	): Promise<Channel> {
-		let channel = await this.router.channels
+	async createRESTChannel(payload: restCreateChannelPayload): Promise<Channel> {
+		return await this.router.channels
+			.create(payload)
+			.then((res) => new Channel(this, res))
+			.catch((err) => {
+				this.emit('error', err);
+				this.emit('restError', err);
+				throw err;
+			});
+	}
+
+	async editRESTChannel(channelId: string, payload: restUpdateChannelPayload): Promise<Channel> {
+		return await this.router.channels
 			.update(channelId, payload)
 			.then((res) => new Channel(this, res))
 			.catch((err) => {
@@ -109,14 +99,12 @@ export class Client extends EventEmitter {
 				this.emit('restError', err);
 				throw err;
 			});
-		if (cache) this.collections.channel.add(channelId, channel, true);
-		return channel;
 	}
 
-	async deleteRESTChannel(channelId: string): Promise<Boolean> {
+	async deleteRESTChannel(channelId: string): Promise<boolean> {
 		return await this.router.channels
 			.delete(channelId)
-			.then(() => this.collections.channel.delete(channelId))
+			.then(() => this.__collections.delete(channelId))
 			.then(() => true)
 			.catch((err) => {
 				this.emit('error', err);
@@ -126,13 +114,13 @@ export class Client extends EventEmitter {
 	}
 
 	getServer(serverId: string): Server | undefined {
-		if (serverId && this.collections.server.has(serverId))
-			return this.collections.server.get(serverId);
+		if (serverId && this.__collections.has(serverId))
+			return this.__collections.get(serverId) as Server;
 		else return undefined;
 	}
 
-	async getRESTServer(serverId: string, cache: boolean = true): Promise<Server> {
-		let server = await this.router.servers
+	async getRESTServer(serverId: string, cache = true): Promise<Server> {
+		const server = await this.router.servers
 			.fetch(serverId)
 			.then((res) => new Server(this, res))
 			.catch((err) => {
@@ -140,18 +128,15 @@ export class Client extends EventEmitter {
 				this.emit('restError', err);
 				throw err;
 			});
-		if (cache) this.collections.server.add(serverId, server, true);
+		if (cache) this.__collections.add(serverId, server, true);
 		return server;
 	}
 
 	async createRESTChatMessage(
 		channelId: string,
 		payload: restChannelMessageCreatePayload,
-		cache: boolean = true,
 	): Promise<Message> {
-		let channel = this.getChannel(channelId);
-		if (!channel) channel = await this.getRESTChannel(channelId);
-		let message = await this.router.messages
+		return await this.router.messages
 			.create(channelId, payload)
 			.then((res) => new Message(this, res))
 			.catch((err) => {
@@ -159,15 +144,13 @@ export class Client extends EventEmitter {
 				this.emit('restError', err);
 				throw err;
 			});
-		if (cache && channel) channel.messages.add(message.id, message, true);
-		return message;
 	}
 
-	async getRESTChatMessages(channelId: string, cache: boolean = true): Promise<Array<Message>> {
+	async getRESTChatMessages(channelId: string, cache = true): Promise<Array<Message>> {
 		let channel = this.getChannel(channelId);
 		if (!channel) channel = await this.getRESTChannel(channelId);
-		let messages = await this.router.messages
-			.fetch<Array<ApiMessage>>(channelId)
+		const messages = await this.router.messages
+			.fetchAll(channelId)
 			.then((res) => res.map((msg) => new Message(this, msg)))
 			.catch((err) => {
 				this.emit('error', err);
@@ -178,15 +161,11 @@ export class Client extends EventEmitter {
 		return messages;
 	}
 
-	async getRESTChatMessage(
-		channelId: string,
-		messageId: string,
-		cache: boolean = true,
-	): Promise<Message> {
+	async getRESTChatMessage(channelId: string, messageId: string, cache = true): Promise<Message> {
 		let channel = this.getChannel(channelId);
 		if (!channel) channel = await this.getRESTChannel(channelId);
-		let message = await this.router.messages
-			.fetch<ApiMessage>(channelId, messageId)
+		const message = await this.router.messages
+			.fetch(channelId, messageId)
 			.then((res) => new Message(this, res))
 			.catch((err) => {
 				this.emit('error', err);
@@ -201,11 +180,8 @@ export class Client extends EventEmitter {
 		channelId: string,
 		messageId: string,
 		payload: restChannelMessageEditPayload,
-		cache: boolean = true,
 	): Promise<Message> {
-		let channel = this.getChannel(channelId);
-		if (!channel) channel = await this.getRESTChannel(channelId);
-		let message = await this.router.messages
+		return await this.router.messages
 			.update(channelId, messageId, payload)
 			.then((res) => new Message(this, res))
 			.catch((err) => {
@@ -213,13 +189,10 @@ export class Client extends EventEmitter {
 				this.emit('restError', err);
 				throw err;
 			});
-		if (cache && channel) channel.messages.add(message.id, message, true);
-		return message;
 	}
 
-	async deleteRESTChatMessage(channelId: string, messageId: string): Promise<Boolean> {
-		let channel = this.getChannel(channelId);
-		await this.router.messages
+	async deleteRESTChatMessage(channelId: string, messageId: string): Promise<boolean> {
+		return await this.router.messages
 			.delete(channelId, messageId)
 			.then(() => true)
 			.catch((err) => {
@@ -227,38 +200,149 @@ export class Client extends EventEmitter {
 				this.emit('restError', err);
 				throw err;
 			});
-		if (channel) channel.messages.delete(messageId);
-		return true;
 	}
 
-	getServerMember(serverId: string, userId: string) {
-		let server = this.getServer(serverId);
+	getServerMembers(serverId: string): Collection<string, Member> | undefined {
+		const server = this.getServer(serverId);
+		if (!server) return undefined;
+		else return server.members;
+	}
+
+	getServerMember(serverId: string, userId: string): Member | undefined {
+		const server = this.getServer(serverId);
 		if (!server) return undefined;
 		else if (!(userId && server.members.has(userId))) return undefined;
 		else return server.members.get(userId);
 	}
 
-	async getRESTServerMember(serverId: string, userId: string) {
+	async getRESTServerMembers(serverId: string, cache = true): Promise<Array<Member>> {
 		let server = this.getServer(serverId);
 		if (!server) server = await this.getRESTServer(serverId);
-		let member = await this.router.members
-			.fetch<ApiServerMember>(serverId, userId)
-			.then((res) => new Member(this, res));
+		const members = await this.router.members
+			.fetchAll(serverId)
+			.then((res) => res.map((mem) => new Member(this, mem)))
+			.catch((err) => {
+				this.emit('error', err);
+				this.emit('restError', err);
+				throw err;
+			});
+		if (cache && server) members.map((mem) => server!.members.add(mem.id, mem));
+		return members;
 	}
 
-	async editRESTMemberNickname(
+	async getRESTServerMember(serverId: string, userId: string, cache = true): Promise<Member> {
+		let server = this.getServer(serverId);
+		if (!server) server = await this.getRESTServer(serverId);
+		const member = await this.router.members
+			.fetch(serverId, userId)
+			.then((res) => new Member(this, res))
+			.catch((err) => {
+				this.emit('error', err);
+				this.emit('restError', err);
+				throw err;
+			});
+		if (cache && server) server.members.add(userId, member);
+		return member;
+	}
+
+	async editRESTServerMemberNickname(
 		serverId: string,
 		userId: string,
 		nickname: string,
-		cache: boolean = true,
-	) {
-		let server = this.getServer(serverId);
-		if (!server) server = await this.getRESTServer(serverId);
-		let member = this.getServerMember(serverId, userId);
-		if (!member) member = await this.getRESTServerMember(serverId, userId);
-		let member = await this.router.members
+	): Promise<boolean> {
+		return await this.router.members
 			.update(serverId, userId, { nickname: nickname })
-			.then((res) => res.nickname);
+			.then(() => true)
+			.catch((err) => {
+				this.emit('error', err);
+				this.emit('restError', err);
+				throw err;
+			});
+	}
+
+	async deleteRESTServerMemberNickname(serverId: string, userId: string): Promise<boolean> {
+		return await this.router.members.delete(serverId, userId).catch((err) => {
+			this.emit('error', err);
+			this.emit('restError', err);
+			throw err;
+		});
+	}
+
+	async kickRESTServerMember(serverId: string, userId: string): Promise<boolean> {
+		return await this.router.members
+			.kick(serverId, userId)
+			.then(() => true)
+			.catch((err) => {
+				this.emit('error', err);
+				this.emit('restError', err);
+				throw err;
+			});
+	}
+
+	async createRESTServerMemberBan(
+		serverId: string,
+		userId: string,
+		reason?: string,
+	): Promise<MemberBan> {
+		return await this.router.bans
+			.create(serverId, userId, { reason: reason })
+			.then((res) => new MemberBan(this, res))
+			.catch((err) => {
+				this.emit('error', err);
+				this.emit('restError', err);
+				throw err;
+			});
+	}
+
+	async getRESTServerMemberBan(serverId: string, userId: string): Promise<MemberBan> {
+		return await this.router.bans
+			.fetch(serverId, userId)
+			.then((res) => new MemberBan(this, res))
+			.catch((err) => {
+				this.emit('error', err);
+				this.emit('restError', err);
+				throw err;
+			});
+	}
+
+	async getRESTServerMemberBans(serverId: string): Promise<Array<MemberBan>> {
+		return await this.router.bans
+			.fetchAll(serverId)
+			.then((res) => res.map((ban) => new MemberBan(this, ban)))
+			.catch((err) => {
+				this.emit('error', err);
+				this.emit('restError', err);
+				throw err;
+			});
+	}
+
+	async deleteRESTServerMemberBans(serverId: string, userId: string): Promise<boolean> {
+		return await this.router.bans
+			.delete(serverId, userId)
+			.then(() => true)
+			.catch((err) => {
+				this.emit('error', err);
+				this.emit('restError', err);
+				throw err;
+			});
+	}
+
+	async getRESTForumTopics(
+		channelId: string,
+		query: restForumTopicsQueryParams,
+	): Promise<Array<ForumTopic>> {
+		return await this.router.forumTopics
+			.fetchAll(channelId, query)
+			.then((res) => res.map((fT) => new ForumTopic(this, fT)));
+	}
+
+	async createRESTForumTopic(
+		channelId: string,
+		payload: restForumTopicCreatePayload,
+	): Promise<ForumTopic> {
+		return await this.router.forumTopics
+			.create(channelId, payload)
+			.then((res) => new ForumTopic(this, res));
 	}
 }
 

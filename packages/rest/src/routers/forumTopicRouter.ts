@@ -265,7 +265,7 @@ export class ForumTopicCommentRouter {
 		channelId: string,
 		forumTopicId: string,
 		forumTopicCommentId: string,
-	): Promise<Boolean> {
+	): Promise<boolean> {
 		return await this.rest
 			.delete<void>(
 				Endpoints.forumTopicComment(
