@@ -2,6 +2,7 @@ import {
 	ApiServerMember,
 	ApiServerMemberSummary,
 	restServerMemberUpdatePayload,
+	restServerMemberUpdateResponse,
 	Endpoints,
 } from '@guildest/api-typings';
 import { restManager } from '../restManager';
@@ -27,8 +28,8 @@ export class MemberRouter {
 		serverId: string,
 		memberId: string,
 		payload: restServerMemberUpdatePayload,
-	): Promise<restServerMemberUpdatePayload> {
-		return await this.rest.put<restServerMemberUpdatePayload, restServerMemberUpdatePayload>(
+	): Promise<restServerMemberUpdateResponse> {
+		return await this.rest.put<restServerMemberUpdateResponse, restServerMemberUpdatePayload>(
 			Endpoints.serverNickname(serverId, memberId),
 			payload,
 		);
@@ -49,25 +50,30 @@ export class MemberRouter {
 	}
 
 	/**
-	 * Fetch Many or Single Server Member on Guilded.
+	 * Fetch Single Server Member on Guilded.
 	 * @param serverId Server ID for Member on Guilded.
 	 * @param memberId Member ID for Member on Guilded.
-	 * @returns Members or Member Value on Guilded.
+	 * @returns Server Member Value on Guilded.
 	 * @example MemberRouter.fetch( "abc" , "xyz");
 	 */
 
-	async fetch(
-		serverId: string,
-		memberId: string,
-	): Promise<ApiServerMember | Array<ApiServerMemberSummary>> {
-		if (memberId)
-			return await this.rest
-				.get<{ member: ApiServerMember }>(Endpoints.serverMember(serverId, memberId))
-				.then((R) => R?.member);
-		else
-			return await this.rest
-				.get<{ members: Array<ApiServerMemberSummary> }>(Endpoints.serverMembers(serverId))
-				.then((R) => R?.members);
+	async fetch(serverId: string, memberId: string): Promise<ApiServerMember> {
+		return await this.rest
+			.get<{ member: ApiServerMember }>(Endpoints.serverMember(serverId, memberId))
+			.then((R) => R?.member);
+	}
+
+	/**
+	 * Fetch Many / All Server Members from Guilded.
+	 * @param serverId Server ID for Member on Guilded.
+	 * @returns Server Members Value on Guilded.
+	 * @example MemberRouter.fetchAll( "abc");
+	 */
+
+	async fetchAll(serverId: string): Promise<Array<ApiServerMemberSummary>> {
+		return await this.rest
+			.get<{ members: Array<ApiServerMemberSummary> }>(Endpoints.serverMembers(serverId))
+			.then((R) => R?.members);
 	}
 
 	/**

@@ -37,33 +37,40 @@ export class ForumTopicRouter {
 	}
 
 	/**
-	 * Fetch Forum Topics or Forum Topic on Channel on Guilded REST API Request.
+	 * Fetch Forum Topic on Channel on Guilded REST API Request.
 	 * @param channelId The ID of the channel on Guilded.
 	 * @param forumTopicId The ID of the forum topic on the Channel on Guilded REST API.
-	 * @param query Query Params with Forum Topics Fetch from Guilded REST Api.
 	 * @returns Forum Topic Object from Guilded.
 	 * @example ForumTopicRouter.fetch('abc' , "xyz")
 	 */
 
-	async fetch(
+	async fetch(channelId: string, forumTopicId: string): Promise<ApiForumTopic> {
+		return await this.rest
+			.get<{ forumTopic: ApiForumTopic }>(
+				Endpoints.forumTopic(channelId, parseInt(forumTopicId)),
+			)
+			?.then((R) => R?.forumTopic);
+	}
+
+	/**
+	 * Fetch Forum Topics on Channel on Guilded REST API Request.
+	 * @param channelId The ID of the channel on Guilded.
+	 * @param query Query Params with Forum Topics Fetch from Guilded REST Api.
+	 * @returns Forum Topic Objects from Guilded.
+	 * @example ForumTopicRouter.fetchAll('abc')
+	 */
+
+	async fetchAll(
 		channelId: string,
-		forumTopicId?: string,
 		query?: restForumTopicsQueryParams,
-	): Promise<ApiForumTopic | Array<ApiForumTopicSummary>> {
-		if (forumTopicId)
-			return await this.rest
-				.get<{ forumTopic: ApiForumTopic }>(
-					Endpoints.forumTopic(channelId, parseInt(forumTopicId)),
-				)
-				?.then((R) => R?.forumTopic);
-		else
-			return await this.rest
-				.get<
-					{ forumTopics: Array<ApiForumTopicSummary> },
-					undefined,
-					restForumTopicsQueryParams
-				>(Endpoints.forumTopics(channelId), undefined, query)
-				?.then((R) => R?.forumTopics);
+	): Promise<Array<ApiForumTopicSummary>> {
+		return await this.rest
+			.get<
+				{ forumTopics: Array<ApiForumTopicSummary> },
+				undefined,
+				restForumTopicsQueryParams
+			>(Endpoints.forumTopics(channelId), undefined, query)
+			?.then((R) => R?.forumTopics);
 	}
 
 	/**

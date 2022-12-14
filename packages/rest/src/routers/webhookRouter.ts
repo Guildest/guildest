@@ -36,31 +36,35 @@ export class WebhookRouter {
 	}
 
 	/**
-	 * Fetch Single or Many Webhook Integration with Server on Guilded.
+	 * Fetch Single Webhook Integration with Server on Guilded.
 	 * @param serverId The ID of the Server on the Guilded.
 	 * @param webhookId The Id of the Webhook on the Server on the Guilded.
-	 * @param query The Query Parameters for Fetching Many Webhooks from Server.
 	 * @returns Webhook Object Data from REST API on Guilded.
-	 * @example WebhookRouter.fetch('abc' , { name: "hello Webhook!" })
+	 * @example WebhookRouter.fetch('abc' ,"xyz" ,{ name: "hello Webhook!" })
 	 */
 
-	async fetch(
-		serverId: string,
-		webhookId?: string,
-		query?: RestWebhookQueryParams,
-	): Promise<ApiWebhook | Array<ApiWebhook>> {
-		if (webhookId)
-			return await this.rest
-				.get<{ webhook: ApiWebhook }>(Endpoints.webhook(serverId, webhookId))
-				?.then((R) => R?.webhook);
-		else
-			return await this.rest
-				.get<{ webhooks: Array<ApiWebhook> }, undefined, RestWebhookQueryParams>(
-					Endpoints.webhooks(serverId),
-					undefined,
-					query,
-				)
-				?.then((R) => R?.webhooks);
+	async fetch(serverId: string, webhookId: string): Promise<ApiWebhook> {
+		return await this.rest
+			.get<{ webhook: ApiWebhook }>(Endpoints.webhook(serverId, webhookId))
+			?.then((R) => R?.webhook);
+	}
+
+	/**
+	 * Fetch Many / All Webhook Integration with Server on Guilded.
+	 * @param serverId The ID of the Server on the Guilded.
+	 * @param query The Query Parameters for Fetching Many Webhooks from Server.
+	 * @returns Webhook Objects Data from REST API on Guilded.
+	 * @example WebhookRouter.fetchAll('abc' , { name: "hello Webhook!" })
+	 */
+
+	async fetchAll(serverId: string, query?: RestWebhookQueryParams): Promise<Array<ApiWebhook>> {
+		return await this.rest
+			.get<{ webhooks: Array<ApiWebhook> }, undefined, RestWebhookQueryParams>(
+				Endpoints.webhooks(serverId),
+				undefined,
+				query,
+			)
+			?.then((R) => R?.webhooks);
 	}
 
 	/**

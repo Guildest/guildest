@@ -20,3 +20,4 @@ export * from './routers/webhookRouter';
 
 // Exporting REST Utils.
 export * from './utils/router';
+export * from './apiError';

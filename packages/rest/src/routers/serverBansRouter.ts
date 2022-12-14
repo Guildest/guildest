@@ -39,22 +39,23 @@ export class ServerBansRouter {
 	 * @example ServerBansRouter.fetch('abc' , "xyz")
 	 */
 
-	async fetch(
-		serverId: string,
-		memberId: string,
-	): Promise<ApiServerMemberBan | Array<ApiServerMemberBan>> {
-		if (memberId)
-			return this.rest
-				.get<{ serverMemberBan: ApiServerMemberBan }>(
-					Endpoints.serverBan(serverId, memberId),
-				)
-				.then((R) => R?.serverMemberBan);
-		else
-			return this.rest
-				.get<{ serverMemberBans: Array<ApiServerMemberBan> }>(
-					Endpoints.serverBans(serverId),
-				)
-				.then((R) => R?.serverMemberBans);
+	async fetch(serverId: string, memberId: string): Promise<ApiServerMemberBan> {
+		return this.rest
+			.get<{ serverMemberBan: ApiServerMemberBan }>(Endpoints.serverBan(serverId, memberId))
+			.then((R) => R?.serverMemberBan);
+	}
+
+	/**
+	 * Server Member Bans Fetch from REST API request on Guilded.
+	 * @param serverId The ID of the server on Guilded
+	 * @returns Server Member Bans on Guilded.
+	 * @example ServerBansRouter.fetchAll('abc')
+	 */
+
+	async fetchAll(serverId: string): Promise<Array<ApiServerMemberBan>> {
+		return this.rest
+			.get<{ serverMemberBans: Array<ApiServerMemberBan> }>(Endpoints.serverBans(serverId))
+			.then((R) => R?.serverMemberBans);
 	}
 
 	/**

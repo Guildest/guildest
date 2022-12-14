@@ -85,6 +85,15 @@ export interface restServerMemberUpdatePayload {
 }
 
 /**
+ * Represents Server Member Update/Edit Response on Guilded.
+ * @see https://www.guilded.gg/docs/api/members/MemberNicknameUpdate
+ */
+export interface restServerMemberUpdateResponse {
+	/* Represent New NickName for Specified Server Member on Guilded. */
+	nickname: string;
+}
+
+/**
  * Represents Server Member Ban Payload on Guilded.
  * @see https://www.guilded.gg/docs/api/member-bans/ServerMemberBanCreate
  */

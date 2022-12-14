@@ -1,12 +1,15 @@
 import { ApiServerChannel, ApiChannelType } from '@guildest/api-typings';
+import { Collection } from '@guildest/collection';
 import { DateParse } from '../utils/basicUtils';
 import { Base } from './base';
 import { Client } from './client';
+import { Message } from './messages';
 
 export class Channel extends Base<ApiServerChannel> {
 	type: ApiChannelType;
 	name: string;
 	topic?: string;
+	messages = new Collection<string, Message>();
 	createdAt: number;
 	createdBy: string;
 	serverId: string;

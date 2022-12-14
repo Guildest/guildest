@@ -40,31 +40,40 @@ export class MessageRouter {
 	}
 
 	/**
-	 * Fetch Many or Single Channel Chat Message on Guilded.
+	 * Fetch Single Channel Chat Message on Guilded.
 	 * @param channelId Channel ID for Message on Guilded.
 	 * @param messageId Message ID for Message on Guilded.
 	 * @param query The Query Parameters of the Fetch Request for Messsages for Message on Guilded.
-	 * @returns The Messages or Message Value on Guilded.
+	 * @returns The Message Value on Guilded.
 	 * @example MessageRouter.fetch( "abc" , "xyz" , { limit: 1 });
 	 */
 
 	async fetch(
 		channelId: string,
-		messageId?: string,
+		messageId: string,
 		query?: restMessageQueryParams,
-	): Promise<ApiMessage | Array<ApiMessage>> {
-		if (messageId)
-			return this.rest
-				.get<{ message: ApiMessage }, undefined, restMessageQueryParams>(
-					Endpoints.message(channelId, messageId),
-					undefined,
-					query,
-				)
-				?.then((R) => R.message);
-		else
-			return this.rest
-				.get<{ messages: Array<ApiMessage> }>(Endpoints.messages(channelId))
-				?.then((R) => R.messages);
+	): Promise<ApiMessage> {
+		return this.rest
+			.get<{ message: ApiMessage }, undefined, restMessageQueryParams>(
+				Endpoints.message(channelId, messageId),
+				undefined,
+				query,
+			)
+			?.then((R) => R.message);
+	}
+
+	/**
+	 * Fetch Many / All Channel Chat Message on Guilded.
+	 * @param channelId Channel ID for Message on Guilded.
+	 * @param query The Query Parameters of the Fetch Request for Messsages for Message on Guilded.
+	 * @returns The Server Channel's Chat Messages Value on Guilded.
+	 * @example MessageRouter.fetchAll( "abc");
+	 */
+
+	async fetchAll(channelId: string): Promise<Array<ApiMessage>> {
+		return this.rest
+			.get<{ messages: Array<ApiMessage> }>(Endpoints.messages(channelId))
+			?.then((R) => R.messages);
 	}
 
 	/**

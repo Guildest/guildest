@@ -70,13 +70,15 @@ export class restManager {
 		retries = 0,
 		authenticated = true,
 	): Promise<R> {
-		const sParams: URLSearchParams | undefined = Object.entries(query!)?.reduce(
-			(tPara: URLSearchParams | undefined = new URLSearchParams(), eNt) => {
-				tPara.append(...eNt);
-				return tPara;
-			},
-			undefined,
-		);
+		let sParams: any = '';
+		if (query)
+			sParams = Object.entries(query)?.reduce(
+				(tPara: URLSearchParams = new URLSearchParams(), eNt) => {
+					tPara.append(...eNt);
+					return tPara;
+				},
+				undefined,
+			);
 		const res = await fetch(this.restUrl + path + sParams, {
 			method,
 			headers: authenticated && this.token ? this.restAuthHeaders : this.restHeaders,

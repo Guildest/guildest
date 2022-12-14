@@ -24,7 +24,7 @@ export class DocsRouter {
 	}
 
 	/**
-	 * Fetch Doc or Docs on Channel on Guilded.
+	 * Fetch Doc on Channel on Guilded.
 	 * @param channelId The ID of the channel on Guilded.
 	 * @param docId The ID of the Doc on Guilded.
 	 * @param query The Query Parameters for Docs on Guilded.
@@ -32,23 +32,28 @@ export class DocsRouter {
 	 * @example DocsRouter.fetch("abc" , "xyz")
 	 */
 
-	async fetch(
-		channelId: string,
-		docId?: string,
-		query?: restDocsQueryParams,
-	): Promise<ApiDocs | Array<ApiDocs>> {
-		if (docId)
-			return await this.rest
-				.get<{ doc: ApiDocs }>(Endpoints.doc(channelId, parseInt(docId)))
-				.then((R) => R?.doc);
-		else
-			return await this.rest
-				.get<{ docs: Array<ApiDocs> }, undefined, restDocsQueryParams>(
-					Endpoints.docs(channelId),
-					undefined,
-					query,
-				)
-				.then((R) => R?.docs);
+	async fetch(channelId: string, docId: string): Promise<ApiDocs> {
+		return await this.rest
+			.get<{ doc: ApiDocs }>(Endpoints.doc(channelId, parseInt(docId)))
+			.then((R) => R?.doc);
+	}
+
+	/**
+	 * Fetch Docs on Channel on Guilded.
+	 * @param channelId The ID of the channel on Guilded.
+	 * @param query The Query Parameters for Docs on Guilded.
+	 * @returns Doc Objects on Guilded.
+	 * @example DocsRouter.fetchAll("abc")
+	 */
+
+	async fetchAll(channelId: string, query?: restDocsQueryParams): Promise<Array<ApiDocs>> {
+		return await this.rest
+			.get<{ docs: Array<ApiDocs> }, undefined, restDocsQueryParams>(
+				Endpoints.docs(channelId),
+				undefined,
+				query,
+			)
+			.then((R) => R?.docs);
 	}
 
 	/**

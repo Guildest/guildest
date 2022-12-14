@@ -32,25 +32,31 @@ export class ListItemRouter {
 	}
 
 	/**
-	 * Fetch List Items or List Item on Channel on Guilded REST API.
+	 * Fetch List Item on Channel on Guilded REST API.
 	 * @param channelId The ID of the channel on Guilded.
 	 * @param listItemId The ID of the List Item on Guilded.
 	 * @returns List Item Object on Guilded.
 	 * @example new ListItemRouter.fetch("abc" , "xyz");
 	 */
 
-	async fetch(
-		channelId: string,
-		listItemId?: string,
-	): Promise<ApiListItem | Array<ApiListItemSummary>> {
-		if (listItemId)
-			return await this.rest
-				.get<{ listItem: ApiListItem }>(Endpoints.listItem(channelId, listItemId))
-				?.then((R) => R?.listItem);
-		else
-			return await this.rest
-				.get<{ listItems: Array<ApiListItemSummary> }>(Endpoints.listItems(channelId))
-				?.then((R) => R?.listItems);
+	async fetch(channelId: string, listItemId: string): Promise<ApiListItem> {
+		return await this.rest
+			.get<{ listItem: ApiListItem }>(Endpoints.listItem(channelId, listItemId))
+			?.then((R) => R?.listItem);
+	}
+
+	/**
+	 * Fetch List Items on Channel on Guilded REST API.
+	 * @param channelId The ID of the channel on Guilded.
+	 * @param listItemId The ID of the List Item on Guilded.
+	 * @returns List Item Objects on Guilded.
+	 * @example new ListItemRouter.fetchAll("abc");
+	 */
+
+	async fetchAll(channelId: string): Promise<Array<ApiListItemSummary>> {
+		return await this.rest
+			.get<{ listItems: Array<ApiListItemSummary> }>(Endpoints.listItems(channelId))
+			?.then((R) => R?.listItems);
 	}
 
 	/**

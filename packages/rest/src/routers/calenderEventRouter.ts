@@ -33,29 +33,32 @@ export class CalendarEventRouter {
 	}
 
 	/**
-	 * Fetch Request for Single or Many Calendar Event Router on Guilded REST API.
+	 * Fetch Request for Single Calendar Event Router on Guilded REST API.
 	 * @param channelId The ID of the channel on Guilded.
 	 * @param calendarEventId The ID of the Calendar Event on Guilded.
 	 * @returns Calendar Event Object on Guilded.
 	 * @example CalendarEventRouter.fetch("abc" , "foo")
 	 */
 
-	async fetch(
-		channelId: string,
-		calendarEventId?: string,
-	): Promise<ApiCalendarEvent | Array<ApiCalendarEvent>> {
-		if (calendarEventId)
-			return await this.rest
-				.get<{ calendarEvent: ApiCalendarEvent }>(
-					Endpoints.calendarEvent(channelId, parseInt(calendarEventId)),
-				)
-				?.then((R) => R?.calendarEvent);
-		else
-			return await this.rest
-				.get<{ calendarEvents: Array<ApiCalendarEvent> }>(
-					Endpoints.calendarEvents(channelId),
-				)
-				?.then((R) => R?.calendarEvents);
+	async fetch(channelId: string, calendarEventId: string): Promise<ApiCalendarEvent> {
+		return await this.rest
+			.get<{ calendarEvent: ApiCalendarEvent }>(
+				Endpoints.calendarEvent(channelId, parseInt(calendarEventId)),
+			)
+			?.then((R) => R?.calendarEvent);
+	}
+
+	/**
+	 * Fetch Request for Many / All Calendar Events Router on Guilded REST API.
+	 * @param channelId The ID of the channel on Guilded.
+	 * @returns Calendar Event Objects on Guilded.
+	 * @example CalendarEventRouter.fetch("abc")
+	 */
+
+	async fetchAll(channelId: string): Promise<Array<ApiCalendarEvent>> {
+		return await this.rest
+			.get<{ calendarEvents: Array<ApiCalendarEvent> }>(Endpoints.calendarEvents(channelId))
+			?.then((R) => R?.calendarEvents);
 	}
 
 	/**
@@ -104,7 +107,7 @@ export class CalendarEventRsvpRouter {
 	constructor(public readonly rest: restManager) {}
 
 	/**
-	 * Fetch Request for Single or Many Calendar Event Rsvp Router on Guilded REST API.
+	 * Fetch Request for Single Calendar Event Rsvp Router on Guilded REST API.
 	 * @param channelId The ID of the channel on Guilded.
 	 * @param calendarEventId The ID of the Calendar Event on Guilded.
 	 * @param userId The ID of the user of Calender Event on Guilded.
@@ -115,20 +118,32 @@ export class CalendarEventRsvpRouter {
 	async fetch(
 		channelId: string,
 		calendarEventId: string,
-		userId?: string,
-	): Promise<ApiCalendarEventRsvp | Array<ApiCalendarEventRsvp>> {
-		if (userId)
-			return await this.rest
-				.get<{ calendarEventRsvp: ApiCalendarEventRsvp }>(
-					Endpoints.calendarEventRsvp(channelId, parseInt(calendarEventId), userId),
-				)
-				?.then((R) => R?.calendarEventRsvp);
-		else
-			return await this.rest
-				.get<{ calendarEventRsvps: Array<ApiCalendarEventRsvp> }>(
-					Endpoints.calendarEventRsvps(channelId, parseInt(calendarEventId)),
-				)
-				?.then((R) => R?.calendarEventRsvps);
+		userId: string,
+	): Promise<ApiCalendarEventRsvp> {
+		return await this.rest
+			.get<{ calendarEventRsvp: ApiCalendarEventRsvp }>(
+				Endpoints.calendarEventRsvp(channelId, parseInt(calendarEventId), userId),
+			)
+			?.then((R) => R?.calendarEventRsvp);
+	}
+
+	/**
+	 * Fetch Request for Many / ALl Calendar Event Rsvp Router on Guilded REST API.
+	 * @param channelId The ID of the channel on Guilded.
+	 * @param calendarEventId The ID of the Calendar Event on Guilded.
+	 * @returns Calendar Event Rsvp Objects on Guilded.
+	 * @example CalendarEventRsvpRouter.fetchAll("abc" , "foo")
+	 */
+
+	async fetchAll(
+		channelId: string,
+		calendarEventId: string,
+	): Promise<Array<ApiCalendarEventRsvp>> {
+		return await this.rest
+			.get<{ calendarEventRsvps: Array<ApiCalendarEventRsvp> }>(
+				Endpoints.calendarEventRsvps(channelId, parseInt(calendarEventId)),
+			)
+			?.then((R) => R?.calendarEventRsvps);
 	}
 
 	/**

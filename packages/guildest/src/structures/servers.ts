@@ -5,6 +5,7 @@ import {
 	ApiServerType,
 	ApiUserResolve,
 } from '@guildest/api-typings';
+import { Collection } from '@guildest/collection';
 import { Base } from './base';
 import { Client } from './client';
 import { User } from './users';
@@ -14,6 +15,7 @@ export class Server extends Base<ApiServer> {
 	type?: ApiServerType;
 	name: string;
 	uri?: string;
+	members = new Collection<string, Member>();
 	about?: string;
 	avatar?: string;
 	banner?: string;

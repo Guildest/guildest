@@ -1,4 +1,9 @@
-import { restCreateChannelPayload, ApiServerChannel, Endpoints } from '@guildest/api-typings';
+import {
+	restCreateChannelPayload,
+	ApiServerChannel,
+	Endpoints,
+	restUpdateChannelPayload,
+} from '@guildest/api-typings';
 import { restManager } from '../restManager';
 
 /**
@@ -46,9 +51,9 @@ export class ChannelRouter {
 	 * @example ChannelRouter.update('abc', { name: 'Chat' });
 	 */
 
-	async update(channelId: string, payload: restCreateChannelPayload): Promise<ApiServerChannel> {
+	async update(channelId: string, payload: restUpdateChannelPayload): Promise<ApiServerChannel> {
 		return await this.rest
-			.patch<{ channel: ApiServerChannel }, restCreateChannelPayload>(
+			.patch<{ channel: ApiServerChannel }, restUpdateChannelPayload>(
 				Endpoints.channel(channelId),
 				payload,
 			)
