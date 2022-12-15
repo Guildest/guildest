@@ -4,9 +4,7 @@ import { ApiBase, ApiBaseMentions, ApiBaseReaction } from './base';
  * Represents Server Forums Topic Summary on Guilded.
  * @see https://www.guilded.gg/docs/api/forums/ForumTopicSummary
  */
-export interface ApiForumTopicSummary extends ApiBase {
-	/* Id of the Forum of the Server on Guilded. */
-	id: string;
+export interface ApiForumTopicSummary extends ApiBase<number> {
 	/* Server Id of the Forum of the Server on Guilded. */
 	serverId: string;
 	/* Channel Id of the Forum of the Server on Guilded. */
@@ -69,7 +67,7 @@ export type ApiForumTopicResolve = ApiForumTopic | ApiForumTopicSummary;
  */
 export interface ApiForumTopicComment {
 	/* Represent Forum Topic Comment Id string on Guilded Server. */
-	id: string;
+	id: number;
 	/* Represent The content of the forum topic comment (min length 1; max length 10000) */
 	content: string;
 	/* Represents The ISO 8601 timestamp that the forum topic comment was created at */

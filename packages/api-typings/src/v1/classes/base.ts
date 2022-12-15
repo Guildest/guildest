@@ -3,9 +3,9 @@ import { ApiServer } from './server';
 /**
  * Represents Base Class of Most Guilded Class with id property.
  */
-export interface ApiBase {
+export interface ApiBase<K = string> {
 	/* The Snowflake uuId or Unique Id of any Identity or Model. */
-	id: string;
+	id: K;
 }
 
 /**

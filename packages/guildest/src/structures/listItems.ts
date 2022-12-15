@@ -1,9 +1,9 @@
-import { ApiListItem, ApiBaseMentions, ApiListItemNote } from '@guildest/api-typings';
+import { ApiBaseMentions, ApiListItemNoteResolve, ApiListItemResolve } from '@guildest/api-typings';
 import { DateParse } from '../utils/basicUtils';
 import { Base } from './base';
 import { Client } from './client';
 
-export class ListItem extends Base<ApiListItem> {
+export class ListItem extends Base<ApiListItemResolve> {
 	serverId: string;
 	channelId: string;
 	message: string;
@@ -16,8 +16,8 @@ export class ListItem extends Base<ApiListItem> {
 	parentListItemId?: string;
 	completedAt?: number;
 	completedBy?: string;
-	note?: ApiListItemNote;
-	constructor(client: Client, json: ApiListItem) {
+	note?: ApiListItemNoteResolve;
+	constructor(client: Client, json: ApiListItemResolve) {
 		super(client, json);
 		this.serverId = json.serverId;
 		this.channelId = json.channelId;
@@ -28,7 +28,7 @@ export class ListItem extends Base<ApiListItem> {
 		this.__update(json);
 	}
 
-	__update(json: Partial<ApiListItem>) {
+	__update(json: Partial<ApiListItemResolve>) {
 		if ('mentions' in json) this.mentions = json.mentions;
 		if ('createdByWebhookId' in json) this.createdByWebhookId = json.createdByWebhookId;
 		if ('updatedAt' in json) this.updatedAt = DateParse(json.updatedAt);

@@ -4,12 +4,18 @@ import { DateParse } from '../utils/basicUtils';
 import { Base } from './base';
 import { Client } from './client';
 import { Message } from './messages';
+import { ForumTopic } from './forums';
+import { ListItem } from './listItems';
+import { Doc } from './docs';
 
 export class Channel extends Base<ApiServerChannel> {
 	type: ApiChannelType;
 	name: string;
 	topic?: string;
 	messages = new Collection<string, Message>();
+	forumTopics = new Collection<string, ForumTopic>();
+	listItems = new Collection<string, ListItem>();
+	docs = new Collection<string, Doc>();
 	createdAt: number;
 	createdBy: string;
 	serverId: string;

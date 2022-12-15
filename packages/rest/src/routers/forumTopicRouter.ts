@@ -193,35 +193,44 @@ export class ForumTopicCommentRouter {
 	}
 
 	/**
-	 * Fetch Forum Topic Comments or Specific Comment on Channel on Guilded REST API Request.
+	 * Fetch Forum Topic Specific Comment on Channel on Guilded REST API Request.
 	 * @param channelId The ID of the channel on Guilded.
 	 * @param forumTopicId The ID of the forum topic on the Channel on Guilded REST API.
 	 * @param forumTopicCommentId The ID of the forum topic comment on the Forum Topic on Guilded REST
-	 * @returns Forum Topic Comment Object single or multiple from Guilded.
+	 * @returns Forum Topic Comment Object single from Guilded.
 	 * @example ForumTopicCommentRouter.fetch('abc' , "xyz" , "1")
 	 */
 
 	async fetch(
 		channelId: string,
 		forumTopicId: string,
-		forumTopicCommentId?: string,
-	): Promise<ApiForumTopicComment | Array<ApiForumTopicComment>> {
-		if (forumTopicCommentId)
-			return await this.rest
-				.get<{ forumTopicComment: ApiForumTopicComment }>(
-					Endpoints.forumTopicComment(
-						channelId,
-						parseInt(forumTopicId),
-						parseInt(forumTopicCommentId),
-					),
-				)
-				?.then((R) => R?.forumTopicComment);
-		else
-			return await this.rest
-				.get<{ forumTopicComments: Array<ApiForumTopicComment> }>(
-					Endpoints.forumTopicComments(channelId, parseInt(forumTopicId)),
-				)
-				?.then((R) => R?.forumTopicComments);
+		forumTopicCommentId: string,
+	): Promise<ApiForumTopicComment> {
+		return await this.rest
+			.get<{ forumTopicComment: ApiForumTopicComment }>(
+				Endpoints.forumTopicComment(
+					channelId,
+					parseInt(forumTopicId),
+					parseInt(forumTopicCommentId),
+				),
+			)
+			?.then((R) => R?.forumTopicComment);
+	}
+
+	/**
+	 * Fetch Forum Topic Comments on Channel on Guilded REST API Request.
+	 * @param channelId The ID of the channel on Guilded.
+	 * @param forumTopicId The ID of the forum topic on the Channel on Guilded REST API.
+	 * @returns Forum Topic Comment Objects from Guilded.
+	 * @example ForumTopicCommentRouter.fetchAll('abc' , "xyz")
+	 */
+
+	async fetchAll(channelId: string, forumTopicId: string): Promise<Array<ApiForumTopicComment>> {
+		return await this.rest
+			.get<{ forumTopicComments: Array<ApiForumTopicComment> }>(
+				Endpoints.forumTopicComments(channelId, parseInt(forumTopicId)),
+			)
+			?.then((R) => R?.forumTopicComments);
 	}
 
 	/**

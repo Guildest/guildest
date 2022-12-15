@@ -33,6 +33,9 @@ export interface ApiListItemSummary extends ApiBase {
 	note?: ApiBaseListItemNote;
 }
 
+/* Represetns the List Item Note Resolve for the Summary and Actual Object List Item */
+export type ApiListItemNoteResolve = ApiListItemNote | ApiBaseListItemNote;
+
 /**
  * Represents the List Item Note Value in Guilded.
  * @see https://www.guilded.gg/docs/api/listItems/ListItem

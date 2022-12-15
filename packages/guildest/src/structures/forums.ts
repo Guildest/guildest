@@ -1,4 +1,5 @@
 import { ApiBaseMentions, ApiForumTopicComment, ApiForumTopicResolve } from '@guildest/api-typings';
+import { Collection } from '@guildest/collection';
 import { DateParse } from '../utils/basicUtils';
 import { Base } from './base';
 import { Client } from './client';
@@ -7,6 +8,7 @@ export class ForumTopic extends Base<ApiForumTopicResolve> {
 	serverId: string;
 	channelId: string;
 	title: string;
+	comments = new Collection<string, ForumTopicComment>();
 	createdAt: number;
 	createdBy: string;
 	createdByWebhookId?: string;
