@@ -14,7 +14,7 @@ import { version } from '../package.json';
  * Guilded API Websocket Manager for CLient/User Based Web Applications
  * @example wsMod = new webSocketManager({ version: 1,token: "xxxx" });
  */
-export class webSocketManager {
+export class webSocketManager extends (EventEmitter as unknown as new () => TypedEmitter<wsManagerEvents>) {
 	/** Represents the Version of the Websocket Manager/Handler on Guilded. */
 	version: number | undefined = 1;
 	/** Represents the Proxy Data like Url , Metadata for Websocket */
@@ -37,11 +37,10 @@ export class webSocketManager {
 	reconnectOnErrorAttempts = 0;
 	/** Connection Started Timestamp in "Date" */
 	connectedAt?: Date;
-	/** Event Emitter of the Web Socket for the Guilded API events. */
-	emitter = new EventEmitter() as TypedEmitter<wsManagerEvents>;
 
 	/** @param options Websocket Options for  */
 	constructor(public readonly options: wsOptions) {
+		super();
 		this.token = options.token!;
 		this.proxy = options.proxy;
 		if (!this.proxy?.url) this.version = options.version;
@@ -102,7 +101,7 @@ export class webSocketManager {
 			});
 		} catch (error) {
 			if (error instanceof Error) {
-				this.emitter.emit('error', error.message, error);
+				this.emit('error', error.message, error);
 				this.onSocketDebug(error.message, 'Websocket Error');
 			}
 			this.handleDisconnect();
@@ -115,21 +114,17 @@ export class webSocketManager {
 		this.socket.on('message', (body) => this.onSocketPayload(body.toString()));
 		this.socket.on('ping', () => {
 			this.lastPingAt = Date.now();
-			if (!this.options.skipOptions?.internalEvents) this.emitter.emit('ping', this);
+			if (!this.options.skipOptions?.internalEvents) this.emit('ping');
 		});
 		this.socket.on('pong', () => {
 			this.lastPongAt = Date.now();
-			if (!this.options.skipOptions?.internalEvents) this.emitter.emit('pong', this);
+			if (!this.options.skipOptions?.internalEvents) this.emit('pong');
 		});
 		this.socket.on('error', (err) => {
 			this.onSocketDebug('Gateway Connection faced Error', 'Gateway Error');
-			this.emitter.emit('error', 'Gateway Error', err);
+			this.emit('error', 'Gateway Error', err);
 			this.handleDisconnect();
-			this.emitter.emit(
-				'close',
-				'Gateway connection permanently closed due to Gataway Error.',
-				this,
-			);
+			this.emit('close', 'Gateway connection permanently closed due to Gataway Error.');
 		});
 		return;
 	}
@@ -164,7 +159,7 @@ export class webSocketManager {
 
 	/** @ignore */
 	private onSocketDebug(message: string, name = 'LOG'): void {
-		this.emitter.emit('debug', `[${name}] : ${message}`, this);
+		this.emit('debug', `[${name}] : ${message}`);
 	}
 
 	/** @ignore */
@@ -172,9 +167,9 @@ export class webSocketManager {
 		let eventPayload: wsMessagePayload;
 		try {
 			eventPayload = JSON.parse(body) as wsMessagePayload;
-			this.emitter.emit('payload', eventPayload, this);
+			this.emit('payload', eventPayload);
 		} catch (error) {
-			this.emitter.emit('error', 'Json Body Parsing Error', error as Error, {
+			this.emit('error', 'Json Body Parsing Error', error as Error, {
 				message: body,
 			});
 			return;
@@ -184,13 +179,12 @@ export class webSocketManager {
 		if (s) this.lastMessageId = s;
 		switch (op) {
 			case wsOpGatawayCode.Event:
-				if (!this.options.skipOptions?.internalEvents)
-					this.emitter.emit('gateaway', t as string, d);
+				if (!this.options.skipOptions?.internalEvents) this.emit('events', t as string, d);
 				break;
 			case wsOpGatawayCode.Ready:
 				this.readyAt = Date.now();
 				if (!this.options?.skipOptions?.internalEvents)
-					this.emitter.emit('ready', (d as wsReadyPayload).user, this);
+					this.emit('ready', (d as wsReadyPayload).user);
 				this.lastPingAt = Date.now();
 				this.socket!.ping();
 				break;
@@ -198,15 +192,10 @@ export class webSocketManager {
 				this.lastMessageId = undefined;
 				break;
 			default:
-				this.emitter.emit(
-					'unknown',
-					'Unkown Websocket OP Code is Detected',
-					{
-						body,
-						payload: eventPayload,
-					},
-					this,
-				);
+				this.emit('unknown', 'Unkown Websocket OP Code is Detected', {
+					body,
+					payload: eventPayload,
+				});
 				break;
 		}
 	}
@@ -215,12 +204,12 @@ export class webSocketManager {
 	private onSocketDisconnect(): boolean {
 		this.socket = undefined;
 		this.readyAt = undefined;
-		if (!this.options.skipOptions?.internalEvents) this.emitter.emit('disconnect', this);
+		if (!this.options.skipOptions?.internalEvents) this.emit('disconnect');
 		if (!this.options.reconnect || this.reconnectExceeded) return true;
 		else ++this.reconnectAttempts;
 		this.connect(this.token);
 		if (!this.options.skipOptions?.internalEvents)
-			this.emitter.emit('reconnect', this.reconnectAttempts, this);
+			this.emit('reconnect', this.reconnectAttempts);
 		return true;
 	}
 }
@@ -262,25 +251,25 @@ export interface proxyOptions {
 /** Websocket Manager Events (internal) for Websocket API. */
 export type wsManagerEvents = {
 	/** Ready Event Trigger on Websocket Connection establishment. */
-	ready: (user: ApiBaseClientUser, ws: webSocketManager) => unknown;
+	ready: (user: ApiBaseClientUser) => unknown;
 	/** Reconnet Event on Websocket Connection re-connection on disurption. */
-	reconnect: (count: number, ws: webSocketManager) => unknown;
+	reconnect: (count: number) => unknown;
 	/** Disconnect Event on Websocket Connection destroyed or close. */
-	disconnect: (ws: webSocketManager) => unknown;
+	disconnect: () => unknown;
 	/** Ping Response from Websocekt API Connection. */
-	ping: (ws: webSocketManager) => unknown;
+	ping: () => unknown;
 	/** Pong Response after Ping Conversation - Message Delivery. */
-	pong: (ws: webSocketManager) => unknown;
+	pong: () => unknown;
 	/** Error Response for Web-Socket Connection or Internal Errors. */
 	error: (message: string, error?: Error, data?: Record<string, any>) => unknown;
 	/** Close / Exit Response for Web-Socket Connection or Internal. */
-	close: (message: string, ws: webSocketManager) => unknown;
+	close: (message: string) => unknown;
 	/** Unknown Response from  */
-	unknown: (message: string, data: Record<string, any>, ws: webSocketManager) => unknown;
+	unknown: (message: string, data: Record<string, any>) => unknown;
 	/** Custom Event on Websocket's socket Message Payload. */
-	gateaway: <Event extends keyof wsEvents>(event: string, metadta: wsEvents[Event]) => void;
+	events: <Event extends keyof wsEvents>(event: string, metadta: wsEvents[Event]) => void;
 	/** Debug Response on Web-Socket Working and Routing in the Manager. */
-	debug: (message: string, ws: webSocketManager) => void;
+	debug: (message: string) => void;
 	/** Raw Message Payload from API Web-Socket Manager. */
-	payload: (data: wsMessagePayload, ws: webSocketManager) => void;
+	payload: (data: wsMessagePayload) => void;
 };

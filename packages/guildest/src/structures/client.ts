@@ -20,6 +20,7 @@ import {
 } from '@guildest/rest';
 import { webSocketManager, wsOptions } from '@guildest/ws';
 import EventEmitter from 'events';
+import TypedEmitter from 'typed-emitter';
 import { Collection } from '@guildest/collection';
 import {
 	restUpdateChannelPayload,
@@ -47,8 +48,9 @@ import { Doc } from './docs';
 import { CalendarEvent, CalendarEventRsvp } from './calenderEvents';
 import { BaseReaction } from './base';
 import { Webhook } from './webhooks';
+import { ClientEvents } from '../constants/events';
 
-export class Client extends EventEmitter {
+export class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
 	user?: ClientUser;
 	readyTimestamp?: number;
 
@@ -83,13 +85,13 @@ export class Client extends EventEmitter {
 
 	async connect(token: string = this.token, force = false) {
 		if (force) this.ws = new webSocketManager({ token: token, ...this.option.ws });
-		this.ws.emitter.on('ready', (user) => {
+		this.ws.on('ready', (user) => {
 			this.user = new ClientUser(this, user);
 			this.readyTimestamp = Date.now();
 			this.emit('ready');
 		});
 
-		this.ws.emitter.on('gateaway', (eNm, eVp) => this.gateawayHandler.events[eNm](eVp));
+		this.ws.on('events', (eNm, eVp) => this.gateawayHandler.events[eNm](eVp));
 	}
 
 	getChannel(channelId: string): Channel | undefined {
@@ -1266,7 +1268,7 @@ export class Client extends EventEmitter {
 		serverId: string,
 		roleId: string,
 		amount: number,
-	): Promise<Boolean> {
+	): Promise<boolean> {
 		const server = this.getServer(serverId) ?? (await this.getRESTServer(serverId));
 		if (!server)
 			throw new GuildedAPIError('invalid_server', {
@@ -1314,11 +1316,11 @@ export class Client extends EventEmitter {
 		});
 	}
 
-	async addRESTMemberToGroup(groupId: string, userId: string): Promise<Boolean> {
+	async addRESTMemberToGroup(groupId: string, userId: string): Promise<boolean> {
 		return this.router.groupMemberships.add(groupId, userId);
 	}
 
-	async removeRESTMemberToGroup(groupId: string, userId: string): Promise<Boolean> {
+	async removeRESTMemberToGroup(groupId: string, userId: string): Promise<boolean> {
 		return this.router.groupMemberships.remove(groupId, userId);
 	}
 
@@ -1469,7 +1471,7 @@ export class Client extends EventEmitter {
 		});
 	}
 
-	async deleteRESTWebhook(serverId: string, webhookId: string): Promise<Boolean> {
+	async deleteRESTWebhook(serverId: string, webhookId: string): Promise<boolean> {
 		const server = this.getServer(serverId) ?? (await this.getRESTServer(serverId));
 		if (!server)
 			throw new GuildedAPIError('invalid_server', {

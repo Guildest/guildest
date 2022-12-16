@@ -30,11 +30,12 @@
 		"clear": "rimraf dist typings"
 	},
 	"dependencies": {
+		"@guildest/api-typings": "workspace:^",
 		"@guildest/builders": "workspace:^",
 		"@guildest/collection": "workspace:^",
 		"@guildest/rest": "workspace:^",
 		"@guildest/ws": "workspace:^",
-		"@guildest/api-typings": "workspace:^"
+		"typed-emitter": "^2.1.0"
 	},
 	"devDependencies": {
 		"@types/node": "^18.11.10",
