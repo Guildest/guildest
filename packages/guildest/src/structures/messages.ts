@@ -2,6 +2,8 @@ import { ApiMessage, ApiMessageType, ApiEmbed, ApiBaseMentions } from '@guildest
 import { DateParse } from '../utils/basicUtils';
 import { Base, BaseReaction } from './base';
 import { Client } from './client';
+import { Server } from './servers';
+import { Channel } from './channels';
 
 export class Message extends Base<ApiMessage> {
 	type: ApiMessageType;
@@ -27,6 +29,17 @@ export class Message extends Base<ApiMessage> {
 
 		this.__update(json);
 	}
+
+	get server(): Server | undefined {
+		if (!this.serverId) return undefined;
+		return this.client.getServer(this.serverId);
+	}
+
+	get channel(): Channel | undefined {
+		if (!this.serverId) return undefined;
+		return this.client.getChannel(this.channelId);
+	}
+
 	__update(json: Partial<ApiMessage>) {
 		if ('serverId' in json) this.serverId = json.serverId;
 		if ('content' in json) this.content = json.content;

@@ -11,6 +11,8 @@ import { DateParse } from '../utils/basicUtils';
 import { Base } from './base';
 import { Client } from './client';
 import { User } from './users';
+import { Channel } from './channels';
+import { Webhook } from './webhooks';
 
 export class Server extends Base<ApiServer> {
 	readonly ownerId: string;
@@ -19,6 +21,7 @@ export class Server extends Base<ApiServer> {
 	uri?: string;
 	members = new Collection<string, Member>();
 	bans = new Collection<string, MemberBan>();
+	webhooks = new Collection<string, Webhook>();
 	about?: string;
 	avatar?: string;
 	banner?: string;
@@ -33,6 +36,17 @@ export class Server extends Base<ApiServer> {
 		this.createdAt = json.createdAt;
 	}
 
+	get url(): string | undefined {
+		if (!(this.uri && typeof this.uri === 'string')) return undefined;
+		else return 'https://www.guilded.gg/' + this.uri;
+	}
+
+	get channels(): Collection<string, Channel> {
+		return this.client.__collections.filter(
+			(channel) => channel && channel instanceof Channel && channel.serverId === this.id,
+		) as Collection<string, Channel>;
+	}
+
 	__update(json: Partial<ApiServer>) {
 		if ('type' in json) this.type = json.type;
 		if ('url' in json) this.uri = json.url;
@@ -42,11 +56,6 @@ export class Server extends Base<ApiServer> {
 		if ('timezone' in json) this.timezone = json.timezone;
 		if ('isVerified' in json) this.isVerified = json.isVerified;
 		if ('defaultChannelId' in json) this.defaultChannelId = json.defaultChannelId;
-	}
-
-	get url(): string | undefined {
-		if (!(this.uri && typeof this.uri === 'string')) return undefined;
-		else return 'https://www.guilded.gg/' + this.uri;
 	}
 }
 

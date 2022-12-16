@@ -2,10 +2,10 @@ import {
 	ApiMessage,
 	ApiEmbed,
 	ApiWebhook,
-	ApiWebhookCreatePayload,
-	ApiWebhookUpdatePayload,
+	restWebhookCreatePayload,
+	restWebhookUpdatePayload,
 	Endpoints,
-	RestWebhookQueryParams,
+	restWebhookQueryParams,
 	restChannelMessageCreateResolvable,
 } from '@guildest/api-typings';
 import { restManager } from '../restManager';
@@ -26,9 +26,9 @@ export class WebhookRouter {
 	 * @example WebhookRouter.create('abc' , { name: "hello Webhook!" })
 	 */
 
-	async create(serverId: string, payload: ApiWebhookCreatePayload): Promise<ApiWebhook> {
+	async create(serverId: string, payload: restWebhookCreatePayload): Promise<ApiWebhook> {
 		return await this.rest
-			.post<{ webhook: ApiWebhook }, ApiWebhookCreatePayload>(
+			.post<{ webhook: ApiWebhook }, restWebhookCreatePayload>(
 				Endpoints.webhooks(serverId),
 				payload,
 			)
@@ -57,9 +57,9 @@ export class WebhookRouter {
 	 * @example WebhookRouter.fetchAll('abc' , { name: "hello Webhook!" })
 	 */
 
-	async fetchAll(serverId: string, query?: RestWebhookQueryParams): Promise<Array<ApiWebhook>> {
+	async fetchAll(serverId: string, query?: restWebhookQueryParams): Promise<Array<ApiWebhook>> {
 		return await this.rest
-			.get<{ webhooks: Array<ApiWebhook> }, undefined, RestWebhookQueryParams>(
+			.get<{ webhooks: Array<ApiWebhook> }, undefined, restWebhookQueryParams>(
 				Endpoints.webhooks(serverId),
 				undefined,
 				query,
@@ -79,10 +79,10 @@ export class WebhookRouter {
 	async update(
 		serverId: string,
 		webhookId: string,
-		payload: ApiWebhookUpdatePayload,
+		payload: restWebhookUpdatePayload,
 	): Promise<ApiWebhook> {
 		return await this.rest
-			.put<{ webhhook: ApiWebhook }, ApiWebhookUpdatePayload>(
+			.put<{ webhhook: ApiWebhook }, restWebhookUpdatePayload>(
 				Endpoints.webhook(serverId, webhookId),
 				payload,
 			)

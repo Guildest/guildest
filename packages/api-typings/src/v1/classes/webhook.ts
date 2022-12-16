@@ -2,7 +2,7 @@
  * Represents Webhook Update Payload for Rest API Request.
  * @see https://www.guilded.gg/docs/api/webhook/WebhookUpdate
  */
-export interface ApiWebhookUpdatePayload {
+export interface restWebhookUpdatePayload {
 	/** The name of the webhook (min length 1; max length 128)  */
 	name: string;
 	/** The ID of the channel on Guilded. */
@@ -13,7 +13,7 @@ export interface ApiWebhookUpdatePayload {
  * Represents Webhook Create Payload for Rest API Request.
  * @see https://www.guilded.gg/docs/api/webhook/WebhookCreate
  */
-export interface ApiWebhookCreatePayload extends ApiWebhookUpdatePayload {
+export interface restWebhookCreatePayload extends restWebhookUpdatePayload {
 	/** The name of the webhook (min length 1; max length 128)  */
 	name: string;
 	/** Channel ID to create the webhook in */
@@ -24,7 +24,7 @@ export interface ApiWebhookCreatePayload extends ApiWebhookUpdatePayload {
  * Represents Webhook Value on Guilded.
  * @see https://www.guilded.gg/docs/api/webhook/Webhook
  */
-export interface ApiWebhook extends ApiWebhookCreatePayload {
+export interface ApiWebhook extends restWebhookCreatePayload {
 	/** The ID of the webhook */
 	id: string;
 	/** The ID of the server */
@@ -43,7 +43,7 @@ export interface ApiWebhook extends ApiWebhookCreatePayload {
  * Represents Webhook Value on Guilded.
  * @see https://www.guilded.gg/docs/api/webhook/Webhook
  */
-export interface RestWebhookQueryParams {
+export interface restWebhookQueryParams {
 	/** Channel Id of the Server on Guilded. */
 	channelId: string;
 }
