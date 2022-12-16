@@ -51,13 +51,21 @@ export class CalendarEventRouter {
 	/**
 	 * Fetch Request for Many / All Calendar Events Router on Guilded REST API.
 	 * @param channelId The ID of the channel on Guilded.
+	 * @param query Query parameters for the Calendar events on Guilded.
 	 * @returns Calendar Event Objects on Guilded.
 	 * @example CalendarEventRouter.fetch("abc")
 	 */
 
-	async fetchAll(channelId: string): Promise<Array<ApiCalendarEvent>> {
+	async fetchAll(
+		channelId: string,
+		query?: restCalendarEventPayload,
+	): Promise<Array<ApiCalendarEvent>> {
 		return await this.rest
-			.get<{ calendarEvents: Array<ApiCalendarEvent> }>(Endpoints.calendarEvents(channelId))
+			.get<{ calendarEvents: Array<ApiCalendarEvent> }, undefined, restCalendarEventPayload>(
+				Endpoints.calendarEvents(channelId),
+				undefined,
+				query,
+			)
 			?.then((R) => R?.calendarEvents);
 	}
 
@@ -147,7 +155,7 @@ export class CalendarEventRsvpRouter {
 	}
 
 	/**
-	 * Update Request for Calendar Event Rsvp Router on Guilded REST API.
+	 * Update OR Create Request for Calendar Event Rsvp Router on Guilded REST API.
 	 * @param channelId The ID of the channel on Guilded.
 	 * @param calendarEventId The ID of the Calendar Event on Guilded.
 	 * @param userId The ID of the user of Calender Event on Guilded.

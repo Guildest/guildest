@@ -1,6 +1,6 @@
 import { ApiMessage, ApiMessageType, ApiEmbed, ApiBaseMentions } from '@guildest/api-typings';
 import { DateParse } from '../utils/basicUtils';
-import { Base } from './base';
+import { Base, BaseReaction } from './base';
 import { Client } from './client';
 
 export class Message extends Base<ApiMessage> {
@@ -9,6 +9,7 @@ export class Message extends Base<ApiMessage> {
 	channelId: string;
 	content?: string;
 	embeds?: Array<ApiEmbed>;
+	reactions = new Array<BaseReaction>();
 	replyMessageIds?: Array<string>;
 	isPrivate?: boolean;
 	isSilent?: boolean;

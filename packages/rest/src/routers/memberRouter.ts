@@ -4,6 +4,7 @@ import {
 	restServerMemberUpdatePayload,
 	restServerMemberUpdateResponse,
 	Endpoints,
+	ApiBaseSocialLinks,
 } from '@guildest/api-typings';
 import { restManager } from '../restManager';
 
@@ -74,6 +75,25 @@ export class MemberRouter {
 		return await this.rest
 			.get<{ members: Array<ApiServerMemberSummary> }>(Endpoints.serverMembers(serverId))
 			.then((R) => R?.members);
+	}
+
+	/**
+	 * Fetch Request of Social link on Guilded of Member.
+	 * @param serverId The ID of the Server on Guilded.
+	 * @param memberId The ID of the Member on Guilded.
+	 * @param type The Type of the Social Link Connected on Guilded.
+	 * @returns Social Link Object on Guilded of Member.
+	 * @example SocialLinkRouter.fetch('abc' , 'foo' , 'bar')
+	 */
+
+	async fetchSocialLinks(
+		serverId: string,
+		memberId: string,
+		type: string,
+	): Promise<ApiBaseSocialLinks> {
+		return await this.rest
+			.get<{ socialLink: ApiBaseSocialLinks }>(Endpoints.socialLink(serverId, memberId, type))
+			?.then((R) => R?.socialLink);
 	}
 
 	/**

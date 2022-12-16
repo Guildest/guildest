@@ -3,7 +3,7 @@ import { DateParse } from '../utils/basicUtils';
 import { Base } from './base';
 import { Client } from './client';
 
-export class Doc extends Base<ApiDocs, number> {
+export class Doc extends Base<ApiDocs> {
 	serverId: string;
 	channelId: string;
 	title?: string;
@@ -14,7 +14,7 @@ export class Doc extends Base<ApiDocs, number> {
 	updatedAt?: number;
 	updatedBy?: string;
 	constructor(client: Client, json: ApiDocs) {
-		super(client, json);
+		super(client, Object.assign({}, json, { id: json.id.toString() }));
 		this.serverId = json.serverId;
 		this.channelId = json.channelId;
 		this.createdAt = Date.parse(json.createdAt);

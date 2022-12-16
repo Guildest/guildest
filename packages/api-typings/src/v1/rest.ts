@@ -313,14 +313,51 @@ export class Endpoints {
 	 * @param contentId The ID of the content.
 	 * @param emoteId The ID of the emote.
 	 * @see https://www.guilded.gg/docs/api/reactions/ContentReactionCreate
-	 * @example Routes.reaction('abc', 'abc', 123); // '/channels/abc/content/abc/emotes/123'
+	 * @see https://www.guilded.gg/docs/api/reactions/ContentReactionDelete
+	 * @example Routes.reactionOnContent('abc', 'abc', 123); // '/channels/abc/content/abc/emotes/123'
 	 */
-	static reaction<C extends string, Co extends string, E extends number>(
+	static reactionOnContent<C extends string, Co extends string, E extends number>(
 		channelId: C,
 		contentId: Co,
 		emoteId: E,
 	) {
 		return `/channels/${channelId}/content/${contentId}/emotes/${emoteId}` as const;
+	}
+
+	/**
+	 * The endpoint for a forum topic reaction on Guilded.
+	 * @param channelId The ID of the channel the forum topic belongs to.
+	 * @param forumTopicId The ID of the forum topic.
+	 * @param emoteId The ID of the emote.
+	 * @see https://www.guilded.gg/docs/api/reactions/ForumTopicReactionCreate
+	 * @see https://www.guilded.gg/docs/api/reactions/ForumTopicReactionDelete
+	 * @example Routes.reactionOnForumTopic('abc', 987, 123); // '/channels/abc/topics/987/emotes/123'
+	 */
+	static reactionOnForumTopic<C extends string, fT extends number, E extends number>(
+		channelId: C,
+		forumTopicId: fT,
+		emoteId: E,
+	) {
+		return `/channels/${channelId}/topics/${forumTopicId}/emotes/${emoteId}` as const;
+	}
+
+	/**
+	 * The endpoint for a forum topic comment reaction on Guilded.
+	 * @param channelId The ID of the channel the forum topic belongs to.
+	 * @param forumTopicId The ID of the forum topic.
+	 * @param forumTopicCommentId The ID of the forum topic comment
+	 * @param emoteId The ID of the emote.
+	 * @see https://www.guilded.gg/docs/api/reactions/ForumTopicCommentReactionCreate
+	 * @see https://www.guilded.gg/docs/api/reactions/ForumTopicCommentReactionDelete
+	 * @example Routes.reactionOnForumTopicComment('abc', 987, 671, 123); // '/channels/abc/topics/987/comments/671/emotes/123'
+	 */
+	static reactionOnForumTopicComment<
+		C extends string,
+		fT extends number,
+		fTc extends number,
+		E extends number,
+	>(channelId: C, forumTopicId: fT, forumTopicCommentId: fTc, emoteId: E) {
+		return `/channels/${channelId}/topics/${forumTopicId}/comments/${forumTopicCommentId}/emotes/${emoteId}` as const;
 	}
 
 	/**

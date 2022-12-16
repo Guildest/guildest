@@ -5,15 +5,17 @@ import {
 	ApiCalendarEventRsvp,
 	ApiCalendarEventRsvpStatusType,
 } from '@guildest/api-typings';
+import { Collection } from '@guildest/collection';
 import { DateParse } from '../utils/basicUtils';
 import { Base } from './base';
 import { Client } from './client';
 
-export class CalendarEvent extends Base<ApiCalendarEvent, number> {
+export class CalendarEvent extends Base<ApiCalendarEvent, string> {
 	serverId: string;
 	channelId: string;
 	name?: string;
 	description?: string;
+	rsvps = new Collection<string, CalendarEventRsvp>();
 	location?: string;
 	relatedUrl?: string;
 	color?: number;
@@ -26,7 +28,7 @@ export class CalendarEvent extends Base<ApiCalendarEvent, number> {
 	createdBy: string;
 	cancellation?: ApiCalendarEventCancellation;
 	constructor(client: Client, json: ApiCalendarEvent) {
-		super(client, json);
+		super(client, Object.assign({}, json, { id: json.id.toString() }));
 		this.serverId = json.serverId;
 		this.channelId = json.channelId;
 		this.startsAt = Date.parse(json.startsAt);
@@ -50,8 +52,8 @@ export class CalendarEvent extends Base<ApiCalendarEvent, number> {
 	}
 }
 
-export class CalendarEventRsvp {
-	calendarEventId: number;
+export class CalendarEventRsvp extends Base<ApiCalendarEventRsvp & { id: string }> {
+	calendarEventId: string;
 	channelId: string;
 	serverId: string;
 	userId: string;
@@ -60,8 +62,9 @@ export class CalendarEventRsvp {
 	createdAt: number;
 	updatedBy?: string;
 	updatedAt?: number;
-	constructor(public readonly client: Client, json: ApiCalendarEventRsvp) {
-		this.calendarEventId = json.calendarEventId;
+	constructor(client: Client, json: ApiCalendarEventRsvp) {
+		super(client, Object.assign({}, json, { id: json.userId }));
+		this.calendarEventId = json.calendarEventId.toString();
 		this.channelId = json.channelId;
 		this.serverId = json.serverId;
 		this.userId = json.userId;

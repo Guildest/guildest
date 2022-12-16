@@ -1,7 +1,7 @@
 import { ApiBaseMentions, ApiForumTopicComment, ApiForumTopicResolve } from '@guildest/api-typings';
 import { Collection } from '@guildest/collection';
 import { DateParse } from '../utils/basicUtils';
-import { Base } from './base';
+import { Base, BaseReaction } from './base';
 import { Client } from './client';
 
 export class ForumTopic extends Base<ApiForumTopicResolve> {
@@ -9,6 +9,7 @@ export class ForumTopic extends Base<ApiForumTopicResolve> {
 	channelId: string;
 	title: string;
 	comments = new Collection<string, ForumTopicComment>();
+	reactions = new Array<BaseReaction>();
 	createdAt: number;
 	createdBy: string;
 	createdByWebhookId?: string;
@@ -19,7 +20,7 @@ export class ForumTopic extends Base<ApiForumTopicResolve> {
 	content?: string;
 	mentions?: ApiBaseMentions;
 	constructor(client: Client, json: ApiForumTopicResolve) {
-		super(client, json);
+		super(client, Object.assign({}, json, { id: json.id.toString() }));
 		this.serverId = json.serverId;
 		this.channelId = json.channelId;
 		this.title = json.title;
@@ -40,6 +41,7 @@ export class ForumTopic extends Base<ApiForumTopicResolve> {
 
 export class ForumTopicComment extends Base<ApiForumTopicComment> {
 	content?: string;
+	reactions = new Array<BaseReaction>();
 	createdAt: number;
 	updatedAt?: number;
 	channelId: string;
@@ -47,7 +49,7 @@ export class ForumTopicComment extends Base<ApiForumTopicComment> {
 	createdBy: string;
 	mentions?: ApiBaseMentions;
 	constructor(client: Client, json: ApiForumTopicComment) {
-		super(client, json);
+		super(client, Object.assign({}, json, { id: json.id.toString() }));
 		this.createdAt = Date.parse(json.createdAt);
 		this.channelId = json.channelId;
 		this.forumTopicId = json.forumTopicId;

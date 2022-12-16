@@ -15,33 +15,45 @@ export class ServerXPRouter {
 	constructor(public readonly rest: restManager) {}
 
 	/**
-	 * Server Member or Members associated with Role Id has been Awarded XP Respect to Server on Guilded.
+	 * Server Member has been Awarded XP Respect to Server on Guilded.
 	 * @param serverId The ID of the Server on Guilded.
-	 * @param payload The JSON Parameters of the Amount of XP on Guilded.
 	 * @param memberId The ID of the Member of the Server on Guilded.
-	 * @param roleId The ID of the Member Role of the Server on Guilded.
-	 * @returns The Total Amount of XP of Server Member or "True" Boolean on Roles Awarding XP on Guilded.
-	 * @example ServerXPRouter.award("abc", { amound: 10 } , "foo")
+	 * @param payload The JSON Parameters of the Amount of XP on Guilded.
+	 * @returns The Total Amount of XP of Server Member Awarding XP on Guilded.
+	 * @example ServerXPRouter.awardToMember("abc", "foo", { amount: 10 })
 	 */
 
-	async award(
+	async awardToMember(
 		serverId: string,
+		memberId: string,
 		payload: restServerMemberAwardPayloadXp,
-		memberId?: string,
-		roleId?: string,
-	): Promise<ApiServerMemberXpResponse | boolean> {
-		if (roleId)
-			return await this.rest.post<ApiServerMemberXpResponse, restServerMemberAwardPayloadXp>(
+	): Promise<ApiServerMemberXpResponse> {
+		return await this.rest.post<ApiServerMemberXpResponse, restServerMemberAwardPayloadXp>(
+			Endpoints.serverMemberXp(serverId, memberId),
+			payload,
+		);
+	}
+
+	/**
+	 * Server Member associated with Role has been Awarded XP Respect to Server on Guilded.
+	 * @param serverId The ID of the Server on Guilded.
+	 * @param roleId The ID of the Role of the Server on Guilded.
+	 * @param payload The JSON Parameters of the Amount of XP on Guilded.
+	 * @returns True or False Boolean Value on Success.
+	 * @example ServerXPRouter.awardToRole("abc", "foo", { amount: 10 })
+	 */
+
+	async awardToRole(
+		serverId: string,
+		roleId: string,
+		payload: restServerMemberAwardPayloadXp,
+	): Promise<boolean> {
+		return await this.rest
+			.post<undefined, restServerMemberAwardPayloadXp>(
 				Endpoints.serverRoleXp(serverId, parseInt(roleId)),
 				payload,
-			);
-		else
-			return await this.rest
-				.post<void, restServerMemberAwardPayloadXp>(
-					Endpoints.serverMemberXp(serverId, memberId!),
-					payload,
-				)
-				?.then(() => true);
+			)
+			.then(() => true);
 	}
 
 	/**
@@ -50,10 +62,10 @@ export class ServerXPRouter {
 	 * @param memberId The ID of the Member of the Server on Guilded.
 	 * @param payload The JSON Parameters of the Total Amount of XP on Guilded.
 	 * @returns The Total Amount of XP of Server Member or "True" Boolean on Roles Awarding XP on Guilded.
-	 * @example ServerXPRouter.update("abc", "foo" , { total: 10 })
+	 * @example ServerXPRouter.updateToMember("abc", "foo" , { total: 10 })
 	 */
 
-	async update(
+	async updateToMember(
 		serverId: string,
 		memberId: string,
 		payload: restServerMemberUpdatePayloadXp,

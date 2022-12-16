@@ -4,6 +4,7 @@ import {
 	ApiServerType,
 	ApiUserResolve,
 	ApiServerMemberResolve,
+	ApiBaseSocialLinks,
 } from '@guildest/api-typings';
 import { Collection } from '@guildest/collection';
 import { DateParse } from '../utils/basicUtils';
@@ -51,7 +52,9 @@ export class Server extends Base<ApiServer> {
 
 export class Member extends Base<ApiServerMemberResolve> {
 	user: User;
-	roleIds?: number[];
+	xp?: number = 0;
+	roleIds?: string[];
+	socialLinks = new Array<ApiBaseSocialLinks>();
 	nickname?: string;
 	joinedAt?: number;
 	isOwner: boolean | null = null;
@@ -59,7 +62,7 @@ export class Member extends Base<ApiServerMemberResolve> {
 	constructor(client: Client, json: ApiServerMemberResolve) {
 		super(client, { ...json, id: json.user.id });
 		this.user = new User(this.client, json.user);
-		this.roleIds = json.roleIds;
+		this.roleIds = json.roleIds.map((role) => role?.toString());
 		this.__update(json);
 	}
 
@@ -67,9 +70,10 @@ export class Member extends Base<ApiServerMemberResolve> {
 		return this.user.name;
 	}
 
-	__update(json: Partial<ApiServerMemberResolve>) {
+	__update(json: Partial<ApiServerMemberResolve | { xp?: number }>) {
+		if ('xp' in json) this.xp = json.xp;
 		if ('joinedAt' in json) this.joinedAt = DateParse(json.joinedAt);
-		if ('roleIds' in json) this.roleIds = json.roleIds;
+		if ('roleIds' in json) this.roleIds = json.roleIds?.map((role) => role?.toString());
 		if ('nickname' in json) this.nickname = json.nickname;
 		if ('isOwner' in json) this.isOwner = json.isOwner ?? false;
 	}

@@ -7,6 +7,8 @@ import { Message } from './messages';
 import { ForumTopic } from './forums';
 import { ListItem } from './listItems';
 import { Doc } from './docs';
+import { CalendarEvent } from './calenderEvents';
+import { Webhook } from './webhooks';
 
 export class Channel extends Base<ApiServerChannel> {
 	type: ApiChannelType;
@@ -16,6 +18,8 @@ export class Channel extends Base<ApiServerChannel> {
 	forumTopics = new Collection<string, ForumTopic>();
 	listItems = new Collection<string, ListItem>();
 	docs = new Collection<string, Doc>();
+	calenderEvents = new Collection<string, CalendarEvent>();
+	webhooks = new Collection<string, Webhook>();
 	createdAt: number;
 	createdBy: string;
 	serverId: string;
