@@ -37,7 +37,7 @@ import {
 	restWebhookUpdatePayload,
 } from '@guildest/api-typings';
 import { ClientUser, User } from './users';
-import { gateawayHandler } from '../handlers/gateaway';
+import { eventsHandler } from '../handlers/events';
 import { Channel } from './channels';
 import { Server, Member, MemberBan } from './servers';
 import { Message } from './messages';
@@ -48,7 +48,7 @@ import { Doc } from './docs';
 import { CalendarEvent, CalendarEventRsvp } from './calenderEvents';
 import { BaseReaction } from './base';
 import { Webhook } from './webhooks';
-import { ClientEvents } from '../constants/events';
+import { ClientEvents } from '../constants/typings';
 
 export class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
 	user?: ClientUser;
@@ -56,8 +56,8 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 
 	ws: webSocketManager = new webSocketManager({ token: this.token, ...this.option.ws });
 	rest: restManager = new restManager({ token: this.token, ...this.option.rest });
-	gateawayHandler: gateawayHandler = new gateawayHandler(this);
 
+	__eventsHandler: eventsHandler = new eventsHandler(this);
 	__collections = new Collection<string, User | Channel | Server>();
 
 	router = {
@@ -91,7 +91,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			this.emit('ready');
 		});
 
-		this.ws.on('events', (eNm, eVp) => this.gateawayHandler.events[eNm](eVp));
+		this.ws.on('events', (eNm, eVp) => this.__eventsHandler.events[eNm](eVp));
 	}
 
 	getChannel(channelId: string): Channel | undefined {
@@ -106,7 +106,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			.fetch(channelId)
 			.then((res) => {
 				if (!raw) return new Channel(this, res);
-				else raw.__update(res);
+				else raw._update(res);
 				return raw;
 			})
 			.then((cH) => {
@@ -131,7 +131,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			.update(channelId, payload)
 			.then((res) => {
 				if (!raw) return new Channel(this, res);
-				else raw.__update(res);
+				else raw._update(res);
 				return raw;
 			})
 			.then((cH) => {
@@ -159,7 +159,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			.fetch(serverId)
 			.then((res) => {
 				if (!raw) return new Server(this, res);
-				else raw.__update(res);
+				else raw._update(res);
 				return raw;
 			})
 			.then((sR) => {
@@ -188,7 +188,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			res.map((msg) => {
 				raw = this.getChatMessage(channelId, msg.id);
 				if (!raw) raw = new Message(this, msg);
-				else raw.__update(msg);
+				else raw._update(msg);
 				if (cache && channel) channel.messages.add(raw.id, raw, true);
 				return raw;
 			}),
@@ -201,7 +201,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		if (!channel) throw new GuildedAPIError('invalid_channel', { meta: { channelId } });
 		return await this.router.messages.fetch(channelId, messageId).then((res) => {
 			if (!raw) raw = new Message(this, res);
-			else raw.__update(res);
+			else raw._update(res);
 			if (cache && channel) channel.messages.add(raw.id, raw, true);
 			return raw;
 		});
@@ -238,7 +238,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			.update(channelId, messageId, payload)
 			.then((res) => {
 				if (!raw) return new Message(this, res);
-				else raw.__update(res);
+				else raw._update(res);
 				return raw;
 			})
 			.then((msg) => {
@@ -277,8 +277,8 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		return await this.router.members.fetchAll(serverId).then((res) =>
 			res.map((mem) => {
 				raw = this.getServerMember(serverId, mem.user.id);
-				if (!raw) raw = new Member(this, mem);
-				else raw.__update(mem);
+				if (!raw) raw = new Member(this, { ...mem, serverId: serverId });
+				else raw._update(mem);
 				if (cache) server.members.add(raw.id, raw, true);
 				return raw;
 			}),
@@ -290,8 +290,8 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		let raw = this.getServerMember(serverId, userId);
 		if (!server) throw new GuildedAPIError('invalid_server', { meta: { serverId, userId } });
 		return await this.router.members.fetch(serverId, userId).then((res) => {
-			if (!raw) raw = new Member(this, res);
-			else raw.__update(res);
+			if (!raw) raw = new Member(this, { ...res, serverId: serverId });
+			else raw._update(res);
 			if (cache) server.members.add(raw.id, raw, true);
 			return raw;
 		});
@@ -312,7 +312,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		return await this.router.members
 			.update(serverId, userId, { nickname: nickname })
 			.then(() => {
-				member.__update({ nickname: nickname });
+				member._update({ nickname: nickname });
 				return member;
 			});
 	}
@@ -324,7 +324,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		if (!member)
 			throw new GuildedAPIError('invalid_server_member', { meta: { serverId, userId } });
 		return await this.router.members.delete(serverId, userId).then(() => {
-			member.__update({ nickname: undefined });
+			member._update({ nickname: undefined });
 			return member;
 		});
 	}
@@ -358,7 +358,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			res.map((ban) => {
 				raw = this.getServerMemberBan(serverId, ban.user.id);
 				if (!raw) raw = new MemberBan(this, ban);
-				else raw.__update(ban);
+				else raw._update(ban);
 				if (cache && server) server.bans.add(raw.id, raw);
 				return raw;
 			}),
@@ -375,7 +375,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		if (!server) throw new GuildedAPIError('invalid_server', { meta: { serverId } });
 		return await this.router.bans.fetch(serverId, userId).then((res) => {
 			if (!raw) raw = new MemberBan(this, res);
-			else raw.__update(res);
+			else raw._update(res);
 			if (cache && server) server.bans.add(raw.id, raw);
 			return raw;
 		});
@@ -430,7 +430,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			res.map((fT) => {
 				raw = this.getForumTopic(channelId, fT.id.toString());
 				if (!raw) raw = new ForumTopic(this, fT);
-				else raw.__update(fT);
+				else raw._update(fT);
 				if (cache && channel) channel.forumTopics.add(raw.id, raw);
 				return raw;
 			}),
@@ -448,7 +448,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			throw new GuildedAPIError('invalid_channel', { meta: { channelId, forumTopicId } });
 		return await this.router.forumTopics.fetch(channelId, forumTopicId).then((res) => {
 			if (!raw) raw = new ForumTopic(this, res);
-			else raw.__update(res);
+			else raw._update(res);
 			if (cache && channel) channel.forumTopics.add(raw.id, raw);
 			return raw;
 		});
@@ -486,7 +486,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			.update(channelId, forumTopicId, payload)
 			.then((res) => {
 				if (!raw) raw = new ForumTopic(this, res);
-				else raw.__update(res);
+				else raw._update(res);
 				channel.forumTopics.add(raw.id, raw, true);
 				return raw;
 			});
@@ -509,7 +509,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		if (!forumTopic)
 			throw new GuildedAPIError('invalid_forum_topic', { meta: { channelId, forumTopicId } });
 		return await this.router.forumTopics.pin(channelId, forumTopicId).then(() => {
-			forumTopic.__update({ isPinned: true });
+			forumTopic._update({ isPinned: true });
 			return forumTopic;
 		});
 	}
@@ -521,7 +521,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		if (!forumTopic)
 			throw new GuildedAPIError('invalid_forum_topic', { meta: { channelId, forumTopicId } });
 		return await this.router.forumTopics.unpin(channelId, forumTopicId).then(() => {
-			forumTopic.__update({ isPinned: false });
+			forumTopic._update({ isPinned: false });
 			return forumTopic;
 		});
 	}
@@ -533,7 +533,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		if (!forumTopic)
 			throw new GuildedAPIError('invalid_forum_topic', { meta: { channelId, forumTopicId } });
 		return await this.router.forumTopics.lock(channelId, forumTopicId).then(() => {
-			forumTopic.__update({ isLocked: true });
+			forumTopic._update({ isLocked: true });
 			return forumTopic;
 		});
 	}
@@ -545,7 +545,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		if (!forumTopic)
 			throw new GuildedAPIError('invalid_forum_topic', { meta: { channelId, forumTopicId } });
 		return await this.router.forumTopics.unlock(channelId, forumTopicId).then(() => {
-			forumTopic.__update({ isLocked: false });
+			forumTopic._update({ isLocked: false });
 			return forumTopic;
 		});
 	}
@@ -584,7 +584,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			res.map((fTc) => {
 				raw = this.getForumTopicComment(channelId, forumTopicId, fTc.id.toString());
 				if (!raw) raw = new ForumTopicComment(this, fTc);
-				else raw.__update(fTc);
+				else raw._update(fTc);
 				if (cache && forumTopic) forumTopic.comments.add(raw.id, raw, true);
 				return raw;
 			}),
@@ -607,7 +607,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			.fetch(channelId, forumTopicId, forumTopicCommentId)
 			.then((res) => {
 				if (!raw) raw = new ForumTopicComment(this, res);
-				else raw.__update(res);
+				else raw._update(res);
 				if (cache && forumTopic) forumTopic.comments.add(raw.id, raw, true);
 				return raw;
 			});
@@ -652,7 +652,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			.update(channelId, forumTopicId, forumTopicCommentId, { content: content })
 			.then((res) => {
 				if (!raw) raw = new ForumTopicComment(this, res);
-				else raw.__update(res);
+				else raw._update(res);
 				forumTopic.comments.add(raw.id, raw, true);
 				return raw;
 			});
@@ -698,7 +698,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			res.map((liT) => {
 				raw = this.getListItem(channelId, liT.id);
 				if (!raw) raw = new ListItem(this, liT);
-				else raw.__update(liT);
+				else raw._update(liT);
 				if (cache) channel.listItems.add(raw.id, raw, true);
 				return raw;
 			}),
@@ -711,7 +711,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		if (!channel) throw new GuildedAPIError('invalid_channel', { meta: { channelId } });
 		return await this.router.listItems.fetch(channelId, listItemId).then((res) => {
 			if (!raw) raw = new ListItem(this, res);
-			else raw.__update(res);
+			else raw._update(res);
 			if (cache) channel.listItems.add(raw.id, raw, true);
 			return raw;
 		});
@@ -746,7 +746,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			.update(channelId, listItemId, { message: message, note: note })
 			.then((res) => {
 				if (!raw) raw = new ListItem(this, res);
-				else raw.__update(res);
+				else raw._update(res);
 				channel.listItems.add(raw.id, raw, true);
 				return raw;
 			});
@@ -768,7 +768,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		if (!raw)
 			throw new GuildedAPIError('invalid_list_item', { meta: { channelId, listItemId } });
 		return await this.router.listItems.complete(channelId, listItemId).then(() => {
-			raw.__update({ completedAt: new Date().toISOString(), completedBy: this.user?.id });
+			raw._update({ completedAt: new Date().toISOString(), completedBy: this.user?.id });
 			return raw;
 		});
 	}
@@ -780,7 +780,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		if (!raw)
 			throw new GuildedAPIError('invalid_list_item', { meta: { channelId, listItemId } });
 		return await this.router.listItems.uncomplete(channelId, listItemId).then(() => {
-			raw.__update({ completedAt: undefined, completedBy: undefined });
+			raw._update({ completedAt: undefined, completedBy: undefined });
 			return raw;
 		});
 	}
@@ -809,7 +809,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			res.map((doc) => {
 				raw = this.getDoc(channelId, doc.id.toString());
 				if (!raw) raw = new Doc(this, doc);
-				else raw.__update(doc);
+				else raw._update(doc);
 				if (cache) channel.docs.add(raw.id, raw, true);
 				return raw;
 			}),
@@ -822,7 +822,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		if (!channel) throw new GuildedAPIError('invalid_channel', { meta: { channelId } });
 		return await this.router.docs.fetch(channelId, docId).then((res) => {
 			if (!raw) raw = new Doc(this, res);
-			else raw.__update(res);
+			else raw._update(res);
 			if (cache) channel.docs.add(raw.id, raw, true);
 			return raw;
 		});
@@ -854,7 +854,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			});
 		return await this.router.docs.update(channelId, docId, { title, content }).then((res) => {
 			if (!raw) raw = new Doc(this, res);
-			else raw.__update(res);
+			else raw._update(res);
 			channel.docs.add(raw.id, raw, true);
 			return raw;
 		});
@@ -893,7 +893,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			res.map((cE) => {
 				raw = this.getCalendarEvent(channelId, cE.id.toString());
 				if (!raw) raw = new CalendarEvent(this, cE);
-				else raw.__update(cE);
+				else raw._update(cE);
 				if (cache) channel.calenderEvents.add(raw.id, raw, true);
 				return raw;
 			}),
@@ -911,7 +911,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			throw new GuildedAPIError('invalid_channel', { meta: { channelId, calendarEventId } });
 		return await this.router.calenderEvents.fetch(channelId, calendarEventId).then((res) => {
 			if (!raw) raw = new CalendarEvent(this, res);
-			else raw.__update(res);
+			else raw._update(res);
 			if (cache) channel.calenderEvents.add(raw.id, raw, true);
 			return raw;
 		});
@@ -946,7 +946,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			.update(channelId, calendarEventId, payload)
 			.then((res) => {
 				if (!raw) raw = new CalendarEvent(this, res);
-				else raw.__update(res);
+				else raw._update(res);
 				channel.calenderEvents.add(raw.id, raw, true);
 				return raw;
 			});
@@ -1000,7 +1000,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 				res.map((cErsvp) => {
 					raw = this.getCalendarEventRsvp(channelId, calendarEventId, cErsvp.userId);
 					if (!raw) raw = new CalendarEventRsvp(this, cErsvp);
-					else raw.__update(cErsvp);
+					else raw._update(cErsvp);
 					if (cache) cEvent.rsvps.add(raw.id, raw, true);
 					return raw;
 				}),
@@ -1025,7 +1025,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			.fetch(channelId, calendarEventId, userId)
 			.then((res) => {
 				if (!raw) raw = new CalendarEventRsvp(this, res);
-				else raw.__update(res);
+				else raw._update(res);
 				if (cache) cEvent.rsvps.add(raw.id, raw, true);
 				return raw;
 			});
@@ -1071,7 +1071,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			.update(channelId, calendarEventId, userId, payload)
 			.then((res) => {
 				if (!raw) raw = new CalendarEventRsvp(this, res);
-				else raw.__update(res);
+				else raw._update(res);
 				cEvent.rsvps.add(raw.id, raw, true);
 				return raw;
 			});
@@ -1259,7 +1259,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		return await this.router.serverXps
 			.awardToMember(serverId, userId, { amount: amount })
 			.then((res) => {
-				member.__update({ xp: res.total });
+				member._update({ xp: res.total });
 				return member;
 			});
 	}
@@ -1292,7 +1292,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		return await this.router.serverXps
 			.updateToMember(serverId, userId, { total: amount })
 			.then((res) => {
-				member.__update({ xp: res.total });
+				member._update({ xp: res.total });
 				return member;
 			});
 	}
@@ -1343,7 +1343,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 				meta: { serverId, userId },
 			});
 		return await this.router.roleMemberships.fetch(serverId, userId).then((res) => {
-			if (cache) member.__update({ roleIds: res });
+			if (cache) member._update({ roleIds: res });
 			return res.map((role) => role?.toString());
 		});
 	}
@@ -1415,7 +1415,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 				res.map((wH) => {
 					raw = this.getWebhook(serverId, wH.id);
 					if (!raw) raw = new Webhook(this, wH);
-					else raw.__update(wH);
+					else raw._update(wH);
 					if (cache) server.webhooks.add(raw.id, raw, true);
 					return raw;
 				}),
@@ -1431,7 +1431,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			});
 		return await this.router.webhooks.fetch(serverId, webhoookId).then((res) => {
 			if (!raw) raw = new Webhook(this, res);
-			else raw.__update(res);
+			else raw._update(res);
 			if (cache) server.webhooks.add(raw.id, raw, true);
 			return raw;
 		});
@@ -1465,7 +1465,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 			});
 		return await this.router.webhooks.update(serverId, webhookId, payload).then((res) => {
 			if (!raw) raw = new Webhook(this, res);
-			else raw.__update(res);
+			else raw._update(res);
 			server.webhooks.add(raw.id, raw, true);
 			return raw;
 		});

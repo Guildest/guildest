@@ -18,10 +18,10 @@ export class Webhook extends Base<ApiWebhook> {
 		this.createdAt = Date.parse(json.createdAt);
 		this.createdBy = json.createdBy;
 
-		this.__update(json);
+		this._update(json);
 	}
 
-	__update(json: Partial<ApiWebhook>) {
+	_update(json: Partial<ApiWebhook>) {
 		if ('name' in json) this.name = json.name;
 		if ('deletedAt' in json) this.deletedAt = DateParse(json.deletedAt);
 		if ('token' in json) this.token = json.token;

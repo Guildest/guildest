@@ -35,10 +35,10 @@ export class CalendarEvent extends Base<ApiCalendarEvent, string> {
 		this.createdAt = Date.parse(json.createdAt);
 		this.createdBy = json.createdBy;
 
-		this.__update(json);
+		this._update(json);
 	}
 
-	__update(json: Partial<ApiCalendarEvent>) {
+	_update(json: Partial<ApiCalendarEvent>) {
 		if ('name' in json) this.name = json.name;
 		if ('description' in json) this.description = json.description;
 		if ('location' in json) this.location = json.location;
@@ -71,10 +71,10 @@ export class CalendarEventRsvp extends Base<ApiCalendarEventRsvp & { id: string 
 		this.createdAt = Date.parse(json.createdAt);
 		this.createdBy = json.createdBy;
 
-		this.__update(json);
+		this._update(json);
 	}
 
-	__update(json: Partial<ApiCalendarEventRsvp>) {
+	_update(json: Partial<ApiCalendarEventRsvp>) {
 		if ('updatedBy' in json) this.updatedBy = json.updatedBy;
 		if ('status' in json) this.status = json.status;
 		if ('updatedAt' in json) this.updatedAt = DateParse(json.updatedAt);

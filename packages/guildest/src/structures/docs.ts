@@ -2,6 +2,7 @@ import { ApiDocs, ApiBaseMentions } from '@guildest/api-typings';
 import { DateParse } from '../utils/basicUtils';
 import { Base } from './base';
 import { Client } from './client';
+import { Server } from './servers';
 
 export class Doc extends Base<ApiDocs> {
 	serverId: string;
@@ -20,10 +21,14 @@ export class Doc extends Base<ApiDocs> {
 		this.createdAt = Date.parse(json.createdAt);
 		this.createdBy = json.createdBy;
 
-		this.__update(json);
+		this._update(json);
 	}
 
-	__update(json: Partial<ApiDocs>) {
+	get server(): Server | undefined {
+		return this.client.getServer(this.serverId);
+	}
+
+	_update(json: Partial<ApiDocs>) {
 		if ('mentions' in json) this.mentions = json.mentions;
 		if ('title' in json) this.title = json.title;
 		if ('content' in json) this.content = json.content;

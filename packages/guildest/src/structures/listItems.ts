@@ -25,10 +25,10 @@ export class ListItem extends Base<ApiListItemResolve> {
 		this.createdAt = Date.parse(json.createdAt);
 		this.createdBy = json.createdBy;
 
-		this.__update(json);
+		this._update(json);
 	}
 
-	__update(json: Partial<ApiListItemResolve>) {
+	_update(json: Partial<ApiListItemResolve>) {
 		if ('mentions' in json) this.mentions = json.mentions;
 		if ('createdByWebhookId' in json) this.createdByWebhookId = json.createdByWebhookId;
 		if ('updatedAt' in json) this.updatedAt = DateParse(json.updatedAt);

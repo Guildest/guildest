@@ -13,14 +13,14 @@ export class User extends Base<ApiUserResolve> {
 	constructor(client: Client, json: ApiUserResolve) {
 		super(client, json);
 		this.type = json.type ?? ApiUserType.User;
-		this.__update(json);
+		this._update(json);
 	}
 
 	get bot() {
 		return this.type === ApiUserType.Bot;
 	}
 
-	__update(json: Partial<ApiUserResolve>) {
+	_update(json: Partial<ApiUserResolve>) {
 		if ('createdAt' in json) this.createdAt = DateParse(json.createdAt);
 		if ('avatar' in json) this.avatar = json.avatar;
 		if ('banner' in json) this.banner = json.banner;

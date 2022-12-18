@@ -28,7 +28,7 @@ export class ForumTopic extends Base<ApiForumTopicResolve> {
 		this.createdBy = json.createdBy;
 	}
 
-	__update(json: Partial<ApiForumTopicResolve>) {
+	_update(json: Partial<ApiForumTopicResolve>) {
 		if ('createdByWebhookId' in json) this.createdByWebhookId = json.createdByWebhookId;
 		if ('updatedAt' in json) this.updatedAt = DateParse(json.updatedAt);
 		if ('bumpedAt' in json) this.bumpedAt = DateParse(json.bumpedAt);
@@ -54,10 +54,10 @@ export class ForumTopicComment extends Base<ApiForumTopicComment> {
 		this.channelId = json.channelId;
 		this.forumTopicId = json.forumTopicId;
 		this.createdBy = json.createdBy;
-		this.__update(json);
+		this._update(json);
 	}
 
-	__update(json: Partial<ApiForumTopicComment>) {
+	_update(json: Partial<ApiForumTopicComment>) {
 		if ('content' in json) this.content = json.content;
 		if ('updatedAt' in json) this.updatedAt = DateParse(json.updatedAt);
 		if ('mentions' in json) this.mentions = json.mentions;

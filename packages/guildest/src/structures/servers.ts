@@ -47,7 +47,7 @@ export class Server extends Base<ApiServer> {
 		) as Collection<string, Channel>;
 	}
 
-	__update(json: Partial<ApiServer>) {
+	_update(json: Partial<ApiServer>) {
 		if ('type' in json) this.type = json.type;
 		if ('url' in json) this.uri = json.url;
 		if ('about' in json) this.about = json.about;
@@ -62,24 +62,31 @@ export class Server extends Base<ApiServer> {
 export class Member extends Base<ApiServerMemberResolve> {
 	user: User;
 	xp?: number = 0;
+	serverId?: string;
 	roleIds?: string[];
 	socialLinks = new Array<ApiBaseSocialLinks>();
 	nickname?: string;
 	joinedAt?: number;
 	isOwner: boolean | null = null;
 
-	constructor(client: Client, json: ApiServerMemberResolve) {
+	constructor(client: Client, json: ApiServerMemberResolve & { serverId: string }) {
 		super(client, { ...json, id: json.user.id });
 		this.user = new User(this.client, json.user);
 		this.roleIds = json.roleIds.map((role) => role?.toString());
-		this.__update(json);
+		this._update(json);
 	}
 
 	get name() {
 		return this.user.name;
 	}
 
-	__update(json: Partial<ApiServerMemberResolve | { xp?: number }>) {
+	get server(): Server | undefined {
+		if (!this.serverId) return undefined;
+		else return this.client.getServer(this.serverId);
+	}
+
+	_update(json: Partial<ApiServerMemberResolve | { xp?: number; serverId: string }>) {
+		if ('serverId' in json) this.serverId = json.serverId;
 		if ('xp' in json) this.xp = json.xp;
 		if ('joinedAt' in json) this.joinedAt = DateParse(json.joinedAt);
 		if ('roleIds' in json) this.roleIds = json.roleIds?.map((role) => role?.toString());
@@ -100,10 +107,10 @@ export class MemberBan extends Base<ApiServerMemberBan> {
 		this.createdBy = json.createdBy;
 		this.createdAt = Date.parse(json.createdAt);
 
-		this.__update(json);
+		this._update(json);
 	}
 
-	__update(json: Partial<ApiServerMemberBan>) {
+	_update(json: Partial<ApiServerMemberBan>) {
 		if ('reason' in json) this.reason = json.reason;
 	}
 }

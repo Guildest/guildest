@@ -40,7 +40,7 @@ export class Channel extends Base<ApiServerChannel> {
 		this.serverId = json.serverId;
 		this.groupId = json.groupId;
 
-		this.__update(json);
+		this._update(json);
 	}
 
 	get server(): Server | undefined {
@@ -52,7 +52,7 @@ export class Channel extends Base<ApiServerChannel> {
 		return this.server.webhooks.filter((webhook) => webhook.channelId === this.id);
 	}
 
-	__update(json: Partial<ApiServerChannel>) {
+	_update(json: Partial<ApiServerChannel>) {
 		if ('topic' in json) this.topic = json.topic;
 		if ('updatedAt' in json) this.updatedAt = DateParse(json.updatedAt);
 		if ('parentId' in json) this.parentId = json.parentId;
