@@ -1,5 +1,5 @@
 import { restManager } from '../restManager';
-import { CalendarEventRouter, CalendarEventRsvpRouter } from '../routers/calenderEventRouter';
+import { CalendarEventRouter, CalendarEventRsvpRouter } from '../routers/calendarEventRouter';
 import { ChannelRouter } from '../routers/channelRouter';
 import { DocsRouter } from '../routers/docRouter';
 import { ForumTopicRouter } from '../routers/forumTopicRouter';
@@ -24,10 +24,10 @@ export class router {
 	public readonly channels: ChannelRouter;
 	/** The Server router for the Guilded REST API. */
 	public readonly servers: ServerRouter;
-	/** The Calender Events router for the Guilded REST API. */
-	public readonly calenderEvents: CalendarEventRouter;
-	/** The Calender Event Rsvps router for the Guilded REST API. */
-	public readonly calenderEventRsvps: CalendarEventRsvpRouter;
+	/** The calendar Events router for the Guilded REST API. */
+	public readonly calendarEvents: CalendarEventRouter;
+	/** The calendar Event Rsvps router for the Guilded REST API. */
+	public readonly calendarEventRsvps: CalendarEventRsvpRouter;
 	/** The Docs router for the Guilded REST API. */
 	public readonly docs: DocsRouter;
 	/** The Forum Topic router for the Guilded REST API. */
@@ -55,8 +55,8 @@ export class router {
 	constructor(public readonly rest: restManager) {
 		this.channels = new ChannelRouter(rest);
 		this.servers = new ServerRouter(rest);
-		this.calenderEvents = new CalendarEventRouter(rest);
-		this.calenderEventRsvps = new CalendarEventRsvpRouter(rest);
+		this.calendarEvents = new CalendarEventRouter(rest);
+		this.calendarEventRsvps = new CalendarEventRsvpRouter(rest);
 		this.docs = new DocsRouter(rest);
 		this.forumTopics = new ForumTopicRouter(rest);
 		this.groupMemberships = new GroupMembershipRouter(rest);

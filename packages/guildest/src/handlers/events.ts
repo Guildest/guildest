@@ -1,10 +1,13 @@
 import {
 	eventBotServerMembershipCreated,
 	eventBotServerMembershipDeleted,
+	eventCalendarEventCreated,
 	eventChatMessageCreated,
 	eventChatMessageDeleted,
 	eventChatMessageUpdated,
 	eventDocCreated,
+	eventDocDeleted,
+	eventDocUpdated,
 	eventServerChannelCreated,
 	eventServerChannelDeleted,
 	eventServerChannelUpdated,
@@ -223,5 +226,28 @@ export class eventsHandler {
 
 			this.client.emit('DocCreated', rDoc);
 		},
+		DocUpdated: async ({ doc }: eventDocUpdated) => {
+			const channel =
+				this.client.getChannel(doc.channelId) ??
+				(await this.client.getRESTChannel(doc.channelId));
+			let rDoc = this.client.getDoc(doc.channelId, doc.id.toString());
+			if (!rDoc) rDoc = new Doc(this.client, doc);
+			else rDoc._update(doc);
+			channel.docs.add(rDoc.id, rDoc, true);
+
+			this.client.emit('DocUpdated', rDoc);
+		},
+		DocDeleted: async ({ doc }: eventDocDeleted) => {
+			const channel =
+				this.client.getChannel(doc.channelId) ??
+				(await this.client.getRESTChannel(doc.channelId));
+			let rDoc = this.client.getDoc(doc.channelId, doc.id.toString());
+			if (!rDoc) rDoc = new Doc(this.client, doc);
+			else rDoc._update(doc);
+			channel.docs.delete(rDoc.id);
+
+			this.client.emit('DocDeleted', rDoc);
+		},
+		CalendarEventCreated: async ({}: eventCalendarEventCreated) => {},
 	};
 }

@@ -118,7 +118,7 @@ export class CalendarEventRsvpRouter {
 	 * Fetch Request for Single Calendar Event Rsvp Router on Guilded REST API.
 	 * @param channelId The ID of the channel on Guilded.
 	 * @param calendarEventId The ID of the Calendar Event on Guilded.
-	 * @param userId The ID of the user of Calender Event on Guilded.
+	 * @param userId The ID of the user of calendar Event on Guilded.
 	 * @returns Calendar Event Rsvp Object on Guilded.
 	 * @example CalendarEventRsvpRouter.fetch("abc" , "foo" , "bar")
 	 */
@@ -158,7 +158,7 @@ export class CalendarEventRsvpRouter {
 	 * Update OR Create Request for Calendar Event Rsvp Router on Guilded REST API.
 	 * @param channelId The ID of the channel on Guilded.
 	 * @param calendarEventId The ID of the Calendar Event on Guilded.
-	 * @param userId The ID of the user of Calender Event on Guilded.
+	 * @param userId The ID of the user of calendar Event on Guilded.
 	 * @param payload The JSON Params for Update Request on Guilded.
 	 * @returns Calendar Event Rsvp Object on Guilded.
 	 * @example CalendarEventRsvpRouter.update("abc" , "foo" , "bar" , { status : "going" })
@@ -182,7 +182,7 @@ export class CalendarEventRsvpRouter {
 	 * Delete Request for Calendar Event Rsvp Router on Guilded REST API.
 	 * @param channelId The ID of the channel on Guilded.
 	 * @param calendarEventId The ID of the Calendar Event on Guilded.
-	 * @param userId The ID of the user of Calender Event on Guilded.
+	 * @param userId The ID of the user of calendar Event on Guilded.
 	 * @returns Boolean Value as "true" or Error
 	 * @example CalendarEventRsvpRouter.delete("abc" , "foo" , "bar")
 	 */

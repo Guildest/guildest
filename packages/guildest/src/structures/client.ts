@@ -38,17 +38,25 @@ import {
 } from '@guildest/api-typings';
 import { ClientUser, User } from './users';
 import { eventsHandler } from '../handlers/events';
-import { Channel } from './channels';
+import {
+	CalendarEventChannel,
+	Channel,
+	ChatSupportedChannel,
+	DocChannel,
+	ForumChannel,
+	ListChannel,
+	WebhookSupportedChannel,
+} from './channels';
 import { Server, Member, MemberBan } from './servers';
 import { Message } from './messages';
 import { ForumTopic, ForumTopicComment } from './forums';
-import { GuildedAPIError } from '../constants/errors';
 import { ListItem } from './listItems';
 import { Doc } from './docs';
-import { CalendarEvent, CalendarEventRsvp } from './calenderEvents';
+import { CalendarEvent, CalendarEventRsvp } from './calendarEvents';
 import { BaseReaction } from './base';
 import { Webhook } from './webhooks';
 import { ClientEvents } from '../constants/typings';
+import { fetchChannelType } from '../utils/basicUtils';
 
 export class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
 	user?: ClientUser;
@@ -70,7 +78,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		forumTopicComments: new ForumTopicCommentRouter(this.rest),
 		listItems: new ListItemRouter(this.rest),
 		docs: new DocsRouter(this.rest),
-		calenderEvents: new CalendarEventRouter(this.rest),
+		calendarEvents: new CalendarEventRouter(this.rest),
 		calendarEventRsvps: new CalendarEventRsvpRouter(this.rest),
 		reactions: new ReactionRouter(this.rest),
 		serverXps: new ServerXPRouter(this.rest),
@@ -94,35 +102,35 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		this.ws.on('events', (eNm, eVp) => this.__eventsHandler.events[eNm](eVp));
 	}
 
-	getChannel(channelId: string): Channel | undefined {
-		if (channelId && this.__collections.has(channelId))
-			return this.__collections.get(channelId) as Channel;
+	getChannel<R = Channel>(channelId: string): R | undefined {
+		let channel = this.__collections.get(channelId);
+		if (channel && channel instanceof Channel) return channel as R;
 		else return undefined;
 	}
 
-	async getRESTChannel(channelId: string, cache = true): Promise<Channel> {
-		const raw = this.getChannel(channelId);
+	async getRESTChannel<R = Channel>(channelId: string, cache = true): Promise<R> {
+		const raw = this.getChannel<Channel>(channelId);
 		return await this.router.channels
 			.fetch(channelId)
 			.then((res) => {
-				if (!raw) return new Channel(this, res);
+				if (!raw) return new (fetchChannelType(res.type))(this, res);
 				else raw._update(res);
 				return raw;
 			})
 			.then((cH) => {
 				if (cache) this.__collections.add(channelId, cH, true);
-				return cH;
+				return cH as R;
 			});
 	}
 
 	async createRESTChannel(payload: restCreateChannelPayload): Promise<Channel> {
-		return await this.router.channels
-			.create(payload)
-			.then((res) => new Channel(this, res))
-			.then((cH) => {
-				this.__collections.add(cH.id, cH);
-				return cH;
-			});
+		return await this.router.channels.create(payload).then((res) => {
+			let exChannel = this.getChannel(res.id);
+			if (!exChannel) exChannel = new (fetchChannelType(res.type))(this, res);
+			else exChannel._update(res);
+			this.__collections.add(exChannel.id, exChannel);
+			return exChannel;
+		});
 	}
 
 	async editRESTChannel(channelId: string, payload: restUpdateChannelPayload): Promise<Channel> {
@@ -130,7 +138,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		return await this.router.channels
 			.update(channelId, payload)
 			.then((res) => {
-				if (!raw) return new Channel(this, res);
+				if (!raw) return new (fetchChannelType(res.type))(this, res);
 				else raw._update(res);
 				return raw;
 			})
@@ -169,41 +177,43 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 	}
 
 	getChatMessages(channelId: string): Collection<string, Message> | undefined {
-		const channel = this.getChannel(channelId);
+		const channel = this.getChannel<ChatSupportedChannel>(channelId);
 		if (!channel) return undefined;
 		else return channel.messages;
 	}
 
 	getChatMessage(channelId: string, messageId: string): Message | undefined {
-		const channel = this.getChannel(channelId);
-		if (!channel) return undefined;
-		else return channel.messages.get(messageId);
+		const messages = this.getChatMessages(channelId);
+		if (!messages) return undefined;
+		else return messages.get(messageId);
 	}
 
 	async getRESTChatMessages(channelId: string, cache = true): Promise<Array<Message>> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
+		const channel =
+			this.getChannel<ChatSupportedChannel>(channelId) ??
+			(await this.getRESTChannel<ChatSupportedChannel>(channelId));
 		let raw: Message | undefined;
-		if (!channel) throw new GuildedAPIError('invalid_channel', { meta: { channelId } });
 		return await this.router.messages.fetchAll(channelId).then((res) =>
 			res.map((msg) => {
 				raw = this.getChatMessage(channelId, msg.id);
 				if (!raw) raw = new Message(this, msg);
 				else raw._update(msg);
-				if (cache && channel) channel.messages.add(raw.id, raw, true);
+				if (cache) channel.messages.add(raw.id, raw, true);
 				return raw;
 			}),
 		);
 	}
 
 	async getRESTChatMessage(channelId: string, messageId: string, cache = true): Promise<Message> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		let raw = this.getChatMessage(channelId, messageId);
-		if (!channel) throw new GuildedAPIError('invalid_channel', { meta: { channelId } });
+		const channel =
+			this.getChannel<ChatSupportedChannel>(channelId) ??
+			(await this.getRESTChannel<ChatSupportedChannel>(channelId));
+		let exMessage = this.getChatMessage(channelId, messageId);
 		return await this.router.messages.fetch(channelId, messageId).then((res) => {
-			if (!raw) raw = new Message(this, res);
-			else raw._update(res);
-			if (cache && channel) channel.messages.add(raw.id, raw, true);
-			return raw;
+			if (!exMessage) exMessage = new Message(this, res);
+			else exMessage._update(res);
+			if (cache) channel.messages.add(exMessage.id, exMessage, true);
+			return exMessage;
 		});
 	}
 
@@ -211,16 +221,16 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		channelId: string,
 		payload: restChannelMessageCreatePayload,
 	): Promise<Message> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		if (!channel)
-			throw new GuildedAPIError('invalid_channel', { meta: { channelId, payload } });
-		return await this.router.messages
-			.create(channelId, payload)
-			.then((res) => new Message(this, res))
-			.then((msg) => {
-				channel?.messages.add(msg.id, msg, true);
-				return msg;
-			});
+		const channel =
+			this.getChannel<ChatSupportedChannel>(channelId) ??
+			(await this.getRESTChannel<ChatSupportedChannel>(channelId));
+		return await this.router.messages.create(channelId, payload).then((res) => {
+			let exMessage = this.getChatMessage(channelId, res.id);
+			if (!exMessage) exMessage = new Message(this, res);
+			else exMessage._update(res);
+			channel.messages.add(exMessage.id, exMessage, true);
+			return exMessage;
+		});
 	}
 
 	async editRESTChatMessage(
@@ -228,18 +238,16 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		messageId: string,
 		payload: restChannelMessageEditPayload,
 	): Promise<Message> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		if (!channel)
-			throw new GuildedAPIError('invalid_channel', {
-				meta: { channelId, messageId, payload },
-			});
-		const raw = this.getChatMessage(channelId, messageId);
+		const channel =
+			this.getChannel<ChatSupportedChannel>(channelId) ??
+			(await this.getRESTChannel<ChatSupportedChannel>(channelId));
+		let message = this.getChatMessage(channelId, messageId);
 		return await this.router.messages
 			.update(channelId, messageId, payload)
 			.then((res) => {
-				if (!raw) return new Message(this, res);
-				else raw._update(res);
-				return raw;
+				if (!message) message = new Message(this, res);
+				else message._update(res);
+				return message;
 			})
 			.then((msg) => {
 				channel.messages.add(messageId, msg, true);
@@ -248,9 +256,9 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 	}
 
 	async deleteRESTChatMessage(channelId: string, messageId: string): Promise<boolean> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		if (!channel)
-			throw new GuildedAPIError('invalid_channel', { meta: { channelId, messageId } });
+		const channel =
+			this.getChannel<ChatSupportedChannel>(channelId) ??
+			(await this.getRESTChannel<ChatSupportedChannel>(channelId));
 		return await this.router.messages
 			.delete(channelId, messageId)
 			.then(() => channel.messages.delete(messageId))
@@ -264,36 +272,32 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 	}
 
 	getServerMember(serverId: string, userId: string): Member | undefined {
-		const server = this.getServer(serverId);
-		if (!server) return undefined;
-		else if (!(userId && server.members.has(userId))) return undefined;
-		else return server.members.get(userId);
+		const members = this.getServerMembers(serverId);
+		if (!members) return undefined;
+		else return members.get(userId);
 	}
 
 	async getRESTServerMembers(serverId: string, cache = true): Promise<Array<Member>> {
 		const server = this.getServer(serverId) ?? (await this.getRESTServer(serverId));
-		let raw: Member | undefined;
-		if (!server) throw new GuildedAPIError('invalid_server', { meta: { serverId } });
 		return await this.router.members.fetchAll(serverId).then((res) =>
 			res.map((mem) => {
-				raw = this.getServerMember(serverId, mem.user.id);
-				if (!raw) raw = new Member(this, { ...mem, serverId: serverId });
-				else raw._update(mem);
-				if (cache) server.members.add(raw.id, raw, true);
-				return raw;
+				let member = this.getServerMember(serverId, mem.user.id);
+				if (!member) member = new Member(this, { ...mem, serverId: serverId });
+				else member._update(mem);
+				if (cache) server.members.add(member.id, member, true);
+				return member;
 			}),
 		);
 	}
 
 	async getRESTServerMember(serverId: string, userId: string, cache = true): Promise<Member> {
 		const server = this.getServer(serverId) ?? (await this.getRESTServer(serverId));
-		let raw = this.getServerMember(serverId, userId);
-		if (!server) throw new GuildedAPIError('invalid_server', { meta: { serverId, userId } });
+		let exMember = this.getServerMember(serverId, userId);
 		return await this.router.members.fetch(serverId, userId).then((res) => {
-			if (!raw) raw = new Member(this, { ...res, serverId: serverId });
-			else raw._update(res);
-			if (cache) server.members.add(raw.id, raw, true);
-			return raw;
+			if (!exMember) exMember = new Member(this, { ...res, serverId: serverId });
+			else exMember._update(res);
+			if (cache) server.members.add(exMember.id, exMember, true);
+			return exMember;
 		});
 	}
 
@@ -305,10 +309,6 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		const member =
 			this.getServerMember(serverId, userId) ??
 			(await this.getRESTServerMember(serverId, userId));
-		if (!member)
-			throw new GuildedAPIError('invalid_server_member', {
-				meta: { serverId, userId, nickname },
-			});
 		return await this.router.members
 			.update(serverId, userId, { nickname: nickname })
 			.then(() => {
@@ -321,8 +321,6 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		const member =
 			this.getServerMember(serverId, userId) ??
 			(await this.getRESTServerMember(serverId, userId));
-		if (!member)
-			throw new GuildedAPIError('invalid_server_member', { meta: { serverId, userId } });
 		return await this.router.members.delete(serverId, userId).then(() => {
 			member._update({ nickname: undefined });
 			return member;
@@ -331,7 +329,6 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 
 	async kickRESTServerMember(serverId: string, userId: string): Promise<boolean> {
 		const server = this.getServer(serverId) ?? (await this.getRESTServer(serverId));
-		if (!server) throw new GuildedAPIError('invalid_server', { meta: { serverId, userId } });
 		return await this.router.members.kick(serverId, userId).then(() => {
 			server.members.delete(userId);
 			return true;
@@ -345,22 +342,20 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 	}
 
 	getServerMemberBan(serverId: string, userId: string): MemberBan | undefined {
-		const server = this.getServer(serverId);
-		if (!server) return undefined;
-		else return server.bans.get(userId);
+		const memberBans = this.getServerMemberBans(serverId);
+		if (!memberBans) return undefined;
+		else return memberBans.get(userId);
 	}
 
 	async getRESTServerMemberBans(serverId: string, cache = true): Promise<Array<MemberBan>> {
 		const server = this.getServer(serverId) ?? (await this.getRESTServer(serverId));
-		let raw: MemberBan | undefined;
-		if (!server) throw new GuildedAPIError('invalid_server', { meta: { serverId } });
 		return await this.router.bans.fetchAll(serverId).then((res) =>
 			res.map((ban) => {
-				raw = this.getServerMemberBan(serverId, ban.user.id);
-				if (!raw) raw = new MemberBan(this, ban);
-				else raw._update(ban);
-				if (cache && server) server.bans.add(raw.id, raw);
-				return raw;
+				let exMemberBan = this.getServerMemberBan(serverId, ban.user.id);
+				if (!exMemberBan) exMemberBan = new MemberBan(this, ban);
+				else exMemberBan._update(ban);
+				if (cache) server.bans.add(exMemberBan.id, exMemberBan);
+				return exMemberBan;
 			}),
 		);
 	}
@@ -371,13 +366,12 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		cache = true,
 	): Promise<MemberBan> {
 		const server = this.getServer(serverId) ?? (await this.getRESTServer(serverId));
-		let raw = this.getServerMemberBan(serverId, userId);
-		if (!server) throw new GuildedAPIError('invalid_server', { meta: { serverId } });
+		let exMemberBan = this.getServerMemberBan(serverId, userId);
 		return await this.router.bans.fetch(serverId, userId).then((res) => {
-			if (!raw) raw = new MemberBan(this, res);
-			else raw._update(res);
-			if (cache && server) server.bans.add(raw.id, raw);
-			return raw;
+			if (!exMemberBan) exMemberBan = new MemberBan(this, res);
+			else exMemberBan._update(res);
+			if (cache && server) server.bans.add(exMemberBan.id, exMemberBan);
+			return exMemberBan;
 		});
 	}
 
@@ -387,19 +381,17 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		reason?: string,
 	): Promise<MemberBan> {
 		const server = this.getServer(serverId) ?? (await this.getRESTServer(serverId));
-		if (!server) throw new GuildedAPIError('invalid_server', { meta: { serverId } });
-		return await this.router.bans
-			.create(serverId, userId, { reason: reason })
-			.then((res) => new MemberBan(this, res))
-			.then((ban) => {
-				server.bans.add(ban.id, ban, true);
-				return ban;
-			});
+		return await this.router.bans.create(serverId, userId, { reason: reason }).then((res) => {
+			let exMemberBan = this.getServerMemberBan(serverId, userId);
+			if (!exMemberBan) exMemberBan = new MemberBan(this, res);
+			else exMemberBan._update(res);
+			server.bans.add(exMemberBan.id, exMemberBan);
+			return exMemberBan;
+		});
 	}
 
 	async deleteRESTServerMemberBans(serverId: string, userId: string): Promise<boolean> {
 		const server = this.getServer(serverId) ?? (await this.getRESTServer(serverId));
-		if (!server) throw new GuildedAPIError('invalid_server', { meta: { serverId } });
 		return await this.router.bans.delete(serverId, userId).then(() => {
 			server.bans.delete(userId);
 			return true;
@@ -407,15 +399,15 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 	}
 
 	getForumTopics(channelId: string): Collection<string, ForumTopic> | undefined {
-		const channel = this.getChannel(channelId);
+		const channel = this.getChannel<ForumChannel>(channelId);
 		if (!channel) return undefined;
 		else return channel.forumTopics;
 	}
 
 	getForumTopic(channelId: string, forumTopicId: string): ForumTopic | undefined {
-		const channel = this.getChannel(channelId);
-		if (!channel) return undefined;
-		else return channel.forumTopics.get(forumTopicId);
+		const forumTopics = this.getForumTopics(channelId);
+		if (!forumTopics) return undefined;
+		else return forumTopics.get(forumTopicId);
 	}
 
 	async getRESTForumTopics(
@@ -423,16 +415,16 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		query: restForumTopicsQueryParams,
 		cache = true,
 	): Promise<Array<ForumTopic>> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		let raw: ForumTopic | undefined;
-		if (!channel) throw new GuildedAPIError('invalid_channel', { meta: { channelId, query } });
+		const channel =
+			this.getChannel<ForumChannel>(channelId) ??
+			(await this.getRESTChannel<ForumChannel>(channelId));
 		return await this.router.forumTopics.fetchAll(channelId, query).then((res) =>
 			res.map((fT) => {
-				raw = this.getForumTopic(channelId, fT.id.toString());
-				if (!raw) raw = new ForumTopic(this, fT);
-				else raw._update(fT);
-				if (cache && channel) channel.forumTopics.add(raw.id, raw);
-				return raw;
+				let exForumTopic = this.getForumTopic(channelId, fT.id.toString());
+				if (!exForumTopic) exForumTopic = new ForumTopic(this, fT);
+				else exForumTopic._update(fT);
+				if (cache) channel.forumTopics.add(exForumTopic.id, exForumTopic);
+				return exForumTopic;
 			}),
 		);
 	}
@@ -442,15 +434,15 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		forumTopicId: string,
 		cache = true,
 	): Promise<ForumTopic> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		let raw = this.getForumTopic(channelId, forumTopicId);
-		if (!channel)
-			throw new GuildedAPIError('invalid_channel', { meta: { channelId, forumTopicId } });
+		const channel =
+			this.getChannel<ForumChannel>(channelId) ??
+			(await this.getRESTChannel<ForumChannel>(channelId));
+		let exForumTopic = this.getForumTopic(channelId, forumTopicId);
 		return await this.router.forumTopics.fetch(channelId, forumTopicId).then((res) => {
-			if (!raw) raw = new ForumTopic(this, res);
-			else raw._update(res);
-			if (cache && channel) channel.forumTopics.add(raw.id, raw);
-			return raw;
+			if (!exForumTopic) exForumTopic = new ForumTopic(this, res);
+			else exForumTopic._update(res);
+			if (cache) channel.forumTopics.add(exForumTopic.id, exForumTopic, true);
+			return exForumTopic;
 		});
 	}
 
@@ -459,16 +451,16 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		payload: restForumTopicCreatePayload,
 		cache = true,
 	): Promise<ForumTopic> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		if (!channel)
-			throw new GuildedAPIError('invalid_channel', { meta: { channelId, payload } });
-		return await this.router.forumTopics
-			.create(channelId, payload)
-			.then((res) => new ForumTopic(this, res))
-			.then((fT) => {
-				if (cache && channel) channel.forumTopics.add(fT.id, fT);
-				return fT;
-			});
+		const channel =
+			this.getChannel<ForumChannel>(channelId) ??
+			(await this.getRESTChannel<ForumChannel>(channelId));
+		return await this.router.forumTopics.create(channelId, payload).then((res) => {
+			let exForumTopic = this.getForumTopic(channelId, res.id.toString());
+			if (!exForumTopic) exForumTopic = new ForumTopic(this, res);
+			else exForumTopic._update(res);
+			if (cache) channel.forumTopics.add(exForumTopic.id, exForumTopic, true);
+			return exForumTopic;
+		});
 	}
 
 	async editRESTForumTopic(
@@ -476,26 +468,24 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		forumTopicId: string,
 		payload: restForumTopicUpdatePayload,
 	): Promise<ForumTopic> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		let raw = this.getForumTopic(channelId, forumTopicId);
-		if (!channel)
-			throw new GuildedAPIError('invalid_channel', {
-				meta: { channelId, forumTopicId, payload },
-			});
+		const channel =
+			this.getChannel<ForumChannel>(channelId) ??
+			(await this.getRESTChannel<ForumChannel>(channelId));
+		let exForumTopic = this.getForumTopic(channelId, forumTopicId);
 		return await this.router.forumTopics
 			.update(channelId, forumTopicId, payload)
 			.then((res) => {
-				if (!raw) raw = new ForumTopic(this, res);
-				else raw._update(res);
-				channel.forumTopics.add(raw.id, raw, true);
-				return raw;
+				if (!exForumTopic) exForumTopic = new ForumTopic(this, res);
+				else exForumTopic._update(res);
+				channel.forumTopics.add(exForumTopic.id, exForumTopic, true);
+				return exForumTopic;
 			});
 	}
 
 	async deleteRESTForumTopic(channelId: string, forumTopicId: string): Promise<boolean> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		if (!channel)
-			throw new GuildedAPIError('invalid_channel', { meta: { channelId, forumTopicId } });
+		const channel =
+			this.getChannel<ForumChannel>(channelId) ??
+			(await this.getRESTChannel<ForumChannel>(channelId));
 		return await this.router.forumTopics.delete(channelId, forumTopicId).then(() => {
 			channel.forumTopics.delete(forumTopicId);
 			return true;
@@ -506,8 +496,6 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		const forumTopic =
 			this.getForumTopic(channelId, forumTopicId) ??
 			(await this.getRESTForumTopic(channelId, forumTopicId));
-		if (!forumTopic)
-			throw new GuildedAPIError('invalid_forum_topic', { meta: { channelId, forumTopicId } });
 		return await this.router.forumTopics.pin(channelId, forumTopicId).then(() => {
 			forumTopic._update({ isPinned: true });
 			return forumTopic;
@@ -518,8 +506,6 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		const forumTopic =
 			this.getForumTopic(channelId, forumTopicId) ??
 			(await this.getRESTForumTopic(channelId, forumTopicId));
-		if (!forumTopic)
-			throw new GuildedAPIError('invalid_forum_topic', { meta: { channelId, forumTopicId } });
 		return await this.router.forumTopics.unpin(channelId, forumTopicId).then(() => {
 			forumTopic._update({ isPinned: false });
 			return forumTopic;
@@ -530,8 +516,6 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		const forumTopic =
 			this.getForumTopic(channelId, forumTopicId) ??
 			(await this.getRESTForumTopic(channelId, forumTopicId));
-		if (!forumTopic)
-			throw new GuildedAPIError('invalid_forum_topic', { meta: { channelId, forumTopicId } });
 		return await this.router.forumTopics.lock(channelId, forumTopicId).then(() => {
 			forumTopic._update({ isLocked: true });
 			return forumTopic;
@@ -542,8 +526,6 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		const forumTopic =
 			this.getForumTopic(channelId, forumTopicId) ??
 			(await this.getRESTForumTopic(channelId, forumTopicId));
-		if (!forumTopic)
-			throw new GuildedAPIError('invalid_forum_topic', { meta: { channelId, forumTopicId } });
 		return await this.router.forumTopics.unlock(channelId, forumTopicId).then(() => {
 			forumTopic._update({ isLocked: false });
 			return forumTopic;
@@ -564,9 +546,9 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		forumTopicId: string,
 		forumTopicCommentId: string,
 	): ForumTopicComment | undefined {
-		const forumTopic = this.getForumTopic(channelId, forumTopicId);
-		if (!forumTopic) return undefined;
-		else return forumTopic.comments.get(forumTopicCommentId);
+		const forumTopicComments = this.getForumTopicComments(channelId, forumTopicId);
+		if (!forumTopicComments) return undefined;
+		else return forumTopicComments.get(forumTopicCommentId);
 	}
 
 	async getRESTForumTopicComments(
@@ -577,16 +559,18 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		const forumTopic =
 			this.getForumTopic(channelId, forumTopicId) ??
 			(await this.getRESTForumTopic(channelId, forumTopicId));
-		let raw: ForumTopicComment | undefined;
-		if (!forumTopic)
-			throw new GuildedAPIError('invalid_forum_topic', { meta: { channelId, forumTopicId } });
 		return await this.router.forumTopicComments.fetchAll(channelId, forumTopicId).then((res) =>
 			res.map((fTc) => {
-				raw = this.getForumTopicComment(channelId, forumTopicId, fTc.id.toString());
-				if (!raw) raw = new ForumTopicComment(this, fTc);
-				else raw._update(fTc);
-				if (cache && forumTopic) forumTopic.comments.add(raw.id, raw, true);
-				return raw;
+				let exForumTopicComment = this.getForumTopicComment(
+					channelId,
+					forumTopicId,
+					fTc.id.toString(),
+				);
+				if (!exForumTopicComment) exForumTopicComment = new ForumTopicComment(this, fTc);
+				else exForumTopicComment._update(fTc);
+				if (cache)
+					forumTopic.comments.add(exForumTopicComment.id, exForumTopicComment, true);
+				return exForumTopicComment;
 			}),
 		);
 	}
@@ -600,16 +584,19 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		const forumTopic =
 			this.getForumTopic(channelId, forumTopicId) ??
 			(await this.getRESTForumTopic(channelId, forumTopicId));
-		let raw = this.getForumTopicComment(channelId, forumTopicId, forumTopicCommentId);
-		if (!forumTopic)
-			throw new GuildedAPIError('invalid_forum_topic', { meta: { channelId, forumTopicId } });
+		let exForumTopicComment = this.getForumTopicComment(
+			channelId,
+			forumTopicId,
+			forumTopicCommentId,
+		);
 		return await this.router.forumTopicComments
 			.fetch(channelId, forumTopicId, forumTopicCommentId)
 			.then((res) => {
-				if (!raw) raw = new ForumTopicComment(this, res);
-				else raw._update(res);
-				if (cache && forumTopic) forumTopic.comments.add(raw.id, raw, true);
-				return raw;
+				if (!exForumTopicComment) exForumTopicComment = new ForumTopicComment(this, res);
+				else exForumTopicComment._update(res);
+				if (cache)
+					forumTopic.comments.add(exForumTopicComment.id, exForumTopicComment, true);
+				return exForumTopicComment;
 			});
 	}
 
@@ -621,16 +608,18 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		const forumTopic =
 			this.getForumTopic(channelId, forumTopicId) ??
 			(await this.getRESTForumTopic(channelId, forumTopicId));
-		if (!forumTopic)
-			throw new GuildedAPIError('invalid_forum_topic', {
-				meta: { channelId, forumTopicId, content },
-			});
 		return await this.router.forumTopicComments
 			.create(channelId, forumTopicId, { content: content })
-			.then((res) => new ForumTopicComment(this, res))
-			.then((fTc) => {
-				forumTopic.comments.add(fTc.id, fTc, true);
-				return fTc;
+			.then((res) => {
+				let exForumTopicComment = this.getForumTopicComment(
+					channelId,
+					forumTopicId,
+					res.id.toString(),
+				);
+				if (!exForumTopicComment) exForumTopicComment = new ForumTopicComment(this, res);
+				else exForumTopicComment._update(res);
+				forumTopic.comments.add(exForumTopicComment.id, exForumTopicComment, true);
+				return exForumTopicComment;
 			});
 	}
 
@@ -643,18 +632,18 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		const forumTopic =
 			this.getForumTopic(channelId, forumTopicId) ??
 			(await this.getRESTForumTopic(channelId, forumTopicId));
-		let raw = this.getForumTopicComment(channelId, forumTopicId, forumTopicCommentId);
-		if (!forumTopic)
-			throw new GuildedAPIError('invalid_forum_topic', {
-				meta: { channelId, forumTopicId, forumTopicCommentId, content },
-			});
+		let exForumTopicComment = this.getForumTopicComment(
+			channelId,
+			forumTopicId,
+			forumTopicCommentId,
+		);
 		return await this.router.forumTopicComments
 			.update(channelId, forumTopicId, forumTopicCommentId, { content: content })
 			.then((res) => {
-				if (!raw) raw = new ForumTopicComment(this, res);
-				else raw._update(res);
-				forumTopic.comments.add(raw.id, raw, true);
-				return raw;
+				if (!exForumTopicComment) exForumTopicComment = new ForumTopicComment(this, res);
+				else exForumTopicComment._update(res);
+				forumTopic.comments.add(exForumTopicComment.id, exForumTopicComment, true);
+				return exForumTopicComment;
 			});
 	}
 
@@ -666,10 +655,6 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		const forumTopic =
 			this.getForumTopic(channelId, forumTopicId) ??
 			(await this.getRESTForumTopic(channelId, forumTopicId));
-		if (!forumTopic)
-			throw new GuildedAPIError('invalid_forum_topic', {
-				meta: { channelId, forumTopicId, forumTopicCommentId },
-			});
 		return await this.router.forumTopicComments
 			.delete(channelId, forumTopicId, forumTopicCommentId)
 			.then(() => {
@@ -679,41 +664,42 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 	}
 
 	getListItems(channelId: string): Collection<string, ListItem> | undefined {
-		const channel = this.getChannel(channelId);
+		const channel = this.getChannel<ListChannel>(channelId);
 		if (!channel) return undefined;
-		else return channel.listItems;
+		else return channel.items;
 	}
 
 	getListItem(channelId: string, listItemId: string): ListItem | undefined {
-		const channel = this.getChannel(channelId);
-		if (!channel) return undefined;
-		else return channel.listItems.get(listItemId);
+		const items = this.getListItems(channelId);
+		if (!items) return undefined;
+		else return items.get(listItemId);
 	}
 
 	async getRESTListItems(channelId: string, cache = true): Promise<Array<ListItem>> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		let raw: ListItem | undefined;
-		if (!channel) throw new GuildedAPIError('invalid_channel', { meta: { channelId } });
+		const channel =
+			this.getChannel<ListChannel>(channelId) ??
+			(await this.getRESTChannel<ListChannel>(channelId));
 		return await this.router.listItems.fetchAll(channelId).then((res) =>
 			res.map((liT) => {
-				raw = this.getListItem(channelId, liT.id);
-				if (!raw) raw = new ListItem(this, liT);
-				else raw._update(liT);
-				if (cache) channel.listItems.add(raw.id, raw, true);
-				return raw;
+				let exListItem = this.getListItem(channelId, liT.id);
+				if (!exListItem) exListItem = new ListItem(this, liT);
+				else exListItem._update(liT);
+				if (cache) channel.items.add(exListItem.id, exListItem, true);
+				return exListItem;
 			}),
 		);
 	}
 
 	async getRESTListItem(channelId: string, listItemId: string, cache = true): Promise<ListItem> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		let raw = this.getListItem(channelId, listItemId);
-		if (!channel) throw new GuildedAPIError('invalid_channel', { meta: { channelId } });
+		const channel =
+			this.getChannel<ListChannel>(channelId) ??
+			(await this.getRESTChannel<ListChannel>(channelId));
+		let exListItem = this.getListItem(channelId, listItemId);
 		return await this.router.listItems.fetch(channelId, listItemId).then((res) => {
-			if (!raw) raw = new ListItem(this, res);
-			else raw._update(res);
-			if (cache) channel.listItems.add(raw.id, raw, true);
-			return raw;
+			if (!exListItem) exListItem = new ListItem(this, res);
+			else exListItem._update(res);
+			if (cache) channel.items.add(exListItem.id, exListItem, true);
+			return exListItem;
 		});
 	}
 
@@ -722,14 +708,17 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		message: string,
 		note?: { content: string },
 	): Promise<ListItem> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		if (!channel) throw new GuildedAPIError('invalid_channel', { meta: { channelId } });
+		const channel =
+			this.getChannel<ListChannel>(channelId) ??
+			(await this.getRESTChannel<ListChannel>(channelId));
 		return await this.router.listItems
 			.create(channelId, { message: message, note: note })
-			.then((res) => new ListItem(this, res))
-			.then((lIt) => {
-				channel.listItems.add(lIt.id, lIt, true);
-				return lIt;
+			.then((res) => {
+				let exListItem = this.getListItem(channelId, res.id);
+				if (!exListItem) exListItem = new ListItem(this, res);
+				else exListItem._update(res);
+				channel.items.add(exListItem.id, exListItem, true);
+				return exListItem;
 			});
 	}
 
@@ -739,62 +728,63 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		message: string,
 		note?: { content: string },
 	): Promise<ListItem> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		let raw = this.getListItem(channelId, listItemId);
-		if (!channel) throw new GuildedAPIError('invalid_channel', { meta: { channelId } });
+		const channel =
+			this.getChannel<ListChannel>(channelId) ??
+			(await this.getRESTChannel<ListChannel>(channelId));
+		let exListItem = this.getListItem(channelId, listItemId);
 		return await this.router.listItems
 			.update(channelId, listItemId, { message: message, note: note })
 			.then((res) => {
-				if (!raw) raw = new ListItem(this, res);
-				else raw._update(res);
-				channel.listItems.add(raw.id, raw, true);
-				return raw;
+				if (!exListItem) exListItem = new ListItem(this, res);
+				else exListItem._update(res);
+				channel.items.add(exListItem.id, exListItem, true);
+				return exListItem;
 			});
 	}
 
 	async deleteRESTListItem(channelId: string, listItemId: string): Promise<boolean> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		if (!channel) throw new GuildedAPIError('invalid_channel', { meta: { channelId } });
+		const channel =
+			this.getChannel<ListChannel>(channelId) ??
+			(await this.getRESTChannel<ListChannel>(channelId));
 		return await this.router.listItems.delete(channelId, listItemId).then(() => {
-			channel.listItems.delete(listItemId);
+			channel.items.delete(listItemId);
 			return true;
 		});
 	}
 
 	async completeRESTListItem(channelId: string, listItemId: string): Promise<ListItem> {
-		const raw =
+		const exListItem =
 			this.getListItem(channelId, listItemId) ??
 			(await this.getRESTListItem(channelId, listItemId));
-		if (!raw)
-			throw new GuildedAPIError('invalid_list_item', { meta: { channelId, listItemId } });
 		return await this.router.listItems.complete(channelId, listItemId).then(() => {
-			raw._update({ completedAt: new Date().toISOString(), completedBy: this.user?.id });
-			return raw;
+			exListItem._update({
+				completedAt: new Date().toISOString(),
+				completedBy: this.user?.id,
+			});
+			return exListItem;
 		});
 	}
 
 	async uncompleteRESTListItem(channelId: string, listItemId: string): Promise<ListItem> {
-		const raw =
+		const exListItem =
 			this.getListItem(channelId, listItemId) ??
 			(await this.getRESTListItem(channelId, listItemId));
-		if (!raw)
-			throw new GuildedAPIError('invalid_list_item', { meta: { channelId, listItemId } });
 		return await this.router.listItems.uncomplete(channelId, listItemId).then(() => {
-			raw._update({ completedAt: undefined, completedBy: undefined });
-			return raw;
+			exListItem._update({ completedAt: undefined, completedBy: undefined });
+			return exListItem;
 		});
 	}
 
 	getDocs(channelId: string): Collection<string, Doc> | undefined {
-		const channel = this.getChannel(channelId);
+		const channel = this.getChannel<DocChannel>(channelId);
 		if (!channel) return undefined;
 		else return channel.docs;
 	}
 
 	getDoc(channelId: string, docId: string): Doc | undefined {
-		const channel = this.getChannel(channelId);
-		if (!channel) return undefined;
-		else return channel.docs.get(docId);
+		const docs = this.getDocs(channelId);
+		if (!docs) return undefined;
+		else return docs.get(docId);
 	}
 
 	async getRESTDocs(
@@ -802,42 +792,44 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		query?: restDocsQueryParams,
 		cache = true,
 	): Promise<Array<Doc>> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		let raw: Doc | undefined;
-		if (!channel) throw new GuildedAPIError('invalid_channel', { meta: { channelId } });
+		const channel =
+			this.getChannel<DocChannel>(channelId) ??
+			(await this.getRESTChannel<DocChannel>(channelId));
 		return await this.router.docs.fetchAll(channelId, query).then((res) =>
 			res.map((doc) => {
-				raw = this.getDoc(channelId, doc.id.toString());
-				if (!raw) raw = new Doc(this, doc);
-				else raw._update(doc);
-				if (cache) channel.docs.add(raw.id, raw, true);
-				return raw;
+				let exDoc = this.getDoc(channelId, doc.id.toString());
+				if (!exDoc) exDoc = new Doc(this, doc);
+				else exDoc._update(doc);
+				if (cache) channel.docs.add(exDoc.id, exDoc, true);
+				return exDoc;
 			}),
 		);
 	}
 
 	async getRESTDoc(channelId: string, docId: string, cache = true): Promise<Doc> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		let raw = this.getDoc(channelId, docId);
-		if (!channel) throw new GuildedAPIError('invalid_channel', { meta: { channelId } });
+		const channel =
+			this.getChannel<DocChannel>(channelId) ??
+			(await this.getRESTChannel<DocChannel>(channelId));
+		let exDoc = this.getDoc(channelId, docId);
 		return await this.router.docs.fetch(channelId, docId).then((res) => {
-			if (!raw) raw = new Doc(this, res);
-			else raw._update(res);
-			if (cache) channel.docs.add(raw.id, raw, true);
-			return raw;
+			if (!exDoc) exDoc = new Doc(this, res);
+			else exDoc._update(res);
+			if (cache) channel.docs.add(exDoc.id, exDoc, true);
+			return exDoc;
 		});
 	}
 
 	async createRESTDoc(channelId: string, title: string, content: string): Promise<Doc> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		if (!channel) throw new GuildedAPIError('invalid_channel', { meta: { channelId } });
-		return await this.router.docs
-			.create(channelId, { title, content })
-			.then((res) => new Doc(this, res))
-			.then((doc) => {
-				channel.docs.add(doc.id, doc, true);
-				return doc;
-			});
+		const channel =
+			this.getChannel<DocChannel>(channelId) ??
+			(await this.getRESTChannel<DocChannel>(channelId));
+		return await this.router.docs.create(channelId, { title, content }).then((res) => {
+			let exDoc = this.getDoc(channelId, res.id.toString());
+			if (!exDoc) exDoc = new Doc(this, res);
+			else exDoc._update(res);
+			channel.docs.add(exDoc.id, exDoc, true);
+			return exDoc;
+		});
 	}
 
 	async editRESTDoc(
@@ -846,23 +838,22 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		title: string,
 		content: string,
 	): Promise<Doc> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		let raw = this.getDoc(channelId, docId);
-		if (!channel)
-			throw new GuildedAPIError('invalid_channel', {
-				meta: { channelId, docId, title, content },
-			});
+		const channel =
+			this.getChannel<DocChannel>(channelId) ??
+			(await this.getRESTChannel<DocChannel>(channelId));
+		let exDoc = this.getDoc(channelId, docId);
 		return await this.router.docs.update(channelId, docId, { title, content }).then((res) => {
-			if (!raw) raw = new Doc(this, res);
-			else raw._update(res);
-			channel.docs.add(raw.id, raw, true);
-			return raw;
+			if (!exDoc) exDoc = new Doc(this, res);
+			else exDoc._update(res);
+			channel.docs.add(exDoc.id, exDoc, true);
+			return exDoc;
 		});
 	}
 
 	async deleteRESTDoc(channelId: string, docId: string): Promise<boolean> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		if (!channel) throw new GuildedAPIError('invalid_channel', { meta: { channelId, docId } });
+		const channel =
+			this.getChannel<DocChannel>(channelId) ??
+			(await this.getRESTChannel<DocChannel>(channelId));
 		return await this.router.docs.delete(channelId, docId).then(() => {
 			channel.docs.delete(docId);
 			return true;
@@ -870,15 +861,15 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 	}
 
 	getCalendarEvents(channelId: string): Collection<string, CalendarEvent> | undefined {
-		const channel = this.getChannel(channelId);
+		const channel = this.getChannel<CalendarEventChannel>(channelId);
 		if (!channel) return undefined;
-		else return channel.calenderEvents;
+		else return channel.calendarEvents;
 	}
 
 	getCalendarEvent(channelId: string, calendarEventId: string): CalendarEvent | undefined {
-		const channel = this.getChannel(channelId);
-		if (!channel) return undefined;
-		else return channel.calenderEvents.get(calendarEventId);
+		const events = this.getCalendarEvents(channelId);
+		if (!events) return undefined;
+		else return events.get(calendarEventId);
 	}
 
 	async getRESTCalendarEvents(
@@ -886,16 +877,16 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		query?: restCalendarEventPayload,
 		cache = true,
 	): Promise<Array<CalendarEvent>> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		let raw: CalendarEvent | undefined;
-		if (!channel) throw new GuildedAPIError('invalid_channel', { meta: { channelId, query } });
-		return await this.router.calenderEvents.fetchAll(channelId, query).then((res) =>
+		const channel =
+			this.getChannel<CalendarEventChannel>(channelId) ??
+			(await this.getRESTChannel<CalendarEventChannel>(channelId));
+		return await this.router.calendarEvents.fetchAll(channelId, query).then((res) =>
 			res.map((cE) => {
-				raw = this.getCalendarEvent(channelId, cE.id.toString());
-				if (!raw) raw = new CalendarEvent(this, cE);
-				else raw._update(cE);
-				if (cache) channel.calenderEvents.add(raw.id, raw, true);
-				return raw;
+				let exCalEvents = this.getCalendarEvent(channelId, cE.id.toString());
+				if (!exCalEvents) exCalEvents = new CalendarEvent(this, cE);
+				else exCalEvents._update(cE);
+				if (cache) channel.calendarEvents.add(exCalEvents.id, exCalEvents, true);
+				return exCalEvents;
 			}),
 		);
 	}
@@ -905,15 +896,15 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		calendarEventId: string,
 		cache = true,
 	): Promise<CalendarEvent> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		let raw = this.getCalendarEvent(channelId, calendarEventId);
-		if (!channel)
-			throw new GuildedAPIError('invalid_channel', { meta: { channelId, calendarEventId } });
-		return await this.router.calenderEvents.fetch(channelId, calendarEventId).then((res) => {
-			if (!raw) raw = new CalendarEvent(this, res);
-			else raw._update(res);
-			if (cache) channel.calenderEvents.add(raw.id, raw, true);
-			return raw;
+		const channel =
+			this.getChannel<CalendarEventChannel>(channelId) ??
+			(await this.getRESTChannel<CalendarEventChannel>(channelId));
+		let exCalEvents = this.getCalendarEvent(channelId, calendarEventId);
+		return await this.router.calendarEvents.fetch(channelId, calendarEventId).then((res) => {
+			if (!exCalEvents) exCalEvents = new CalendarEvent(this, res);
+			else exCalEvents._update(res);
+			if (cache) channel.calendarEvents.add(exCalEvents.id, exCalEvents, true);
+			return exCalEvents;
 		});
 	}
 
@@ -921,16 +912,16 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		channelId: string,
 		payload: restCalendarEventPayload,
 	): Promise<CalendarEvent> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		if (!channel)
-			throw new GuildedAPIError('invalid_channel', { meta: { channelId, payload } });
-		return await this.router.calenderEvents
-			.create(channelId, payload)
-			.then((res) => new CalendarEvent(this, res))
-			.then((cE) => {
-				channel.calenderEvents.add(cE.id, cE, true);
-				return cE;
-			});
+		const channel =
+			this.getChannel<CalendarEventChannel>(channelId) ??
+			(await this.getRESTChannel<CalendarEventChannel>(channelId));
+		return await this.router.calendarEvents.create(channelId, payload).then((res) => {
+			let exCalEvents = this.getCalendarEvent(channelId, res.id.toString());
+			if (!exCalEvents) exCalEvents = new CalendarEvent(this, res);
+			else exCalEvents._update(res);
+			channel.calendarEvents.add(exCalEvents.id, exCalEvents, true);
+			return exCalEvents;
+		});
 	}
 
 	async editRESTCalendarEvent(
@@ -938,26 +929,26 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		calendarEventId: string,
 		payload: restCalendarEventPayload,
 	): Promise<CalendarEvent> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		let raw = this.getCalendarEvent(channelId, calendarEventId);
-		if (!channel)
-			throw new GuildedAPIError('invalid_channel', { meta: { channelId, calendarEventId } });
-		return await this.router.calenderEvents
+		const channel =
+			this.getChannel<CalendarEventChannel>(channelId) ??
+			(await this.getRESTChannel<CalendarEventChannel>(channelId));
+		let exCalEvents = this.getCalendarEvent(channelId, calendarEventId);
+		return await this.router.calendarEvents
 			.update(channelId, calendarEventId, payload)
 			.then((res) => {
-				if (!raw) raw = new CalendarEvent(this, res);
-				else raw._update(res);
-				channel.calenderEvents.add(raw.id, raw, true);
-				return raw;
+				if (!exCalEvents) exCalEvents = new CalendarEvent(this, res);
+				else exCalEvents._update(res);
+				channel.calendarEvents.add(exCalEvents.id, exCalEvents, true);
+				return exCalEvents;
 			});
 	}
 
-	async deleteRESTCalenderEvent(channelId: string, calendarEventId: string): Promise<boolean> {
-		const channel = this.getChannel(channelId) ?? (await this.getRESTChannel(channelId));
-		if (!channel)
-			throw new GuildedAPIError('invalid_channel', { meta: { channelId, calendarEventId } });
-		return await this.router.calenderEvents.delete(channelId, calendarEventId).then(() => {
-			channel.calenderEvents.delete(calendarEventId);
+	async deleteRESTcalendarEvent(channelId: string, calendarEventId: string): Promise<boolean> {
+		const channel =
+			this.getChannel<CalendarEventChannel>(channelId) ??
+			(await this.getRESTChannel<CalendarEventChannel>(channelId));
+		return await this.router.calendarEvents.delete(channelId, calendarEventId).then(() => {
+			channel.calendarEvents.delete(calendarEventId);
 			return true;
 		});
 	}
@@ -966,9 +957,9 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		channelId: string,
 		calendarEventId: string,
 	): Collection<string, CalendarEventRsvp> | undefined {
-		const cEvent = this.getCalendarEvent(channelId, calendarEventId);
-		if (!cEvent) return undefined;
-		else return cEvent.rsvps;
+		const exCalEvent = this.getCalendarEvent(channelId, calendarEventId);
+		if (!exCalEvent) return undefined;
+		else return exCalEvent.rsvps;
 	}
 
 	getCalendarEventRsvp(
@@ -976,9 +967,9 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		calendarEventId: string,
 		userId: string,
 	): CalendarEventRsvp | undefined {
-		const cEvent = this.getCalendarEvent(channelId, calendarEventId);
-		if (!cEvent) return undefined;
-		else return cEvent.rsvps.get(userId);
+		const exCalEventRsvps = this.getCalendarEventRsvps(channelId, calendarEventId);
+		if (!exCalEventRsvps) return undefined;
+		else return exCalEventRsvps.get(userId);
 	}
 
 	async getRESTCalendarEventRsvps(
@@ -986,23 +977,22 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		calendarEventId: string,
 		cache = true,
 	): Promise<Array<CalendarEventRsvp>> {
-		const cEvent =
+		const exCalEvent =
 			this.getCalendarEvent(channelId, calendarEventId) ??
 			(await this.getRESTCalendarEvent(channelId, calendarEventId));
-		let raw: CalendarEventRsvp | undefined;
-		if (!cEvent)
-			throw new GuildedAPIError('invalid_calendar_event', {
-				meta: { channelId, calendarEventId },
-			});
 		return await this.router.calendarEventRsvps
 			.fetchAll(channelId, calendarEventId)
 			.then((res) =>
 				res.map((cErsvp) => {
-					raw = this.getCalendarEventRsvp(channelId, calendarEventId, cErsvp.userId);
-					if (!raw) raw = new CalendarEventRsvp(this, cErsvp);
-					else raw._update(cErsvp);
-					if (cache) cEvent.rsvps.add(raw.id, raw, true);
-					return raw;
+					let exCalEventRsvp = this.getCalendarEventRsvp(
+						channelId,
+						calendarEventId,
+						cErsvp.userId,
+					);
+					if (!exCalEventRsvp) exCalEventRsvp = new CalendarEventRsvp(this, cErsvp);
+					else exCalEventRsvp._update(cErsvp);
+					if (cache) exCalEvent.rsvps.add(exCalEventRsvp.id, exCalEventRsvp, true);
+					return exCalEventRsvp;
 				}),
 			);
 	}
@@ -1013,21 +1003,17 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		userId: string,
 		cache = true,
 	): Promise<CalendarEventRsvp> {
-		const cEvent =
+		const exCalEvent =
 			this.getCalendarEvent(channelId, calendarEventId) ??
 			(await this.getRESTCalendarEvent(channelId, calendarEventId));
-		let raw = this.getCalendarEventRsvp(channelId, calendarEventId, userId);
-		if (!cEvent)
-			throw new GuildedAPIError('invalid_calendar_event', {
-				meta: { channelId, calendarEventId, userId },
-			});
+		let exCalEventRsvp = this.getCalendarEventRsvp(channelId, calendarEventId, userId);
 		return await this.router.calendarEventRsvps
 			.fetch(channelId, calendarEventId, userId)
 			.then((res) => {
-				if (!raw) raw = new CalendarEventRsvp(this, res);
-				else raw._update(res);
-				if (cache) cEvent.rsvps.add(raw.id, raw, true);
-				return raw;
+				if (!exCalEventRsvp) exCalEventRsvp = new CalendarEventRsvp(this, res);
+				else exCalEventRsvp._update(res);
+				if (cache) exCalEvent.rsvps.add(exCalEventRsvp.id, exCalEventRsvp, true);
+				return exCalEventRsvp;
 			});
 	}
 
@@ -1037,19 +1023,17 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		userId: string,
 		payload: restCalendarEventRsvpPayload,
 	): Promise<CalendarEventRsvp> {
-		const cEvent =
+		const exCalEvent =
 			this.getCalendarEvent(channelId, calendarEventId) ??
 			(await this.getRESTCalendarEvent(channelId, calendarEventId));
-		if (!cEvent)
-			throw new GuildedAPIError('invalid_calendar_event', {
-				meta: { channelId, calendarEventId, userId },
-			});
 		return await this.router.calendarEventRsvps
 			.update(channelId, calendarEventId, userId, payload)
-			.then((res) => new CalendarEventRsvp(this, res))
-			.then((cERsvp) => {
-				cEvent.rsvps.add(cERsvp.id, cERsvp, true);
-				return cERsvp;
+			.then((res) => {
+				let exCalEventRsvp = this.getCalendarEventRsvp(channelId, calendarEventId, userId);
+				if (!exCalEventRsvp) exCalEventRsvp = new CalendarEventRsvp(this, res);
+				else exCalEventRsvp._update(res);
+				exCalEvent.rsvps.add(exCalEventRsvp.id, exCalEventRsvp, true);
+				return exCalEventRsvp;
 			});
 	}
 
@@ -1059,21 +1043,17 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		userId: string,
 		payload: restCalendarEventRsvpPayload,
 	): Promise<CalendarEventRsvp> {
-		const cEvent =
+		const exCalEvent =
 			this.getCalendarEvent(channelId, calendarEventId) ??
 			(await this.getRESTCalendarEvent(channelId, calendarEventId));
-		let raw = this.getCalendarEventRsvp(channelId, calendarEventId, userId);
-		if (!cEvent)
-			throw new GuildedAPIError('invalid_calendar_event', {
-				meta: { channelId, calendarEventId, userId },
-			});
+		let exCalEventRsvp = this.getCalendarEventRsvp(channelId, calendarEventId, userId);
 		return await this.router.calendarEventRsvps
 			.update(channelId, calendarEventId, userId, payload)
 			.then((res) => {
-				if (!raw) raw = new CalendarEventRsvp(this, res);
-				else raw._update(res);
-				cEvent.rsvps.add(raw.id, raw, true);
-				return raw;
+				if (!exCalEventRsvp) exCalEventRsvp = new CalendarEventRsvp(this, res);
+				else exCalEventRsvp._update(res);
+				exCalEvent.rsvps.add(exCalEventRsvp.id, exCalEventRsvp, true);
+				return exCalEventRsvp;
 			});
 	}
 
@@ -1082,17 +1062,13 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		calendarEventId: string,
 		userId: string,
 	): Promise<boolean> {
-		const cEvent =
+		const exCalEvent =
 			this.getCalendarEvent(channelId, calendarEventId) ??
 			(await this.getRESTCalendarEvent(channelId, calendarEventId));
-		if (!cEvent)
-			throw new GuildedAPIError('invalid_calendar_event', {
-				meta: { channelId, calendarEventId, userId },
-			});
 		return await this.router.calendarEventRsvps
 			.delete(channelId, calendarEventId, userId)
 			.then(() => {
-				cEvent.rsvps.delete(userId);
+				exCalEvent.rsvps.delete(userId);
 				return true;
 			});
 	}
@@ -1103,13 +1079,9 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		emoteId: string,
 		cache = true,
 	): Promise<BaseReaction> {
-		const message =
+		const exMessage =
 			this.getChatMessage(channelId, messageId) ??
 			(await this.getRESTChatMessage(channelId, messageId));
-		if (!message)
-			throw new GuildedAPIError('invalid_chat_message', {
-				meta: { channelId, messageId, emoteId },
-			});
 		return await this.router.reactions
 			.addOnContent(channelId, messageId, emoteId)
 			.then(() => ({
@@ -1117,7 +1089,14 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 				emoteId: emoteId,
 			}))
 			.then((reaction: BaseReaction) => {
-				if (cache) message.reactions.push(reaction);
+				if (
+					cache &&
+					!exMessage.reactions.find(
+						(Re) =>
+							Re.emoteId === reaction.emoteId && Re.reactedBy === reaction.reactedBy,
+					)
+				)
+					exMessage.reactions.push(reaction);
 				return reaction;
 			});
 	}
@@ -1127,17 +1106,13 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		messageId: string,
 		emoteId: string,
 	): Promise<boolean> {
-		const message =
+		const exMessage =
 			this.getChatMessage(channelId, messageId) ??
 			(await this.getRESTChatMessage(channelId, messageId));
-		if (!message)
-			throw new GuildedAPIError('invalid_chat_message', {
-				meta: { channelId, messageId, emoteId },
-			});
 		return await this.router.reactions
 			.deleteFromContent(channelId, messageId, emoteId)
 			.then(() => {
-				message.reactions = message.reactions.filter(
+				exMessage.reactions = exMessage.reactions.filter(
 					(reaction) => reaction.emoteId.trim() !== emoteId.trim(),
 				);
 				return true;
@@ -1150,13 +1125,9 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		emoteId: string,
 		cache = true,
 	): Promise<BaseReaction> {
-		const forumTopic =
+		const exForumTopic =
 			this.getForumTopic(channelId, forumTopicId) ??
 			(await this.getRESTForumTopic(channelId, forumTopicId));
-		if (!forumTopic)
-			throw new GuildedAPIError('invalid_forum_topic', {
-				meta: { channelId, forumTopicId, emoteId },
-			});
 		return await this.router.reactions
 			.addOnForumTopic(channelId, forumTopicId, emoteId)
 			.then(() => ({
@@ -1164,7 +1135,14 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 				emoteId: emoteId,
 			}))
 			.then((reaction: BaseReaction) => {
-				if (cache) forumTopic.reactions.push(reaction);
+				if (
+					cache &&
+					!exForumTopic.reactions.find(
+						(Re) =>
+							Re.emoteId === reaction.emoteId && Re.reactedBy === reaction.reactedBy,
+					)
+				)
+					exForumTopic.reactions.push(reaction);
 				return reaction;
 			});
 	}
@@ -1174,17 +1152,13 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		forumTopicId: string,
 		emoteId: string,
 	): Promise<boolean> {
-		const forumTopic =
+		const exForumTopic =
 			this.getForumTopic(channelId, forumTopicId) ??
 			(await this.getRESTForumTopic(channelId, forumTopicId));
-		if (!forumTopic)
-			throw new GuildedAPIError('invalid_forum_topic', {
-				meta: { channelId, forumTopicId, emoteId },
-			});
 		return await this.router.reactions
 			.deleteFromForumTopic(channelId, forumTopicId, emoteId)
 			.then(() => {
-				forumTopic.reactions = forumTopic.reactions.filter(
+				exForumTopic.reactions = exForumTopic.reactions.filter(
 					(reaction) => reaction.emoteId.trim() !== emoteId.trim(),
 				);
 				return true;
@@ -1198,13 +1172,9 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		emoteId: string,
 		cache = true,
 	): Promise<BaseReaction> {
-		const forumTopicComment =
+		const exForumTopicComment =
 			this.getForumTopicComment(channelId, forumTopicId, forumTopicCommentId) ??
 			(await this.getRESTForumTopicComment(channelId, forumTopicId, forumTopicCommentId));
-		if (!forumTopicComment)
-			throw new GuildedAPIError('invalid_forum_topic_comment', {
-				meta: { channelId, forumTopicId, forumTopicCommentId, emoteId },
-			});
 		return await this.router.reactions
 			.addOnForumTopicComment(channelId, forumTopicId, forumTopicCommentId, emoteId)
 			.then(() => ({
@@ -1212,7 +1182,14 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 				emoteId: emoteId,
 			}))
 			.then((reaction: BaseReaction) => {
-				if (cache) forumTopicComment.reactions.push(reaction);
+				if (
+					cache &&
+					!exForumTopicComment.reactions.find(
+						(Re) =>
+							Re.emoteId === reaction.emoteId && Re.reactedBy === reaction.reactedBy,
+					)
+				)
+					exForumTopicComment.reactions.push(reaction);
 				return reaction;
 			});
 	}
@@ -1223,13 +1200,9 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		forumTopicCommentId: string,
 		emoteId: string,
 	): Promise<BaseReaction> {
-		const forumTopicComment =
+		const exForumTopicComment =
 			this.getForumTopicComment(channelId, forumTopicId, forumTopicCommentId) ??
 			(await this.getRESTForumTopicComment(channelId, forumTopicId, forumTopicCommentId));
-		if (!forumTopicComment)
-			throw new GuildedAPIError('invalid_forum_topic_comment', {
-				meta: { channelId, forumTopicId, forumTopicCommentId, emoteId },
-			});
 		return await this.router.reactions
 			.deleteFromForumTopicComment(channelId, forumTopicId, forumTopicCommentId, emoteId)
 			.then(() => ({
@@ -1237,7 +1210,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 				emoteId: emoteId,
 			}))
 			.then((reaction: BaseReaction) => {
-				forumTopicComment.reactions = forumTopicComment.reactions.filter(
+				exForumTopicComment.reactions = exForumTopicComment.reactions.filter(
 					(reaction) => reaction.emoteId.trim() !== emoteId.trim(),
 				);
 				return reaction;
@@ -1249,18 +1222,14 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		userId: string,
 		amount: number,
 	): Promise<Member> {
-		const member =
+		const exMember =
 			this.getServerMember(serverId, userId) ??
 			(await this.getRESTServerMember(serverId, userId));
-		if (!member)
-			throw new GuildedAPIError('invalid_server_member', {
-				meta: { serverId, userId, amount },
-			});
 		return await this.router.serverXps
 			.awardToMember(serverId, userId, { amount: amount })
 			.then((res) => {
-				member._update({ xp: res.total });
-				return member;
+				exMember._update({ xp: res.total });
+				return exMember;
 			});
 	}
 
@@ -1269,11 +1238,7 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		roleId: string,
 		amount: number,
 	): Promise<boolean> {
-		const server = this.getServer(serverId) ?? (await this.getRESTServer(serverId));
-		if (!server)
-			throw new GuildedAPIError('invalid_server', {
-				meta: { serverId, roleId, amount },
-			});
+		if (!this.getServer(serverId)) await this.getRESTServer(serverId);
 		return await this.router.serverXps.awardToRole(serverId, roleId, { amount: amount });
 	}
 
@@ -1282,18 +1247,14 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		userId: string,
 		amount: number,
 	): Promise<Member> {
-		const member =
+		const exMember =
 			this.getServerMember(serverId, userId) ??
 			(await this.getRESTServerMember(serverId, userId));
-		if (!member)
-			throw new GuildedAPIError('invalid_server_member', {
-				meta: { serverId, userId, amount },
-			});
 		return await this.router.serverXps
 			.updateToMember(serverId, userId, { total: amount })
 			.then((res) => {
-				member._update({ xp: res.total });
-				return member;
+				exMember._update({ xp: res.total });
+				return exMember;
 			});
 	}
 
@@ -1303,15 +1264,11 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		type: string,
 		cache = true,
 	): Promise<ApiBaseSocialLinks> {
-		const member =
+		const exMember =
 			this.getServerMember(serverId, userId) ??
 			(await this.getRESTServerMember(serverId, userId));
-		if (!member)
-			throw new GuildedAPIError('invalid_server_member', {
-				meta: { serverId, userId, type },
-			});
 		return await this.router.members.fetchSocialLinks(serverId, userId, type).then((res) => {
-			if (cache) member.socialLinks.push(res);
+			if (cache) exMember.socialLinks.push(res);
 			return res;
 		});
 	}
@@ -1325,9 +1282,9 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 	}
 
 	getMemberRoles(serverId: string, userId: string): Array<string> | undefined {
-		const member = this.getServerMember(serverId, userId);
-		if (!member) return undefined;
-		else return member.roleIds;
+		const exMember = this.getServerMember(serverId, userId);
+		if (!exMember) return undefined;
+		else return exMember.roleIds;
 	}
 
 	async getRESTMemberRoles(
@@ -1335,30 +1292,22 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		userId: string,
 		cache = true,
 	): Promise<Array<string>> {
-		const member =
+		const exMember =
 			this.getServerMember(serverId, userId) ??
 			(await this.getRESTServerMember(serverId, userId));
-		if (!member)
-			throw new GuildedAPIError('invalid_server_member', {
-				meta: { serverId, userId },
-			});
 		return await this.router.roleMemberships.fetch(serverId, userId).then((res) => {
-			if (cache) member._update({ roleIds: res });
+			if (cache) exMember._update({ roleIds: res });
 			return res.map((role) => role?.toString());
 		});
 	}
 
 	async addRESTRoleToMember(serverId: string, userId: string, roleId: string): Promise<Member> {
-		const member =
+		const exMember =
 			this.getServerMember(serverId, userId) ??
 			(await this.getRESTServerMember(serverId, userId));
-		if (!member)
-			throw new GuildedAPIError('invalid_server_member', {
-				meta: { serverId, userId },
-			});
 		return await this.router.roleMemberships.add(serverId, userId, roleId).then(() => {
-			member.roleIds?.push(roleId);
-			return member;
+			exMember.roleIds?.push(roleId);
+			return exMember;
 		});
 	}
 
@@ -1367,16 +1316,12 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		userId: string,
 		roleId: string,
 	): Promise<Member> {
-		const member =
+		const exMember =
 			this.getServerMember(serverId, userId) ??
 			(await this.getRESTServerMember(serverId, userId));
-		if (!member)
-			throw new GuildedAPIError('invalid_server_member', {
-				meta: { serverId, userId },
-			});
 		return await this.router.roleMemberships.remove(serverId, userId, roleId).then(() => {
-			member.roleIds = member.roleIds?.filter((id) => id.trim() !== roleId.trim());
-			return member;
+			exMember.roleIds = exMember.roleIds?.filter((id) => id.trim() !== roleId.trim());
+			return exMember;
 		});
 	}
 
@@ -1387,15 +1332,15 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 	}
 
 	getChannelWebhooks(channelId: string): Collection<string, Webhook> | undefined {
-		const channel = this.getChannel(channelId);
+		const channel = this.getChannel<WebhookSupportedChannel>(channelId);
 		if (!channel) return undefined;
 		else return channel.webhooks;
 	}
 
 	getWebhook(serverId: string, webhookId: string): Webhook | undefined {
-		const server = this.getServer(serverId);
-		if (!server) return undefined;
-		else return server.webhooks.get(webhookId);
+		const exWebhooks = this.getServerWebhooks(serverId);
+		if (!exWebhooks) return undefined;
+		else return exWebhooks.get(webhookId);
 	}
 
 	async getRESTWebhooks(
@@ -1404,52 +1349,39 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		cache = true,
 	): Promise<Array<Webhook>> {
 		const server = this.getServer(serverId) ?? (await this.getRESTServer(serverId));
-		let raw: Webhook | undefined;
-		if (!server)
-			throw new GuildedAPIError('invalid_server', {
-				meta: { serverId },
-			});
 		return await this.router.webhooks
 			.fetchAll(serverId, channelId ? { channelId: channelId } : undefined)
 			.then((res) =>
 				res.map((wH) => {
-					raw = this.getWebhook(serverId, wH.id);
-					if (!raw) raw = new Webhook(this, wH);
-					else raw._update(wH);
-					if (cache) server.webhooks.add(raw.id, raw, true);
-					return raw;
+					let exWebhook = this.getWebhook(serverId, wH.id);
+					if (!exWebhook) exWebhook = new Webhook(this, wH);
+					else exWebhook._update(wH);
+					if (cache) server.webhooks.add(exWebhook.id, exWebhook, true);
+					return exWebhook;
 				}),
 			);
 	}
 
 	async getRESTWebhook(serverId: string, webhoookId: string, cache = true): Promise<Webhook> {
 		const server = this.getServer(serverId) ?? (await this.getRESTServer(serverId));
-		let raw = this.getWebhook(serverId, webhoookId);
-		if (!server)
-			throw new GuildedAPIError('invalid_server', {
-				meta: { serverId },
-			});
+		let exWebhook = this.getWebhook(serverId, webhoookId);
 		return await this.router.webhooks.fetch(serverId, webhoookId).then((res) => {
-			if (!raw) raw = new Webhook(this, res);
-			else raw._update(res);
-			if (cache) server.webhooks.add(raw.id, raw, true);
-			return raw;
+			if (!exWebhook) exWebhook = new Webhook(this, res);
+			else exWebhook._update(res);
+			if (cache) server.webhooks.add(exWebhook.id, exWebhook, true);
+			return exWebhook;
 		});
 	}
 
 	async createRESTWebhook(serverId: string, channelId: string, name: string): Promise<Webhook> {
 		const server = this.getServer(serverId) ?? (await this.getRESTServer(serverId));
-		if (!server)
-			throw new GuildedAPIError('invalid_server', {
-				meta: { serverId },
-			});
-		return await this.router.webhooks
-			.create(serverId, { channelId, name })
-			.then((res) => new Webhook(this, res))
-			.then((webhook) => {
-				server.webhooks.add(webhook.id, webhook, true);
-				return webhook;
-			});
+		return await this.router.webhooks.create(serverId, { channelId, name }).then((res) => {
+			let exWebhook = this.getWebhook(serverId, res.id);
+			if (!exWebhook) exWebhook = new Webhook(this, res);
+			else exWebhook._update(res);
+			server.webhooks.add(exWebhook.id, exWebhook, true);
+			return exWebhook;
+		});
 	}
 
 	async editRESTWebhook(
@@ -1458,26 +1390,21 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		payload: restWebhookUpdatePayload,
 	): Promise<Webhook> {
 		const server = this.getServer(serverId) ?? (await this.getRESTServer(serverId));
-		let raw = this.getWebhook(serverId, webhookId);
-		if (!server)
-			throw new GuildedAPIError('invalid_server', {
-				meta: { serverId },
-			});
+		let exWebhook = this.getWebhook(serverId, webhookId);
 		return await this.router.webhooks.update(serverId, webhookId, payload).then((res) => {
-			if (!raw) raw = new Webhook(this, res);
-			else raw._update(res);
-			server.webhooks.add(raw.id, raw, true);
-			return raw;
+			if (!exWebhook) exWebhook = new Webhook(this, res);
+			else exWebhook._update(res);
+			server.webhooks.add(exWebhook.id, exWebhook, true);
+			return exWebhook;
 		});
 	}
 
 	async deleteRESTWebhook(serverId: string, webhookId: string): Promise<boolean> {
 		const server = this.getServer(serverId) ?? (await this.getRESTServer(serverId));
-		if (!server)
-			throw new GuildedAPIError('invalid_server', {
-				meta: { serverId },
-			});
-		return await this.router.webhooks.delete(serverId, webhookId);
+		return await this.router.webhooks.delete(serverId, webhookId).then(() => {
+			server.webhooks.delete(webhookId);
+			return true;
+		});
 	}
 }
 

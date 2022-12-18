@@ -7,7 +7,7 @@ import { ApiBase } from './base';
 export enum ApiChannelType {
 	Announcement = 'announcements',
 	Chat = 'chat',
-	Calender = 'calendar',
+	Calendar = 'calendar',
 	Forums = 'forums',
 	Media = 'media',
 	Docs = 'docs',

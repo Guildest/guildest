@@ -7,19 +7,26 @@ import { Message } from './messages';
 import { ForumTopic } from './forums';
 import { ListItem } from './listItems';
 import { Doc } from './docs';
-import { CalendarEvent } from './calenderEvents';
+import { CalendarEvent } from './calendarEvents';
 import { Webhook } from './webhooks';
 import { Server } from './servers';
 
+/** Channel Types for Guildest Client and for handlers for REST and Websocket */
+export { ApiChannelType as ChannelTypes } from '@guildest/api-typings';
+
+/** Channel that Support Content Payload Messages like content and Embed in Guilded for Resolve */
+export type ChatSupportedChannel = ChatChannel | AnnouncementChannel;
+
+/** Channel that Support Webhooks Modifications and Generators with REST API on Guilded. */
+export type WebhookSupportedChannel = ChatChannel | ListChannel;
+
+/**
+ * 
+ */
 export class Channel extends Base<ApiServerChannel> {
-	type: ApiChannelType;
+	type: ApiChannelType | 'category';
 	name: string;
 	topic?: string;
-	messages = new Collection<string, Message>();
-	forumTopics = new Collection<string, ForumTopic>();
-	listItems = new Collection<string, ListItem>();
-	docs = new Collection<string, Doc>();
-	calenderEvents = new Collection<string, CalendarEvent>();
 	createdAt: number;
 	createdBy: string;
 	serverId: string;
@@ -47,11 +54,6 @@ export class Channel extends Base<ApiServerChannel> {
 		return this.client.getServer(this.serverId);
 	}
 
-	get webhooks(): Collection<string, Webhook> | undefined {
-		if (!this.server) return undefined;
-		return this.server.webhooks.filter((webhook) => webhook.channelId === this.id);
-	}
-
 	_update(json: Partial<ApiServerChannel>) {
 		if ('topic' in json) this.topic = json.topic;
 		if ('updatedAt' in json) this.updatedAt = DateParse(json.updatedAt);
@@ -63,4 +65,86 @@ export class Channel extends Base<ApiServerChannel> {
 	}
 }
 
-export { ApiChannelType as ChannelTypes } from '@guildest/api-typings';
+export class CategoryChannel extends Channel {
+	channels = new Collection<string, Channel>();
+	constructor(client: Client, json: ApiServerChannel) {
+		super(client, json);
+		this.type = 'category';
+	}
+}
+
+export class AnnouncementChannel extends Channel {
+	messages = new Collection<string, Message>();
+	constructor(client: Client, json: ApiServerChannel) {
+		super(client, { ...json, type: ApiChannelType.Announcement });
+	}
+}
+
+export class ChatChannel extends Channel {
+	messages = new Collection<string, Message>();
+	constructor(client: Client, json: ApiServerChannel) {
+		super(client, { ...json, type: ApiChannelType.Chat });
+	}
+
+	get webhooks(): Collection<string, Webhook> | undefined {
+		if (!this.server) return undefined;
+		return this.server.webhooks.filter((webhook) => webhook.channelId === this.id);
+	}
+}
+
+export class ForumChannel extends Channel {
+	forumTopics = new Collection<string, ForumTopic>();
+	constructor(client: Client, json: ApiServerChannel) {
+		super(client, { ...json, type: ApiChannelType.Forums });
+	}
+}
+
+export class ListChannel extends Channel {
+	items = new Collection<string, ListItem>();
+	constructor(client: Client, json: ApiServerChannel) {
+		super(client, { ...json, type: ApiChannelType.ListItem });
+	}
+
+	get webhooks(): Collection<string, Webhook> | undefined {
+		if (!this.server) return undefined;
+		return this.server.webhooks.filter((webhook) => webhook.channelId === this.id);
+	}
+}
+
+export class DocChannel extends Channel {
+	docs = new Collection<string, Doc>();
+	constructor(client: Client, json: ApiServerChannel) {
+		super(client, { ...json, type: ApiChannelType.Docs });
+	}
+}
+
+export class CalendarEventChannel extends Channel {
+	calendarEvents = new Collection<string, CalendarEvent>();
+	constructor(client: Client, json: ApiServerChannel) {
+		super(client, { ...json, type: ApiChannelType.Calendar });
+	}
+}
+
+export class MediaChannel extends Channel {
+	constructor(client: Client, json: ApiServerChannel) {
+		super(client, { ...json, type: ApiChannelType.Media });
+	}
+}
+
+export class VoiceChannel extends Channel {
+	constructor(client: Client, json: ApiServerChannel) {
+		super(client, { ...json, type: ApiChannelType.Voice });
+	}
+}
+
+export class StreamChannel extends Channel {
+	constructor(client: Client, json: ApiServerChannel) {
+		super(client, { ...json, type: ApiChannelType.Stream });
+	}
+}
+
+export class SchedulingChannel extends Channel {
+	constructor(client: Client, json: ApiServerChannel) {
+		super(client, { ...json, type: ApiChannelType.Scheduling });
+	}
+}

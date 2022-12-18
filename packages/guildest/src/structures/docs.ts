@@ -3,6 +3,7 @@ import { DateParse } from '../utils/basicUtils';
 import { Base } from './base';
 import { Client } from './client';
 import { Server } from './servers';
+import { Channel } from './channels';
 
 export class Doc extends Base<ApiDocs> {
 	serverId: string;
@@ -26,6 +27,11 @@ export class Doc extends Base<ApiDocs> {
 
 	get server(): Server | undefined {
 		return this.client.getServer(this.serverId);
+	}
+
+	get channel(): Channel | undefined {
+		if (!this.channelId) return undefined;
+		return this.client.getChannel(this.channelId);
 	}
 
 	_update(json: Partial<ApiDocs>) {

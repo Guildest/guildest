@@ -74,6 +74,8 @@ export class Member extends Base<ApiServerMemberResolve> {
 		this.user = new User(this.client, json.user);
 		this.roleIds = json.roleIds.map((role) => role?.toString());
 		this._update(json);
+
+		this.client.__collections.add(this.user.id, this.user, true);
 	}
 
 	get name() {

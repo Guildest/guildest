@@ -2,7 +2,7 @@
 export * from './restManager';
 
 // Exporting Routers
-export * from './routers/calenderEventRouter';
+export * from './routers/calendarEventRouter';
 export * from './routers/channelRouter';
 export * from './routers/docRouter';
 export * from './routers/forumTopicRouter';

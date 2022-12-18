@@ -31,4 +31,6 @@ export type ClientEvents = {
 	ServerWebhookCreated: (webhook: Webhook) => unknown;
 	ServerWebhookUpdated: (webhook: Webhook) => unknown;
 	DocCreated: (doc: Doc) => unknown;
+	DocUpdated: (doc: Doc) => unknown;
+	DocDeleted: (doc: Doc) => unknown;
 };
