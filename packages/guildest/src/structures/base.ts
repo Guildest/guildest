@@ -1,8 +1,18 @@
 import { Client } from './client';
 
+/**
+ * @class Base Class Represents the Interfaces of Base Model in Guilded API in Server.
+ */
 export class Base<T = { id: string }, K = string> {
+	/** Id of the Class as detemined */
 	public id: K;
 
+	/**
+	 * Represents the Base Class of the API Channel on Guilded.
+	 * @param client Guildest Client Interacting with REST and Ws using Guilded API .
+	 * @param json JSON / Record Object Data from REST /  Ws as Raw Data from API
+	 * @example base = new Base(client,data)
+	 */
 	constructor(public readonly client: Client, json: { id: K } & T) {
 		this.id = json.id;
 	}

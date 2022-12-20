@@ -58,16 +58,26 @@ import { Webhook } from './webhooks';
 import { ClientEvents } from '../constants/typings';
 import { fetchChannelType } from '../utils/basicUtils';
 
+/**
+ * @class Base Client Represents the Interfaces of Client Model in Guilded API in Server.
+ */
 export class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
+	/** User of the Client in Guilded. */
 	user?: ClientUser;
+	/** Timestamp in (ms) when client emit ready event */
 	readyTimestamp?: number;
 
+	/** Websocket instance for the Guildest Client */
 	ws: webSocketManager = new webSocketManager({ token: this.token, ...this.option.ws });
+	/** Rest Manager Instance for the Guildest Client */
 	rest: restManager = new restManager({ token: this.token, ...this.option.rest });
 
+	/** Private Event Handlers for the Ws event emittions */
 	__eventsHandler: eventsHandler = new eventsHandler(this);
+	/** Private Collection of Channel | Server | User */
 	__collections = new Collection<string, User | Channel | Server>();
 
+	/** Router based on REST Manager with REST Instance for client internal functions. */
 	router = {
 		servers: new ServerRouter(this.rest),
 		channels: new ChannelRouter(this.rest),
@@ -87,11 +97,23 @@ export class Client extends (EventEmitter as unknown as new () => TypedEmitter<C
 		webhooks: new WebhookRouter(this.rest),
 	};
 
+	/**
+	 * Client Insstance Manager for Guildest Client Instance
+	 * @param token Secret Guilded Bot Token for Authentication
+	 * @param option Client Options for the REST API.
+	 * @example client = new Client("xxx-xxxx",{})
+	 */
 	constructor(readonly token: string, public readonly option: ClientOption) {
 		super();
 	}
 
-	async connect(token: string = this.token, force = false) {
+	/**
+	 * Client connect function with Internal Ws client.
+	 * @param token Secret Guilded Bot Token for Authentication
+	 * @param force Re-Connect the Client forecfully
+	 * @returns {Promise<void>} returns the void after connecting ws with the client
+	 */
+	async connect(token: string = this.token, force = false): Promise<void> {
 		if (force) this.ws = new webSocketManager({ token: token, ...this.option.ws });
 		this.ws.on('ready', (user) => {
 			this.user = new ClientUser(this, user);
