@@ -8,6 +8,13 @@
 - [Website]()
 - [Documentation]()
 - [Guide]()
+  
+## Installation
+ 
+- ``npm i @guildest/ws``
+- ``yarn add @guildest/ws``
+- ``pnpm add @guildest/ws``
+  
 
 **Want to chat and build a guilded bot with us?**
 **Join our Guilded Server [Here](https://www.guilded.gg/i/kamZgDBk)**
